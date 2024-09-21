@@ -7,305 +7,501 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;500;600;700;800&display=swap');
 
 :root {
-    --primary-color: #ff6b6b;
-    --secondary-color: #4ecdc4;
-    --background-color: #1a1a2e;
-    --text-color: #f7fff7;
+    --primary-color: #00ffff;
+    --secondary-color: #ff00ff;
+    --background-color: #0a0a2a;
+    --text-color: #ffffff;
+    --table-bg: rgba(10, 10, 42, 0.8);
+    --hover-color: rgba(0, 255, 255, 0.1);
+    --price-color: #00ffaa;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(45deg, var(--background-color), #16213e, #0f3460);
-    background-attachment: fixed;
-    min-height: 100vh;
+    font-family: 'Oxanium', sans-serif;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
     color: var(--text-color);
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow-x: hidden;
+    line-height: 1.6;
 }
 
 .container {
     width: 95%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 2rem auto;
     padding: 2rem;
-    backdrop-filter: blur(10px);
-    background-color: rgba(26, 26, 46, 0.8);
+    background: rgba(10, 10, 42, 0.3);
     border-radius: 20px;
-    border: 1px solid rgba(255, 107, 107, 0.2);
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
-    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
+.container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+    animation: pulse 15s infinite linear;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-50%, -50%); }
 }
 
 h1 {
-    font-family: 'Orbitron', sans-serif;
-    color: var(--primary-color);
-    text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    font-size: 3.5rem;
+    font-weight: 700;
     text-align: center;
-    font-size: 2.5rem;
     margin-bottom: 2rem;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    letter-spacing: 2px;
+}
+
+.advanced-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    position: relative;
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.filter-group label {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"], select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    padding: 0.8rem;
+    font-family: 'Oxanium', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border-radius: 25px; 
+}
+
+nput[type="text"]:focus, select:focus {
+    outline: none;
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300ffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
+}
+
+.clear-filters {
+    background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+    color: var(--text-color);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px; 
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Oxanium', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.clear-filters::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s;
+}
+
+.clear-filters:hover::before {
+    left: 100%;
+}
+
+.clear-filters:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
 }
 
 .table-container {
-    background: rgba(15, 52, 96, 0.5);
+    background: var(--table-bg);
     border-radius: 15px;
-    overflow-x: auto;
-    margin-top: 2rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    position: relative;
 }
 
 table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    font-size: 1.1rem;
+}
+
+th, td {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+    vertical-align: middle;
 }
 
 th {
-    background: rgba(255, 107, 107, 0.2);
+    background: rgba(0, 255, 255, 0.1);
     color: var(--primary-color);
-    font-family: 'Orbitron', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 15px;
-    text-align: left;
-    border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+    position: relative;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 th:hover {
-    background: rgba(255, 107, 107, 0.3);
+    background: rgba(0, 255, 255, 0.2);
+}
+
+th::after {
+    content: '\f0dc';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-left: 0.5rem;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+th.sort-asc::after {
+    content: '\f0de';
+    opacity: 1;
+}
+
+th.sort-desc::after {
+    content: '\f0dd';
+    opacity: 1;
 }
 
 td {
-    padding: 12px 15px;
-    border-bottom: 1px solid rgba(255, 107, 107, 0.1);
-    color: var(--text-color);
-    transition: all 0.3s ease;
-}
-
-tr:last-child td {
-    border-bottom: none;
+    font-weight: 400; 
+    position: relative;
+    overflow: hidden;
+    text-shadow: none; 
 }
 
 tr:hover td {
-    background: rgba(255, 107, 107, 0.1);
-    transform: scale(1.02);
+    color: var(--primary-color);
+    background: var(--hover-color);
 }
 
-input[type="text"], input[type="number"], select {
+tr:hover td::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
     width: 100%;
-    background: rgba(26, 26, 46, 0.8);
-    border: 1px solid rgba(255, 107, 107, 0.3);
-    border-radius: 4px;
-    padding: 10px 12px;
-    color: var(--text-color);
-    transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.05), transparent); /* Reduced opacity for subtler effect */
+    animation: scan 1.5s linear;
 }
 
-input[type="text"]:focus, input[type="number"]:focus, select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+@keyframes scan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.price-column {
+    font-size: 1.6rem;
+    font-weight: 700; 
+    color: var(--price-color);
+    text-shadow: 0 0 3px rgba(0, 255, 170, 0.3); 
+    letter-spacing: 1px;
 }
 
 .pagination {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
+    position: relative;
+}
+
+.pagination-content {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    padding: 0 40px;
 }
 
 .pagination button {
-    background: rgba(255, 107, 107, 0.2);
-    border: 1px solid rgba(255, 107, 107, 0.3);
-    border-radius: 4px;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
     color: var(--primary-color);
-    padding: 8px 15px;
-    margin: 0 5px;
-    transition: all 0.3s ease;
-    font-family: 'Orbitron', sans-serif;
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    border-radius: 10px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Oxanium', sans-serif;
+    flex-shrink: 0;
 }
 
 .pagination button:hover, .pagination button.active {
-    background: rgba(255, 107, 107, 0.4);
-    color: var(--text-color);
+    background: rgba(0, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
 }
 
-.sort-icon {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    margin-left: 5px;
-    vertical-align: middle;
-    border-right: 4px solid transparent;
-    border-left: 4px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.sort-icon.asc {
-    border-bottom: 4px solid var(--primary-color);
-}
-
-.sort-icon.desc {
-    border-top: 4px solid var(--primary-color);
-}
-
-.advanced-filters {
-    background: rgba(26, 26, 46, 0.8);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.filter-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.filter-group label {
-    min-width: 100px;
-    color: var(--primary-color);
-    font-family: 'Orbitron', sans-serif;
-    margin-right: 10px;
-}
-
-.filter-group input, .filter-group select {
-    flex-grow: 1;
-    min-width: 150px;
-}
-
-.clear-filters {
-    background: rgba(255, 107, 107, 0.2);
-    color: var(--primary-color);
+.pagination-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 255, 255, 0.2);
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    padding: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Orbitron', sans-serif;
-    display: block;
-    margin: 20px auto 0;
+    border-radius: 50%;
 }
 
-.clear-filters:hover {
-    background: rgba(255, 107, 107, 0.4);
-    color: var(--text-color);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+.pagination-arrow:hover {
+    background: rgba(0, 255, 255, 0.4);
 }
 
-@media (max-width: 600px) {
-    .filter-group {
+.pagination-arrow.left {
+    left: 0;
+}
+
+.pagination-arrow.right {
+    right: 0;
+}
+
+.disclaimer {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.filter-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: var(--secondary-color);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.filter-active .filter-indicator {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    th, td {
+        padding: 1rem 0.5rem;
+    }
+
+    .advanced-filters {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
     }
 
-    .filter-group label {
-        margin-bottom: 5px;
+    .filter-group {
+        margin-right: 0;
+        margin-bottom: 1rem;
     }
 
-    .filter-group input, .filter-group select {
+    .clear-filters {
+        margin-left: 0;
         width: 100%;
     }
+
+    table {
+        font-size: 1rem;
+    }
+
+    .price-column {
+        font-size: 1.4rem;
+    }
+
+    .pagination-content {
+        justify-content: flex-start;
+        padding: 0 20px;
+    }
+
+    .pagination button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+        input[type="text"], select, .clear-filters {
+        border-radius: 20px;
+    }
 }
 
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+:focus {
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 2px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #ffffff;
+        --secondary-color: #ffff00;
+        --background-color: #000000;
+        --text-color: #ffffff;
+        --table-bg: #000000;
+        --hover-color: #333333;
+        --price-color: #ffffff;
     }
-    50% {
-        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+
+    body {
+        background: #000000;
     }
-    100% {
-        box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+
+    .container::before {
+        display: none;
+    }
+
+    input[type="text"], select, .clear-filters {
+        border: 2px solid var(--primary-color);
     }
 }
 
-.container:hover {
-    animation: glow 2s infinite;
+@media (prefers-reduced-motion: reduce) {
+    .container::before,
+    tr:hover td::before {
+        animation: none;
+    }
+
+    .clear-filters::before {
+        transition: none;
+    }
 }
     </style>
 </head>
 <body class="p-8">
-    <div class="container max-w-6xl mx-auto p-8">
-        <h1 class="text-4xl font-bold text-center mb-8">المنفذ التجاري</h1>
+    <div class="container">
+        <h1>SwiftXplorer</h1>
         
         <div class="advanced-filters">
             <div class="filter-group">
-                <label for="nameFilter">Name:</label>
-                <input type="text" id="nameFilter" class="w-full" placeholder="Filter by name" data-filter="name">
+                <input type="text" id="nameFilter" placeholder=" " data-filter="name">
+                <label for="nameFilter">Name</label>
+                <div class="filter-indicator"></div>
             </div>
             <div class="filter-group">
-                <label for="unitFilter">Unit:</label>
-                <select id="unitFilter" class="w-full" data-filter="unit">
+                <select id="unitFilter" data-filter="unit">
+                    <option value="" disabled selected>Select Unit</option>
                     <option value="">All Units</option>
                 </select>
+                <label for="unitFilter">Unit</label>
+                <div class="filter-indicator"></div>
             </div>
             <div class="filter-group">
-                <label for="priceMinFilter">Price Range:</label>
-                <input type="number" id="priceMinFilter" class="w-1/2" placeholder="Min" data-filter="priceMin">
-                <input type="number" id="priceMaxFilter" class="w-1/2" placeholder="Max" data-filter="priceMax">
-            </div>
-            <div class="filter-group">
-                <label for="companyFilter">Company:</label>
-                <select id="companyFilter" class="w-full" data-filter="company">
+                <select id="companyFilter" data-filter="company">
+                    <option value="" disabled selected>Select Company</option>
                     <option value="">All Companies</option>
                 </select>
+                <label for="companyFilter">Company</label>
+                <div class="filter-indicator"></div>
             </div>
-            <button class="clear-filters mt-4" onclick="clearFilters()">Clear Filters</button>
+            <button class="clear-filters" onclick="clearFilters()">Clear Filters</button>
         </div>
         
-        <div class="table-container p-6">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr>
-                            <th data-sort="name">
-                                Name
-                                <span class="sort-icon"></span>
-                            </th>
-                            <th data-sort="unit">
-                                Unit
-                                <span class="sort-icon"></span>
-                            </th>
-                            <th data-sort="price">
-                                Price
-                                <span class="sort-icon"></span>
-                            </th>
-                            <th data-sort="company">
-                                Company
-                                <span class="sort-icon"></span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="medicineTableBody"></tbody>
-                </table>
-            </div>
-            <div class="pagination flex justify-center mt-6" id="pagination"></div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-sort="name">Name</th>
+                        <th data-sort="unit">Unit</th>
+                        <th data-sort="price">Price</th>
+                        <th data-sort="company">Company</th>
+                    </tr>
+                </thead>
+                <tbody id="medicineTableBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination" id="pagination">
+            <button class="pagination-arrow left" onclick="scrollPagination('left')">&lt;</button>
+            <div class="pagination-content" id="paginationContent"></div>
+            <button class="pagination-arrow right" onclick="scrollPagination('right')">&gt;</button>
+        </div>
+        <div class="disclaimer">
+            Please note: The information in this list is currently being refined and reviewed for accuracy. It may not be comprehensive or up to date.
         </div>
     </div>
 
     <script>
-         const medicineData = [
+      const medicineData = [
             {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"},
             {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"},
             {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"},
@@ -446,7 +642,7 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
         ];
 
         const medicineTableBody = document.getElementById('medicineTableBody');
-        const paginationContainer = document.getElementById('pagination');
+        const paginationContainer = document.getElementById('paginationContent');
 
         let currentSort = { key: null, direction: 'asc' };
         let currentPage = 1;
@@ -464,9 +660,10 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
                 row.innerHTML = `
                     <td>${item.name}</td>
                     <td>${item.unit}</td>
-                    <td>${item.price.toFixed(2)}</td>
+                    <td class="price-column">${item.price.toFixed(item.price % 1 === 0 ? 0 : 2)}</td>
                     <td>${item.company}</td>
                 `;
+                row.style.animation = 'fadeIn 0.5s ease-out';
             });
 
             renderPagination(data.length);
@@ -488,13 +685,20 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
             }
         }
 
+        function scrollPagination(direction) {
+            const scrollAmount = 100;
+            if (direction === 'left') {
+                paginationContainer.scrollLeft -= scrollAmount;
+            } else {
+                paginationContainer.scrollLeft += scrollAmount;
+            }
+        }
+
         function filterAndSortData() {
             let filteredData = medicineData.filter(item => {
                 return Object.entries(filters).every(([key, value]) => {
                     if (!value) return true;
                     if (key === 'name') return item.name.toLowerCase().includes(value.toLowerCase());
-                    if (key === 'priceMin') return item.price >= parseFloat(value);
-                    if (key === 'priceMax') return item.price <= parseFloat(value);
                     return item[key] === value;
                 });
             });
@@ -539,10 +743,21 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
                 } else {
                     element.value = '';
                 }
+                element.parentNode.classList.remove('filter-active');
             });
             filters = {};
             currentPage = 1;
             filterAndSortData();
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                const key = th.getAttribute('data-sort');
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (currentSort.key === key) {
+                    th.classList.add(`sort-${currentSort.direction}`);
+                }
+            });
         }
 
         document.querySelectorAll('th[data-sort]').forEach(th => {
@@ -562,29 +777,67 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
             filterElement.addEventListener('input', (e) => {
                 const key = e.target.getAttribute('data-filter');
                 filters[key] = e.target.value;
+                e.target.parentNode.classList.toggle('filter-active', !!e.target.value);
                 currentPage = 1;
                 filterAndSortData();
             });
         });
 
-        function updateSortIcons() {
-    document.querySelectorAll('th[data-sort]').forEach(th => {
-        const key = th.getAttribute('data-sort');
-        const icon = th.querySelector('.sort-icon');
-        icon.className = 'sort-icon';
-        if (currentSort.key === key) {
-            icon.classList.add(currentSort.direction);
+        function initializeTable() {
+            medicineTableBody.style.opacity = '0';
+            setTimeout(() => {
+                filterAndSortData();
+                medicineTableBody.style.transition = 'opacity 0.5s ease-out';
+                medicineTableBody.style.opacity = '1';
+            }, 100);
         }
-    });
-}
 
-function init() {
-    initializeFilters();
-    filterAndSortData();
-    updateSortIcons();
-}
+        function createParticles() {
+            const particleContainer = document.createElement('div');
+            particleContainer.style.position = 'fixed';
+            particleContainer.style.top = '0';
+            particleContainer.style.left = '0';
+            particleContainer.style.width = '100%';
+            particleContainer.style.height = '100%';
+            particleContainer.style.pointerEvents = 'none';
+            particleContainer.style.zIndex = '-1';
+            document.body.appendChild(particleContainer);
 
-document.addEventListener('DOMContentLoaded', init);
-</script>
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '2px';
+                particle.style.height = '2px';
+                particle.style.background = 'rgba(0, 255, 255, 0.5)';
+                particle.style.borderRadius = '50%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animation = `float ${5 + Math.random() * 10}s infinite linear`;
+                particleContainer.appendChild(particle);
+            }
+        }
+
+        function init() {
+            initializeFilters();
+            initializeTable();
+            updateSortIcons();
+            createParticles();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(0) rotate(0deg); }
+                100% { transform: translateY(-100vh) rotate(360deg); }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
