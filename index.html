@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futuristic Medicine Inventory</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --background-color: #1a1a2e;
+    --text-color: #f7fff7;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(45deg, var(--background-color), #16213e, #0f3460);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    backdrop-filter: blur(10px);
+    background-color: rgba(26, 26, 46, 0.8);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.table-container {
+    background: rgba(15, 52, 96, 0.5);
+    border-radius: 15px;
+    overflow-x: auto;
+    margin-top: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--primary-color);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid rgba(255, 107, 107, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+th:hover {
+    background: rgba(255, 107, 107, 0.3);
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 107, 107, 0.1);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background: rgba(255, 107, 107, 0.1);
+    transform: scale(1.02);
+}
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+    background: rgba(26, 26, 46, 0.8);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 4px;
+    padding: 10px 12px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.pagination button {
+    background: rgba(255, 107, 107, 0.2);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 4px;
+    color: var(--primary-color);
+    padding: 8px 15px;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+}
+
+.pagination button:hover, .pagination button.active {
+    background: rgba(255, 107, 107, 0.4);
+    color: var(--text-color);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+}
+
+.sort-icon {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 5px;
+    vertical-align: middle;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.sort-icon.asc {
+    border-bottom: 4px solid var(--primary-color);
+}
+
+.sort-icon.desc {
+    border-top: 4px solid var(--primary-color);
+}
+
+.advanced-filters {
+    background: rgba(26, 26, 46, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    min-width: 100px;
+    color: var(--primary-color);
+    font-family: 'Orbitron', sans-serif;
+    margin-right: 10px;
+}
+
+.filter-group input, .filter-group select {
+    flex-grow: 1;
+    min-width: 150px;
+}
+
+.clear-filters {
+    background: rgba(255, 107, 107, 0.2);
+    color: var(--primary-color);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Orbitron', sans-serif;
+    display: block;
+    margin: 20px auto 0;
+}
+
+.clear-filters:hover {
+    background: rgba(255, 107, 107, 0.4);
+    color: var(--text-color);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(255, 107, 107, 0.3);
+}
+
+@media (max-width: 600px) {
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-group label {
+        margin-bottom: 5px;
+    }
+
+    .filter-group input, .filter-group select {
+        width: 100%;
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+    }
+}
+
+.container:hover {
+    animation: glow 2s infinite;
+}
+    </style>
+</head>
+<body class="p-8">
+    <div class="container max-w-6xl mx-auto p-8">
+        <h1 class="text-4xl font-bold text-center mb-8">المنفذ التجاري</h1>
+        
+        <div class="advanced-filters">
+            <div class="filter-group">
+                <label for="nameFilter">Name:</label>
+                <input type="text" id="nameFilter" class="w-full" placeholder="Filter by name" data-filter="name">
+            </div>
+            <div class="filter-group">
+                <label for="unitFilter">Unit:</label>
+                <select id="unitFilter" class="w-full" data-filter="unit">
+                    <option value="">All Units</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="priceMinFilter">Price Range:</label>
+                <input type="number" id="priceMinFilter" class="w-1/2" placeholder="Min" data-filter="priceMin">
+                <input type="number" id="priceMaxFilter" class="w-1/2" placeholder="Max" data-filter="priceMax">
+            </div>
+            <div class="filter-group">
+                <label for="companyFilter">Company:</label>
+                <select id="companyFilter" class="w-full" data-filter="company">
+                    <option value="">All Companies</option>
+                </select>
+            </div>
+            <button class="clear-filters mt-4" onclick="clearFilters()">Clear Filters</button>
+        </div>
+        
+        <div class="table-container p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th data-sort="name">
+                                Name
+                                <span class="sort-icon"></span>
+                            </th>
+                            <th data-sort="unit">
+                                Unit
+                                <span class="sort-icon"></span>
+                            </th>
+                            <th data-sort="price">
+                                Price
+                                <span class="sort-icon"></span>
+                            </th>
+                            <th data-sort="company">
+                                Company
+                                <span class="sort-icon"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicineTableBody"></tbody>
+                </table>
+            </div>
+            <div class="pagination flex justify-center mt-6" id="pagination"></div>
+        </div>
+    </div>
+
+    <script>
+         const medicineData = [
+            {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"},
+            {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"},
+            {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"},
+            {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"},
+            {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
+            {name: "Apidra", unit: "Penfill", price: 44, company: "شراء موحد"},
+            {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"},
+            {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"},
+            {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"},
+            {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"},
+            {name: "Atozet 20 / 10", unit: "10 Tab", price: 110, company: "شراء موحد"},
+            {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
+            {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
+            {name: "Campto", unit: "Vial", price: 60, company: "شراء موحد"},
+            {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"},
+            {name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"},
+            {name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"},
+            {name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"},
+            {name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"},
+            {name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"},
+            {name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"},
+            {name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"},
+            {name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"},
+            {name: "Coversyl 10 plus", unit: "15 Tab", price: 20, company: "شراء موحد"},
+            {name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"},
+            {name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"},
+            {name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"},
+            {name: "Crestor 10", unit: "28 Tab", price: 118, company: "شراء موحد"},
+            {name: "Crestor 20", unit: "14 Tab", price: 96, company: "شراء موحد"},
+            {name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"},
+            {name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"},
+            {name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"},
+            {name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"},
+            {name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"},
+            {name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"},
+            {name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"},
+            {name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"},
+            {name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"},
+            {name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"},
+            {name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"},
+            {name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"},
+            {name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"},
+            {name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"},
+            {name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
+            {name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
+            {name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
+            {name: "Etodolac 600", unit: "10 Tab", price: 15.5, company: "شراء موحد"},
+            {name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"},
+            {name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"},
+            {name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"},
+            {name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"},
+            {name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"},
+            {name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"},
+            {name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"},
+            {name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"},
+            {name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"},
+            {name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"},
+            {name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"},
+            {name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"},
+            {name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"},
+            {name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"},
+            {name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
+            {name: "Glucovance 5 /1000", unit: "30 Tab", price: 20, company: "شراء موحد"},
+            {name: "Humalog 100", unit: "Pen", price: 52.87, company: "شراء موحد"},
+            {name: "Humalog 100", unit: "Penfill", price: 48, company: "شراء موحد"},
+            {name: "Humalog Mix 25", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Humalog Mix 50", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"},
+            {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"},
+            {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"},
+            {name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"},
+            {name: "Jaunamet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"},
+            {name: "Jaunamet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"},
+            {name: "Jaunamet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"},
+            {name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"},
+            {name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"},
+            {name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"},
+            {name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"},
+            {name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"},
+            {name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"},
+            {name: "Lipiror 80", unit: "7 Tab", price: 51, company: "شراء موحد"},
+            {name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"},
+            {name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"},
+            {name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"},
+            {name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"},
+            {name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"},
+            {name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"},
+            {name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"},
+            {name: "Nexium 20", unit: "28 Tab", price: 140, company: "شراء موحد"},
+            {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"},
+            {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"},
+            {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"},
+            {name: "Novomix 30 Mix", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Novomix 50 Mix", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Novorapid", unit: "Penfill", price: 39.5, company: "شراء موحد"},
+            {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"},
+            {name: "Plavix 75", unit: "28 Tab", price: 40, company: "شراء موحد"},
+            {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"},
+            {name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"},
+            {name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"},
+            {name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"},
+            {name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"},
+            {name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"},
+            {name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"},
+            {name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"},
+            {name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"},
+            {name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"},
+            {name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"},
+            {name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"},
+            {name: "Taxoter 20", unit: "Vial", price: 240, company: "شراء موحد"},
+            {name: "Taxoter 80", unit: "Vial", price: 860, company: "شراء موحد"},
+            {name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"},
+            {name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"},
+            {name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"},
+            {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"},
+            {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"},
+            {name: "Tentavair 160", unit: "Spray", price: 27, company: "شراء موحد"},
+            {name: "Toujeo", unit: "Pen", price: 50, company: "شراء موحد"},
+            {name: "Tresiba", unit: "Pen", price: 70, company: "شراء موحد"},
+            {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"},
+            {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"},
+            {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"},
+            {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"},
+            {name: "Tritace Comp Ls 2.5 / 12.5", unit: "14 Tab", price: 18, company: "شراء موحد"},
+            {name: "Tritace Protect 10", unit: "20 Tab", price: 29, company: "شراء موحد"},
+            {name: "Trivastal", unit: "30 Tab", price: 27.25, company: "شراء موحد"},
+            {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"},
+            {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"},
+            {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"},
+            {name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"},
+            {name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"},
+            {name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"},
+            {name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"},
+            {name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"},
+            {name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"},
+            {name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"},
+            {name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"}
+        ];
+
+        const medicineTableBody = document.getElementById('medicineTableBody');
+        const paginationContainer = document.getElementById('pagination');
+
+        let currentSort = { key: null, direction: 'asc' };
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let filters = {};
+
+        function renderTable(data) {
+            medicineTableBody.innerHTML = '';
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedData = data.slice(start, end);
+
+            paginatedData.forEach(item => {
+                const row = medicineTableBody.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.unit}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${item.company}</td>
+                `;
+            });
+
+            renderPagination(data.length);
+        }
+
+        function renderPagination(totalItems) {
+            const pageCount = Math.ceil(totalItems / itemsPerPage);
+            paginationContainer.innerHTML = '';
+
+            for (let i = 1; i <= pageCount; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.classList.toggle('active', i === currentPage);
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    filterAndSortData();
+                });
+                paginationContainer.appendChild(button);
+            }
+        }
+
+        function filterAndSortData() {
+            let filteredData = medicineData.filter(item => {
+                return Object.entries(filters).every(([key, value]) => {
+                    if (!value) return true;
+                    if (key === 'name') return item.name.toLowerCase().includes(value.toLowerCase());
+                    if (key === 'priceMin') return item.price >= parseFloat(value);
+                    if (key === 'priceMax') return item.price <= parseFloat(value);
+                    return item[key] === value;
+                });
+            });
+
+            if (currentSort.key) {
+                filteredData.sort((a, b) => {
+                    if (a[currentSort.key] < b[currentSort.key]) return currentSort.direction === 'asc' ? -1 : 1;
+                    if (a[currentSort.key] > b[currentSort.key]) return currentSort.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            renderTable(filteredData);
+        }
+
+        function initializeFilters() {
+            const units = [...new Set(medicineData.map(item => item.unit))];
+            const companies = [...new Set(medicineData.map(item => item.company))];
+
+            const unitFilter = document.getElementById('unitFilter');
+            const companyFilter = document.getElementById('companyFilter');
+
+            units.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit;
+                option.textContent = unit;
+                unitFilter.appendChild(option);
+            });
+
+            companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company;
+                option.textContent = company;
+                companyFilter.appendChild(option);
+            });
+        }
+
+        function clearFilters() {
+            document.querySelectorAll('[data-filter]').forEach(element => {
+                if (element.tagName === 'SELECT') {
+                    element.selectedIndex = 0;
+                } else {
+                    element.value = '';
+                }
+            });
+            filters = {};
+            currentPage = 1;
+            filterAndSortData();
+        }
+
+        document.querySelectorAll('th[data-sort]').forEach(th => {
+            th.addEventListener('click', () => {
+                const key = th.getAttribute('data-sort');
+                if (currentSort.key === key) {
+                    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                } else {
+                    currentSort = { key, direction: 'asc' };
+                }
+                updateSortIcons();
+                filterAndSortData();
+            });
+        });
+
+        document.querySelectorAll('[data-filter]').forEach(filterElement => {
+            filterElement.addEventListener('input', (e) => {
+                const key = e.target.getAttribute('data-filter');
+                filters[key] = e.target.value;
+                currentPage = 1;
+                filterAndSortData();
+            });
+        });
+
+        function updateSortIcons() {
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        const key = th.getAttribute('data-sort');
+        const icon = th.querySelector('.sort-icon');
+        icon.className = 'sort-icon';
+        if (currentSort.key === key) {
+            icon.classList.add(currentSort.direction);
+        }
+    });
+}
+
+function init() {
+    initializeFilters();
+    filterAndSortData();
+    updateSortIcons();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
