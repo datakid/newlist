@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftXplorer - Ultra Premium Medicine Interface</title>
+    <title>المنفذ التجاري وادوية التحمل</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 <style>
@@ -726,7 +726,6 @@ body {
     }
 }
 
-/* Responsive Design */
 @media (max-width: 1600px) {
     .container {
         padding: 50px;
@@ -817,6 +816,9 @@ body {
     .search-input {
         width: 80%;
     }
+        .scroll-button {
+        display: none;
+    }
 }
 
 @media (max-width: 576px) {
@@ -851,6 +853,9 @@ body {
     
     .action-button {
         margin: 10px 0;
+    }
+        .scroll-button {
+        display: none;
     }
 }
 
@@ -967,7 +972,8 @@ body {
             {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"},
             {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"},
             {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
-            {name: "Apidra", unit: "Penfill", price: 44, company: "شراء موحد"},
+            {name: "Apidra (قوي عاملة)", unit: "Penfill", price: 44, company: "شراء موحد"},
+            {name: "Apidra (طلاب)", unit: "Penfill", price: 20, company: "شراء موحد"},
             {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"},
             {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"},
             {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"},
@@ -1027,8 +1033,10 @@ body {
             {name: "Glucovance 5 /1000", unit: "30 Tab", price: 20, company: "شراء موحد"},
             {name: "Humalog 100", unit: "Pen", price: 52.87, company: "شراء موحد"},
             {name: "Humalog 100", unit: "Penfill", price: 48, company: "شراء موحد"},
-            {name: "Humalog Mix 25", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Humalog Mix 50", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Humalog Mix 25 (قوي عاملة)", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Humalog Mix 25 (طلاب)", unit: "Pen", price: 20, company: "شراء موحد"},
+            {name: "Humalog Mix 50 (قوي عاملة)", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Humalog Mix 50 (طلاب)", unit: "Pen", price: 20, company: "شراء موحد"},
             {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"},
             {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"},
             {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"},
@@ -1054,9 +1062,12 @@ body {
             {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"},
             {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"},
             {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"},
-            {name: "Novomix 30 Mix", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Novomix 50 Mix", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Novorapid", unit: "Penfill", price: 39.5, company: "شراء موحد"},
+            {name: "Novomix 30 Mix (قوي عاملة)", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Novomix 30 Mix (طلاب)", unit: "Pen", price: 20, company: "شراء موحد"},
+            {name: "Novomix 50 Mix (قوي عاملة)", unit: "Pen", price: 60, company: "شراء موحد"},
+            {name: "Novomix 50 Mix (طلاب)", unit: "Pen", price: 20, company: "شراء موحد"},
+            {name: "Novorapid (قوي عاملة)", unit: "Penfill", price: 39.5, company: "شراء موحد"},
+            {name: "Novorapid (طلاب)", unit: "Penfill", price: 20, company: "شراء موحد"},
             {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"},
             {name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"},
             {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"},
@@ -1079,8 +1090,10 @@ body {
             {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"},
             {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"},
             {name: "Tentavair 160", unit: "Spray", price: 27, company: "شراء موحد"},
-            {name: "Toujeo", unit: "Pen", price: 50, company: "شراء موحد"},
-            {name: "Tresiba", unit: "Pen", price: 70, company: "شراء موحد"},
+            {name: "Toujeo (قوي عاملة)", unit: "Pen", price: 50, company: "شراء موحد"},
+            {name: "Toujeo (طلاب)", unit: "Pen", price: 15, company: "شراء موحد"},
+            {name: "Tresiba (قوي عاملة)", unit: "Pen", price: 70, company: "شراء موحد"},
+            {name: "Tresiba (طلاب)", unit: "Pen", price: 25, company: "شراء موحد"},
             {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"},
             {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"},
             {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"},
