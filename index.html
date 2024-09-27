@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنفذ التجاري</title>
+    <title>المنفذ التجاري وادوية التحمل</title>
     <style>
 :root {
   --luxury-gold: #d4af37;
@@ -996,15 +996,15 @@ function getIconForUnit(unit) {
     } else if (unit.includes('syringe')) {
         return 'fas fa-syringe';
     } else if (unit.includes('vial')) {
-        return 'fas fa-vial';
+        return 'fas fa-vial'; 
     } else if (unit.includes('bottle')) {
-        return 'fas fa-prescription-bottle-alt';
+        return 'fas fa-prescription-bottle'; 
     } else if (unit.includes('spray')) {
         return 'fas fa-spray-can';
     } else if (unit.includes('pen') || unit.includes('penfill')) {
-        return 'fas fa-pen-fancy';
+        return 'fas fa-pen'; // This one was good, so we keep it
     } else if (unit.includes('tube')) {
-        return 'fas fa-prescription-bottle';
+        return 'fas fa-prescription-bottle-alt'; 
     } else {
         return 'fas fa-tablets';
     }
