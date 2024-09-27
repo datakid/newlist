@@ -998,13 +998,15 @@ function getIconForUnit(unit) {
     } else if (unit.includes('vial')) {
         return 'fas fa-vial'; 
     } else if (unit.includes('bottle')) {
-        return 'fas fa-prescription-bottle'; 
+        return 'fas fa-wine-bottle';
     } else if (unit.includes('spray')) {
         return 'fas fa-spray-can';
     } else if (unit.includes('pen') || unit.includes('penfill')) {
-        return 'fas fa-pen'; // This one was good, so we keep it
+        return 'fas fa-pen';
     } else if (unit.includes('tube')) {
         return 'fas fa-prescription-bottle-alt'; 
+    } else if (unit.includes('film')) {
+        return 'fas fa-film';  
     } else {
         return 'fas fa-tablets';
     }
