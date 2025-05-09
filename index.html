@@ -1,1209 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنفذ التجاري وادوية التحمل</title>
+    <title>LX Paid - Elite Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-:root {
-  --luxury-gold: #d4af37;
-  --luxury-silver: #c0c0c0;
-  --luxury-black: #1a1a1a;
-  --luxury-white: #ffffff;
-  --luxury-red: #8b0000;
-  --luxury-bg: linear-gradient(135deg, var(--luxury-black), #000000);
-  --luxury-border: var(--luxury-gold);
-  --luxury-text: var(--luxury-white);
-  --luxury-glow: rgba(212, 175, 55, 0.3);
-  --luxury-shine: linear-gradient(145deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.5) 100%);
-  --luxury-gradient: linear-gradient(to right, var(--luxury-gold), var(--luxury-silver));
-}
-
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: "Playfair Display", "Times New Roman", serif;
-  background: var(--luxury-bg);
-  color: var(--luxury-text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  font-size: 18px;
-  line-height: 1.8;
-}
-
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  min-height: calc(100vh - 40px);
-  display: flex;
-  flex-direction: column;
-  animation: fadeIn 1s ease-out;
-}
-
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.filters {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.filter-dropdown, .reset-button {
-  background: var(--luxury-gradient);
-  border: none;
-  color: var(--luxury-black);
-  padding: 12px 25px;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  transition: all 0.5s ease;
-  box-shadow: 0 0 15px var(--luxury-glow);
-  position: relative;
-  overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.filter-dropdown::before, .reset-button::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: var(--luxury-shine);
-  transform: rotate(45deg);
-  transition: all 0.8s ease;
-  opacity: 0;
-}
-
-.filter-dropdown:hover, .reset-button:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 0 20px var(--luxury-glow);
-}
-
-.filter-dropdown:hover::before, .reset-button:hover::before {
-  top: -75%;
-  left: -75%;
-  opacity: 1;
-}
-
-.filter-dropdown {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"),
-                    var(--luxury-gradient);
-  background-repeat: no-repeat, repeat;
-  background-position: right 15px center, center;
-  background-size: 16px, cover;
-  padding-right: 45px;
-}
-
-.filter-dropdown::-ms-expand {
-  display: none;
-}
-
-.filter-dropdown option {
-  background-color: var(--luxury-black);
-  color: var(--luxury-gold);
-  font-size: 16px;
-  padding: 10px;
-}
-
-.filter-dropdown:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--luxury-glow);
-}
-
-
-.search-container {
-  position: relative;
-  width: 300px;
-  height: 40px;
-  overflow: visible;
-  margin: 20px auto;
-  filter: drop-shadow(0 0 10px var(--luxury-glow));
-}
-.search-icon {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  color: var(--luxury-gold);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.search-icon:hover {
-  transform: translateY(-50%) scale(1.2) rotate(15deg);
-  text-shadow: 0 0 15px var(--luxury-glow), 0 0 30px var(--luxury-glow);
-  filter: brightness(1.2);
-}
-.search-bar {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(145deg, #0a0a0a, #000000);
-  border: 2px solid var(--luxury-gold);
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  padding-right: 50px;
-  box-sizing: border-box;
-  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-  box-shadow: 0 0 20px var(--luxury-glow), inset 0 0 10px rgba(255, 215, 0, 0.3);
-}
-.search-bar:hover,
-.search-bar:focus-within {
-  box-shadow: 0 0 30px var(--luxury-glow), inset 0 0 15px rgba(255, 215, 0, 0.5);
-  transform: translateY(-3px) scale(1.02);
-  border-color: #ffd700;
-}
-.search-bar input {
-  width: 100%;
-  padding: 12px 20px;
-  border: none;
-  background: transparent;
-  color: var(--luxury-gold);
-  font-size: 18px;
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-}
-.search-bar input:focus {
-  outline: none;
-  font-weight: 400;
-}
-.search-bar input::placeholder {
-  color: var(--luxury-silver);
-  opacity: 0.6;
-  transition: all 0.4s ease;
-}
-.search-bar:hover input::placeholder,
-.search-bar:focus-within input::placeholder {
-  opacity: 0.8;
-  color: #ffd700;
-  text-shadow: 0 0 5px var(--luxury-glow);
-}
-
-.gallery, .suggestions {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 20px 0;
-  margin-bottom: 20px;
-  flex-shrink: 0;
-  animation: slideIn 1s ease-out;
-  position: relative;
-}
-
-.gallery::-webkit-scrollbar, .suggestions::-webkit-scrollbar {
-  height: 8px;
-}
-
-.gallery::-webkit-scrollbar-track, .suggestions::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-}
-
-.gallery::-webkit-scrollbar-thumb, .suggestions::-webkit-scrollbar-thumb {
-  background: var(--luxury-gradient);
-  border-radius: 5px;
-  border: 2px solid var(--luxury-black);
-}
-
-.gallery::-webkit-scrollbar-thumb:hover, .suggestions::-webkit-scrollbar-thumb:hover {
-  background: var(--luxury-gold);
-}
-
-.scroll-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background: var(--luxury-gradient);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.5s ease, transform 0.3s ease;
-  z-index: 10;
-}
-
-.scroll-arrow:before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid var(--luxury-black);
-  border-right: 2px solid var(--luxury-black);
-  transform: rotate(45deg);
-}
-
-.scroll-arrow.left {
-  left: 10px;
-  transform: translateY(-50%) rotate(-180deg);
-}
-
-.scroll-arrow.right {
-  right: 10px;
-}
-
-.gallery:hover .scroll-arrow, .suggestions:hover .scroll-arrow {
-  opacity: 0.9;
-}
-
-.scroll-arrow:hover {
-  opacity: 1 !important;
-  transform: translateY(-50%) scale(1.1);
-}
-
-.gallery-item, .gallery-item.suggestion {
-  flex: 0 0 auto;
-  width: 180px;
-  height: 220px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 35px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.5s ease;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(255,255,255,0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.gallery-item::before, .gallery-item.suggestion::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: var(--luxury-shine);
-  transform: rotate(45deg);
-  transition: all 0.8s ease;
-  opacity: 0;
-}
-
-.gallery-item:hover, .gallery-item.suggestion:hover {
-  transform: translateY(-5px) scale(1.03);
-  box-shadow: 0 0 20px rgba(255,255,255,0.2);
-}
-
-.gallery-item:hover::before, .gallery-item.suggestion:hover::before {
-  top: -75%;
-  left: -75%;
-  opacity: 1;
-}
-
-.gallery-item:active, .gallery-item.suggestion:active {
-  transform: translateY(2px) scale(0.98);
-  box-shadow: 0 0 10px var(--luxury-glow);
-}
-
-.gallery-item-icon, .gallery-item.suggestion .gallery-item-icon {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 15px;
-  transition: all 0.5s ease;
-  filter: drop-shadow(0 0 5px var(--luxury-glow));
-  color: var(--luxury-gold);
-}
-
-.gallery-item:hover .gallery-item-icon, .gallery-item.suggestion:hover .gallery-item-icon {
-  transform: scale(1.1) rotate(5deg);
-  color: var(--luxury-white);
-}
-
-.gallery-item-name, .gallery-item.suggestion .gallery-item-name {
-  font-weight: bold;
-  margin-bottom: 5px;
-  z-index: 1;
-  text-shadow: 0 0 10px var(--luxury-glow);
-  font-size: 20px;
-  transition: all 0.5s ease;
-  color: var(--luxury-gold);
-  letter-spacing: 1px;
-}
-
-.gallery-item:hover .gallery-item-name, .gallery-item.suggestion:hover .gallery-item-name {
-  color: var(--luxury-white);
-}
-
-.gallery-item-description, .gallery-item.suggestion .gallery-item-description {
-  color: var(--luxury-silver);
-  font-size: 14px;
-  opacity: 0.9;
-  transition: all 0.5s ease;
-  font-style: italic;
-}
-
-.gallery-item:hover .gallery-item-description, .gallery-item.suggestion:hover .gallery-item-description {
-  opacity: 1;
-  color: var(--luxury-gold);
-}
-
-.preview {
-  background: linear-gradient(145deg, rgba(26,26,26,0.7), rgba(0,0,0,0.7));
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 30px;
-  padding: 20px;
-  margin-top: auto;
-  box-shadow: 0 0 20px rgba(255,255,255,0.1);
-  animation: fadeIn 1s ease-out;
-  transition: all 0.5s ease;
-}
-
-.preview:hover {
-  box-shadow: 0 0 30px rgba(255,255,255,0.15);
-  transform: translateY(-5px);
-}
-
-.preview h2 {
-  margin-top: 0;
-  font-size: 36px;
-  margin-bottom: 20px;
-  color: var(--luxury-gold);
-  text-shadow: 0 0 15px var(--luxury-glow);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.preview-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.preview-details {
-  flex: 1;
-  min-width: 200px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-}
-
-.preview-details p {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.6;
-  transition: all 0.5s ease;
-  background: var(--luxury-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.preview-details p:hover {
-  transform: translateY(-3px);
-  background: var(--luxury-gold);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-}
-
-.preview-details .price {
-  font-size: 48px;
-  font-weight: bold;
-  color: var(--luxury-gold);
-  text-shadow: 0 0 15px var(--luxury-glow);
-  text-align: right;
-  transition: all 0.5s ease;
-  grid-column: 1 / -1;
-  animation: pulse 2s infinite;
-}
-
-.preview-details .price:hover {
-  transform: scale(1.05);
-  color: var(--luxury-white);
-}
-
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: center;  
-  }
-  .search-container {
-    width: 80%;
-  }
-  .preview-content {
-    flex-direction: column;
-    align-items: center;
-  }
-  .preview-details {
-    text-align: center;
-  }
-  .preview-details .price {
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .luxury-button {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-  
-  .gallery-item {
-    width: 140px;
-    height: 180px;
-  }
-  
-  .gallery-item-name {
-    font-size: 16px;
-  }
-  
-  .gallery-item-description {
-    font-size: 10px;
-  }
-  
-  .preview h2 {
-    font-size: 24px;
-  }
-  
-  .preview-details p {
-    font-size: 16px;
-  }
-  
-  .preview-details .price {
-    font-size: 32px;
-  }
-}
-
-.luxury-bg-animation {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(212,175,55,0.1) 25%, transparent 25%, transparent 50%, rgba(212,175,55,0.1) 50%, rgba(212,175,55,0.1) 75%, transparent 75%, transparent);
-  background-size: 60px 60px;
-  z-index: -1;
-  animation: shimmer 30s linear infinite;
-}
-
-.luxury-text-shadow {
-  text-shadow: 0 0 10px var(--luxury-glow), 0 0 20px var(--luxury-glow), 0 0 30px var(--luxury-glow);
-}
-
-.luxury-border-animation {
-  position: relative;
-  overflow: hidden;
-}
-.luxury-border-animation::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(transparent, var(--luxury-gold), transparent 30%);
-  animation: rotate 4s linear infinite;
-}
-
-@keyframes rotate {
-  100% {
-    transform: rotate(1turn);
-  }
-}
-
-.luxury-button {
-  background: var(--luxury-gradient);
-  color: var(--luxury-black);
-  border: none;
-  padding: 12px 25px;
-  font-size: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.5s ease;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.luxury-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--luxury-shine);
-  z-index: -1;
-  transition: all 0.5s ease;
-  opacity: 0;
-}
-
-.luxury-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
-
-.luxury-button:hover::before {
-  opacity: 1;
-  transform: translateX(100%);
-}
-
-.luxury-card {
-  background: linear-gradient(135deg, rgba(26,26,26,0.8), rgba(0,0,0,0.8));
-  border: 2px solid var(--luxury-gold);
-  border-radius: 40px;
-  padding: 20px;
-  margin: 15px 0;
-  transition: all 0.5s ease;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.luxury-card::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, var(--luxury-gold) 10%, transparent 10%);
-  background-size: 20px 20px;
-  opacity: 0.1;
-  animation: sparkle 4s linear infinite;
-}
-
-@keyframes sparkle {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(-50px, 50px);
-  }
-}
-
-.luxury-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-}
-
-.luxury-card:active {
-  transform: translateY(2px) scale(0.98);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.luxury-title {
-  font-size: 36px;
-  color: var(--luxury-gold);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 15px;
-  position: relative;
-  display: inline-block;
-}
-
-.luxury-title::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--luxury-gradient);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.5s ease;
-}
-
-.luxury-title:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-.luxury-subtitle {
-  font-size: 20px;
-  color: var(--luxury-silver);
-  font-style: italic;
-  margin-bottom: 20px;
-}
-
-.luxury-image {
-  border-radius: 30px;
-  border: 3px solid var(--luxury-gold);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-  transition: all 0.5s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.luxury-image::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -75%;
-  z-index: 2;
-  display: block;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
-  transform: skewX(-25deg);
-  transition: all 0.75s ease;
-}
-
-.luxury-image:hover::before {
-  animation: shine 0.75s;
-}
-
-@keyframes shine {
-  100% {
-    left: 125%;
-  }
-}
-
-.luxury-image:hover {
-  transform: scale(1.05);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-}
-
-.luxury-form-group {
-  margin-bottom: 20px;
-}
-
-.luxury-label {
-  display: block;
-  font-size: 16px;
-  color: var(--luxury-gold);
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.luxury-input {
-  width: 100%;
-  padding: 12px;
-  font-size: 14px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid var(--luxury-gold);
-  border-radius: 20px;
-  color: var(--luxury-white);
-  transition: all 0.3s ease;
-}
-
-.luxury-input:focus {
-  outline: none;
-  box-shadow: 0 0 15px var(--luxury-glow);
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.luxury-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-}
-
-.luxury-table th,
-.luxury-table td {
-  padding: 15px;
-  text-align: left;
-  border-top: 2px solid var(--luxury-gold);
-  border-bottom: 2px solid var(--luxury-gold);
-}
-
-.luxury-table th {
-  background: var(--luxury-gradient);
-  color: var(--luxury-black);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.luxury-table tr {
-  background: rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
-}
-
-.luxury-table tr:hover {
-  transform: scale(1.02);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.luxury-table td:first-child,
-.luxury-table th:first-child {
-  border-left: 2px solid var(--luxury-gold);
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-}
-
-.luxury-table td:last-child,
-.luxury-table th:last-child {
-  border-right: 2px solid var(--luxury-gold);
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-}
-
-.luxury-loader {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--luxury-gold);
-  border-top: 3px solid var(--luxury-black);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+        :root {
+            --lx-gold: #b08d57; 
+            --lx-gold-text: #c5a47e; 
+            --lx-gold-glow: rgba(176, 141, 87, 0.15);
+            --lx-shine-color-center: rgba(240, 220, 180, 0.18); 
+            --lx-shine-color-edge: rgba(220, 190, 150, 0.08); 
+            --lx-dark-bg: #080808; 
+            --lx-element-bg: #000000; 
+            --lx-text-light: #dcdcdc; 
+            --lx-text-dark: #181818; 
+            --lx-text-placeholder: #505050; 
+            --lx-reset-button-bg: #383838; 
+            --lx-reset-button-text: #b0b0b0;
+            --lx-reset-button-border: #505050;
+
+            --font-display: 'Playfair Display', serif; 
+            --font-body: 'Inter', sans-serif;
+            --border-radius-main: 18px; 
+            --border-radius-elements: 30px; 
+            --shadow-soft: rgba(0,0,0, 0.4);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulseGoldBorderSearch {
+          0% { border-color: var(--lx-gold); box-shadow: inset 0 0 4px var(--lx-gold-glow), 0 0 0 1px var(--lx-gold-glow); }
+          50% { border-color: #c5a47e; box-shadow: inset 0 0 8px var(--lx-gold-glow), 0 0 0 2px var(--lx-gold-glow); }
+          100% { border-color: var(--lx-gold); box-shadow: inset 0 0 4px var(--lx-gold-glow), 0 0 0 1px var(--lx-gold-glow); }
+        }
+
+        body, html { margin: 0; padding: 0; font-family: var(--font-body); background: var(--lx-dark-bg); color: var(--lx-text-light); min-height: 100vh; overflow-x: hidden; font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .app-container { width: 100%; max-width: 960px; margin: 0 auto; padding: 20px 15px; min-height: 100vh; display: flex; flex-direction: column; animation: fadeIn 0.5s ease-out; }
+        .app-header { background-color: var(--lx-dark-bg); padding: 20px; border-radius: var(--border-radius-main); margin-bottom: 20px; }
+        .header-top { display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .logo { font-family: var(--font-display); font-size: 2.2em; font-weight: 700; color: var(--lx-gold-text); letter-spacing: 0.5px; display: flex; align-items: center; }
+        .logo i.fa-gem { margin-right: 12px; font-size: 0.85em; opacity: 0.9; }
+        .search-wrapper { position: relative; width: 100%; max-width: 600px; margin: 0 auto 20px auto; }
+        #searchInput { width: 100%; padding: 14px 20px 14px 48px; font-size: 0.95em; font-family: var(--font-body); border: 1px solid var(--lx-gold); border-radius: var(--border-radius-elements); background-color: var(--lx-element-bg); color: var(--lx-text-light); outline: none; transition: all 0.25s ease-in-out; box-shadow: inset 0 0 6px rgba(176, 141, 87, 0.1); }
+        #searchInput:focus { border-color: #c5a47e; background-color: #050505; animation: pulseGoldBorderSearch 1.5s infinite ease-in-out; }
+        #searchInput::placeholder { color: var(--lx-text-placeholder); font-weight: 400; }
+        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--lx-text-placeholder); font-size: 1em; pointer-events: none; transition: color 0.25s ease-in-out; }
+        #searchInput:focus + .search-icon { color: var(--lx-gold); }
+        .filter-area { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        .filter-select, .filter-btn-reset { background-color: var(--lx-gold); border: 1px solid var(--lx-gold); color: var(--lx-text-dark); padding: 9px 18px; border-radius: var(--border-radius-elements); cursor: pointer; font-size: 0.8em; font-weight: 600; font-family: var(--font-body); transition: all 0.2s ease-in-out; box-shadow: 0 1px 3px rgba(0,0,0,0.15); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; }
+        .filter-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; padding-right: 12px; position: relative; }
+        .filter-select::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.8em; margin-left: 8px; color: var(--lx-text-dark); opacity: 0.8; transition: transform 0.2s ease-in-out; }
+        .filter-select:focus-within::after { transform: rotate(180deg); }
+        .filter-select option { background-color: var(--lx-element-bg); color: var(--lx-gold-text); font-weight: 500; }
+        .filter-select:hover, .filter-btn-reset:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 3px 7px rgba(0,0,0,0.28), 0 0 3px var(--lx-gold-glow); filter: brightness(1.05); }
+        .filter-btn-reset { background: var(--lx-reset-button-bg); color: var(--lx-reset-button-text); border-color: var(--lx-reset-button-border); }
+        .filter-btn-reset:hover { background: #4a4a4a; color: var(--lx-text-light); }
+        .app-main { flex-grow: 1; position: relative; padding-top: 10px; }
+        .suggestions-area { margin: 0 auto 15px auto; max-width: calc(100% - 30px); width: fit-content; padding: 8px 15px; background-color: var(--lx-element-bg); border-radius: 10px; border: 1px solid rgba(176, 141, 87, 0.2); font-size: 0.9em; color: var(--lx-text-placeholder); text-align: left; box-shadow: 0 2px 6px rgba(0,0,0,0.2); animation: fadeIn 0.25s ease-out; }
+        .suggestions-area:empty { display: none; }
+        .suggestions-area p { margin: 0; line-height: 1.5; }
+        .suggestions-area strong { font-weight: 500; color: var(--lx-text-light); margin-right: 6px;}
+        .suggestions-area a { color: var(--lx-gold-text); text-decoration: none; font-weight: 500; margin: 0 2px; padding: 2px 5px; border-radius: 4px; transition: all 0.15s ease; display: inline-block; }
+        .suggestions-area a:hover { background-color: var(--lx-gold); color: var(--lx-text-dark); text-decoration: underline; }
+        .suggestions-area a:not(:last-child)::after { content: ","; color: var(--lx-text-placeholder); margin-left: 1px; text-decoration: none !important; }
+        .results-area { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+        .results-area .placeholder-text { color: var(--lx-text-placeholder); text-align: center; font-size: 1.05em; margin-top: 50px; grid-column: 1 / -1; font-weight: 300; }
+        .result-item { background: linear-gradient(155deg, #181818 0%, #0c0c0c 100%); border: 1px solid rgba(176, 141, 87, 0.25); border-radius: 12px; padding: 18px; box-shadow: 0 7px 18px rgba(0,0,0,0.4); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; }
+        .result-item::before { content: ""; position: absolute; top: -10%; left: -175%; width: 50%; height: 120%; background: linear-gradient( to right, transparent 0%, var(--lx-shine-color-edge) 35%, var(--lx-shine-color-center) 50%, var(--lx-shine-color-edge) 65%, transparent 100% ); transform: skewX(-25deg); transition: left 0.75s cubic-bezier(0.165, 0.84, 0.44, 1); opacity: 0; z-index: 0; }
+        .result-item:hover::before { left: 175%; opacity: 0.9; transition-duration: 0.8s; }
+        .result-item:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 12px var(--lx-gold-glow); border-color: var(--lx-gold); }
+        .item-header { margin-bottom: 10px; z-index: 1; position:relative; }
+        .item-name { font-family: var(--font-display); font-size: 1.3em; font-weight: 700; color: var(--lx-gold-text); margin-bottom: 5px; line-height: 1.25; z-index: 1; position:relative;}
+        .item-details { font-size: 0.88em; color: var(--lx-text-placeholder); margin-bottom: 6px; font-weight: 400; z-index: 1; position:relative;}
+        .item-details strong { color: var(--lx-text-light); font-weight: 500; }
+        .item-details .price { font-weight: 600; color: var(--lx-gold-text); font-size: 1.1em; }
+        .item-details p { margin-bottom: 4px; }
+        .item-details .source-arabic { font-family: 'Arial', sans-serif; /* Fallback font for Arabic if Playfair/Inter don't render it well */ }
+
+        @media (max-width: 768px) { .app-container { padding: 15px 10px; } .app-header { padding: 15px; margin-bottom: 15px; } .header-top { margin-bottom: 15px; } .logo { font-size: 1.9em; } #searchInput { padding: 12px 18px 12px 40px; font-size: 0.9em;} .search-icon { left: 15px; font-size: 0.95em; } .filter-area { gap: 10px; } .filter-select, .filter-btn-reset { padding: 8px 15px; font-size: 0.75em; } .results-area { grid-template-columns: 1fr; gap: 15px;} .item-name { font-size: 1.2em; } }
+        @media (max-width: 480px) { .logo { font-size: 1.7em; } .filter-select, .filter-btn-reset { width: 100%; text-align: left; justify-content: space-between; } .filter-select { padding-right: 15px; } .filter-select::after { position: absolute; right: 15px; top: 50%; transform: translateY(-50%);} .item-name { font-size: 1.1em; } .item-details { font-size: 0.82em; } }
     </style>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxury Medicine Gallery</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="luxury-bg-animation"></div>
-    <div class="container">
-        <div class="header">
-            <div class="filters">
-                <select id="unitFilter" class="filter-dropdown">
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-top">
+                <div class="logo">
+                    <i class="fas fa-gem"></i> LX Paid
+                </div>
+            </div>
+            <div class="search-wrapper">
+                 <input type="text" id="searchInput" placeholder="Search elite items...">
+                 <i class="fas fa-search search-icon"></i>
+            </div>
+            <div class="filter-area">
+                <select id="unitFilter" class="filter-select">
                     <option value="all">All Units</option>
                 </select>
-                <select id="companyFilter" class="filter-dropdown">
-                    <option value="all">All Companies</option>
+                <select id="companyFilter" class="filter-select">
+                    <option value="all">All Sources</option>
                 </select>
-                <button id="resetFilters" class="reset-button">Reset Filters</button>
+                 <button id="resetFilters" class="filter-btn-reset">Reset Filters</button>
             </div>
-            <div class="search-container">
-                <div class="search-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search medicines...">
-                </div>
+        </header>
+
+        <main class="app-main">
+            <div id="suggestionsArea" class="suggestions-area"></div>
+            <div id="resultsArea" class="results-area">
+                <p class="placeholder-text">Start typing to explore the LX Paid collection...</p>
             </div>
-        </div>
-        
-        <div class="suggestions" id="suggestions"></div>
-        
-        <div class="gallery" id="medicineGallery"></div>
-        
-        <div class="preview" id="medicinePreview">
-            <h2>Select a medicine to view details</h2>
-        </div>
+        </main>
     </div>
 
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-<script>
-const medicines = [
-            {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"},
-            {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"},
-            {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"},
-            {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"},
-            {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
-            {name: "Apidra قوي عاملة", unit: "Penfill", price: 44, company: "شراء موحد"},
-            {name: "Apidra طلاب", unit: "Penfill", price: 20, company: "شراء موحد"},
-            {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"},
-            {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"},
-            {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"},
-            {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"},
-            {name: "Atozet 20 / 10", unit: "10 Tab", price: 110, company: "شراء موحد"},
-            {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
-            {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
-            {name: "Campto", unit: "Vial", price: 60, company: "شراء موحد"},
-            {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"},
-            {name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"},
-            {name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"},
-            {name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"},
-            {name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"},
-            {name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"},
-            {name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"},
-            {name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"},
-            {name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"},
-            {name: "Coversyl 10 plus", unit: "15 Tab", price: 20, company: "شراء موحد"},
-            {name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"},
-            {name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"},
-            {name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"},
-            {name: "Crestor 10", unit: "28 Tab", price: 118, company: "شراء موحد"},
-            {name: "Crestor 20", unit: "14 Tab", price: 96, company: "شراء موحد"},
-            {name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"},
-            {name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"},
-            {name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"},
-            {name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"},
-            {name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"},
-            {name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"},
-            {name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"},
-            {name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"},
-            {name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"},
-            {name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"},
-            {name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"},
-            {name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"},
-            {name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"},
-            {name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"},
-            {name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
-            {name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
-            {name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
-            {name: "Etodolac 600", unit: "10 Tab", price: 15.5, company: "شراء موحد"},
-            {name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"},
-            {name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"},
-            {name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"},
-            {name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"},
-            {name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"},
-            {name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"},
-            {name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"},
-            {name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"},
-            {name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"},
-            {name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"},
-            {name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"},
-            {name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"},
-            {name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"},
-            {name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"},
-            {name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
-            {name: "Glucovance 5 /1000", unit: "30 Tab", price: 20, company: "شراء موحد"},
-            {name: "Humalog 100 pen قوي عاملة", unit: "Pen", price: 52.87, company: "شراء موحد"},
-            {name: "Humalog 100 penfill قوي عاملة", unit: "Penfill", price: 48, company: "شراء موحد"},
-            {name: "Humalog Mix 25 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Humalog Mix 25 طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
-            {name: "Humalog Mix 50 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Humalog Mix 50 طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
-            {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"},
-            {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"},
-            {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"},
-            {name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"},
-            {name: "Jaunamet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"},
-            {name: "Jaunamet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"},
-            {name: "Jaunamet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"},
-            {name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"},
-            {name: "Lantus", unit: "Penfill", price: 20, company: "ايرادات هيئة"},
-            {name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"},
-            {name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"},
-            {name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"},
-            {name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"},
-            {name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"},
-            {name: "Lipiror 80", unit: "7 Tab", price: 51, company: "شراء موحد"},
-            {name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"},
-            {name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"},
-            {name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"},
-            {name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"},
-            {name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"},
-            {name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"},
-            {name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"},
-            {name: "Nexium 20", unit: "28 Tab", price: 140, company: "شراء موحد"},
-            {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"},
-            {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"},
-            {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"},
-            {name: "Novomix 30 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Novomix 30 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
-            {name: "Novomix 50 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
-            {name: "Novomix 50 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
-            {name: "Novorapid قوي عاملة", unit: "Penfill", price: 39.5, company: "شراء موحد"},
-            {name: "Novorapid طلاب", unit: "Penfill", price: 20, company: "شراء موحد"},
-            {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"},
-            {name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"},
-            {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"},
-            {name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"},
-            {name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"},
-            {name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"},
-            {name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"},
-            {name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"},
-            {name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"},
-            {name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"},
-            {name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"},
-            {name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"},
-            {name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"},
-            {name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"},
-            {name: "Taxoter 20", unit: "Vial", price: 240, company: "شراء موحد"},
-            {name: "Taxoter 80", unit: "Vial", price: 860, company: "شراء موحد"},
-            {name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"},
-            {name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"},
-            {name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"},
-            {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"},
-            {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"},
-            {name: "Tentavair 160", unit: "Spray", price: 27, company: "شراء موحد"},
-            {name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"},
-            {name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"},
-            {name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"},
-            {name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"},
-            {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"},
-            {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"},
-            {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"},
-            {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"},
-            {name: "Tritace Comp Ls 2.5 / 12.5", unit: "14 Tab", price: 18, company: "شراء موحد"},
-            {name: "Tritace Protect 10", unit: "20 Tab", price: 29, company: "شراء موحد"},
-            {name: "Trivastal", unit: "30 Tab", price: 27.25, company: "شراء موحد"},
-            {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"},
-            {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"},
-            {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"},
-            {name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"},
-            {name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"},
-            {name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"},
-            {name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"},
-            {name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"},
-            {name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"},
-            {name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"},
-            {name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('searchInput');
+        const unitFilterSelect = document.getElementById('unitFilter');
+        const companyFilterSelect = document.getElementById('companyFilter');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const resultsArea = document.getElementById('resultsArea');
+        const suggestionsArea = document.getElementById('suggestionsArea');
+        let searchTimeout;
+
+        const allMasterItemsRaw = [
+            {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"}, {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"}, {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"}, {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Apidra قوي عاملة", unit: "Penfill", price: 44, company: "شراء موحد"}, {name: "Apidra طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"}, {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"}, {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"}, {name: "Atozet 20 / 10", unit: "10 Tab", price: 110, company: "شراء موحد"}, {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Campto", unit: "Vial", price: 60, company: "شراء موحد"}, {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"}, {name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"}, {name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"}, {name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"}, {name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"}, {name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"}, {name: "Coversyl 10 plus", unit: "15 Tab", price: 20, company: "شراء موحد"}, {name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"}, {name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"}, {name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"}, {name: "Crestor 10", unit: "28 Tab", price: 118, company: "شراء موحد"}, {name: "Crestor 20", unit: "14 Tab", price: 96, company: "شراء موحد"}, {name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"}, {name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"}, {name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"}, {name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"}, {name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"}, {name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"}, {name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"}, {name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"}, {name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Etodolac 600", unit: "10 Tab", price: 15.5, company: "شراء موحد"}, {name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"}, {name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"}, {name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"}, {name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"}, {name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"}, {name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"}, {name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"}, {name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"}, {name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"}, {name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"}, {name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"}, {name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"}, {name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"}, {name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"}, {name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Glucovance 5 /1000", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Humalog 100 pen قوي عاملة", unit: "Pen", price: 52.87, company: "شراء موحد"}, {name: "Humalog 100 penfill قوي عاملة", unit: "Penfill", price: 48, company: "شراء موحد"}, {name: "Humalog Mix 25 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 25 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Humalog Mix 50 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 50 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"}, {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"}, {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"}, {name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"}, {name: "Jaunamet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"}, {name: "Jaunamet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"}, {name: "Jaunamet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"}, {name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"}, {name: "Lantus", unit: "Penfill", price: 20, company: "ايرادات هيئة"}, {name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"}, {name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"}, {name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"}, {name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"}, {name: "Lipiror 80", unit: "7 Tab", price: 51, company: "شراء موحد"}, {name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"}, {name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"}, {name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"}, {name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"}, {name: "Nexium 20", unit: "28 Tab", price: 140, company: "شراء موحد"}, {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"}, {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"}, {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"}, {name: "Novomix 30 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 30 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novomix 50 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 50 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novorapid قوي عاملة", unit: "Penfill", price: 39.5, company: "شراء موحد"}, {name: "Novorapid طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"}, {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"}, {name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"}, {name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"}, {name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"}, {name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"}, {name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"}, {name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"}, {name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"}, {name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"}, {name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"}, {name: "Taxoter 20", unit: "Vial", price: 240, company: "شراء موحد"}, {name: "Taxoter 80", unit: "Vial", price: 860, company: "شراء موحد"}, {name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"}, {name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"}, {name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"}, {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"}, {name: "Tentavair 160", unit: "Spray", price: 27, company: "شراء موحد"}, {name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"}, {name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"}, {name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"}, {name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"}, {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"}, {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"}, {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"}, {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Tritace Comp Ls 2.5 / 12.5", unit: "14 Tab", price: 18, company: "شراء موحد"}, {name: "Tritace Protect 10", unit: "20 Tab", price: 29, company: "شراء موحد"}, {name: "Trivastal", unit: "30 Tab", price: 27.25, company: "شراء موحد"}, {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"}, {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"}, {name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"}, {name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"}, {name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"}, {name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"}, {name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"}, {name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"}, {name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"}, {name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"}
         ];
 
-const gallery = document.getElementById('medicineGallery');
-const preview = document.getElementById('medicinePreview');
-const unitFilter = document.getElementById('unitFilter');
-const companyFilter = document.getElementById('companyFilter');
-const resetFiltersButton = document.getElementById('resetFilters');
-const searchInput = document.querySelector('.search-bar input');
-const suggestionsContainer = document.getElementById('suggestions');
+        const preserveSuffixes = ["قوي عاملة", "طلاب"]; 
 
-const searchIndex = new Map();
-medicines.forEach(medicine => {
-    const words = medicine.name.toLowerCase().split(' ');
-    words.forEach(word => {
-        if (!searchIndex.has(word)) {
-            searchIndex.set(word, []);
+        const translateCompanyToEnglish = (arabicCompany) => {
+            if (arabicCompany === "شراء موحد") return "Unified Purchase";
+            if (arabicCompany === "ايرادات هيئة") return "Authority Revenue";
+            return arabicCompany; 
+        };
+        
+        const processItemName = (originalName) => {
+            let baseName = originalName;
+            let preservedSuffix = "";
+
+            for (const suffix of preserveSuffixes) {
+                if (originalName.includes(suffix)) {
+                    // Extract the part before the suffix
+                    const suffixIndex = originalName.indexOf(suffix);
+                    baseName = originalName.substring(0, suffixIndex).trim();
+                    preservedSuffix = ` ${suffix}`; // Keep the original suffix with a leading space
+                    break; 
+                }
+            }
+
+            return baseName + preservedSuffix;
+        };
+
+        const processedItems = allMasterItemsRaw.map(item => ({
+            name: processItemName(item.name),
+            unit: item.unit, 
+            price: item.price,
+            sourceOriginal: item.company, 
+            sourceTranslated: translateCompanyToEnglish(item.company), 
+            status: "paid" 
+        }));
+        
+        const paidItems = processedItems;
+
+        const nameIndex = new Map(); const companyIndex = new Map(); const termFrequency = new Map();
+        const bigramIndex = new Map(); const trigramIndex = new Map();
+        const soundexIndex = new Map(); const metaphoneIndex = new Map();
+
+        function getSoundex(str) { if (!str) return ""; str = str.toLowerCase(); const firstLetter = str.charAt(0); str = str.substring(1); str = str.replace(/[aeiouyhw]/g, ''); const s = firstLetter.toUpperCase() + str.replace(/bfpv/g, '1').replace(/cgjkqsxz/g, '2').replace(/dt/g, '3').replace(/l/g, '4').replace(/mn/g, '5').replace(/r/g, '6').replace(/(.)\1+/g, '$1'); return (s + "0000").substring(0, 4); }
+        function getMetaphone(word) { if (!word) return ""; word = word.toUpperCase(); let output = ""; let i = 0; if (word.startsWith("KN")||word.startsWith("GN")||word.startsWith("PN")||word.startsWith("AE")||word.startsWith("WR")) word = word.substring(1); if (word.startsWith("X")) word = "S" + word.substring(1); if (word.startsWith("WH")) word = "W" + word.substring(1); while (output.length < 4 && i < word.length) { let char = word[i]; let nextChar = word[i+1]||''; switch (char) { case 'B': if (!(i > 0 && word[i-1] === 'M' && !nextChar)) output += 'B'; break; case 'C': if (nextChar === 'IA' || nextChar === 'H') output += 'X'; else if (nextChar === 'I' || nextChar === 'E' || nextChar === 'Y') output += 'S'; else if (nextChar === 'K' || nextChar === 'G' || nextChar === 'Q') {} else output += 'K'; break; case 'D': output += (nextChar === 'G' && "EIY".includes(word[i+2]||'')) ? 'J' : 'T'; break; case 'G': if (nextChar === 'H' && !"AEIOU".includes(word[i+2]||'')) {} else if (nextChar === 'N' || (nextChar === 'E' && word[i+2] === 'D')) {} else if ("EIY".includes(nextChar) && !(word[i-1] === 'G')) output += 'J'; else output += 'K'; break; case 'H': if (i === 0 || "AEIOUCSPTG".includes(word[i-1])) output += 'H'; break; case 'K': if (i === 0 || word[i-1] !== 'C') output += 'K'; break; case 'P': output += (nextChar === 'H') ? 'F' : 'P'; break; case 'Q': output += 'K'; break; case 'S': output += (nextChar === 'H' || (nextChar === 'I' && (word[i+2] === 'O' || word[i+2] === 'A'))) ? 'X' : 'S'; break; case 'T': output += (nextChar === 'H' || (nextChar === 'I' && (word[i+2] === 'O' || word[i+2] === 'A'))) ? 'X' : '0'; break; case 'V': output += 'F'; break; case 'W': case 'Y': if ("AEIOU".includes(nextChar)) output += char; break; case 'X': output += 'KS'; break; case 'Z': output += 'S'; break; default: if ("AEIOU".includes(char)) { if (i === 0) output += char; } else { output += char; } break; } if (output.length > 1 && output[output.length -1] === output[output.length -2]) output = output.slice(0, -1); i++; } return output.substring(0, 4); }
+        function updateTermIndices(term, itemName) { term = term.replace(/[^\w\s]/gi, '').trim(); if(!term || term.length < 2) return; termFrequency.set(term, (termFrequency.get(term) || 0) + 1); for (let i = 0; i < term.length - 1; i++) { const bigram = term.slice(i, i + 2); if (!bigramIndex.has(bigram)) bigramIndex.set(bigram, new Set()); bigramIndex.get(bigram).add(itemName); } for (let i = 0; i < term.length - 2; i++) { const trigram = term.slice(i, i + 3); if (!trigramIndex.has(trigram)) trigramIndex.set(trigram, new Set()); trigramIndex.get(trigram).add(itemName); } const soundex = getSoundex(term); if (!soundexIndex.has(soundex)) soundexIndex.set(soundex, new Set()); soundexIndex.get(soundex).add(itemName); const metaphone = getMetaphone(term); if (!metaphoneIndex.has(metaphone)) metaphoneIndex.set(metaphone, new Set()); metaphoneIndex.get(metaphone).add(itemName); }
+
+        paidItems.forEach(item => {
+            const lowerName = item.name.toLowerCase();
+            nameIndex.set(lowerName, item); 
+            
+            let namePartForIndexing = item.name;
+            preserveSuffixes.forEach(suffix => { namePartForIndexing = namePartForIndexing.replace(suffix, ""); });
+            namePartForIndexing.trim().toLowerCase().split(/\s+/).filter(w => w.length > 1 && !/^\d+$/.test(w) && !/^\d+\/\d+$/.test(w) && !/^\d+-\d+$/.test(w)).forEach(word => updateTermIndices(word, item.name));
+            
+            const sourceKey = item.sourceTranslated || "Unknown Source"; 
+            if (!companyIndex.has(sourceKey)) companyIndex.set(sourceKey, new Set());
+            companyIndex.get(sourceKey).add(item);
+            sourceKey.toLowerCase().split(/\s+/).filter(w => w.length > 1).forEach(word => updateTermIndices(word, item.name));
+        });
+
+        function levenshteinDistance(a, b) { if (a.length === 0) return b.length; if (b.length === 0) return a.length; const matrix = Array(a.length + 1).fill(null).map(() => Array(b.length + 1).fill(null)); for (let i = 0; i <= a.length; i++) matrix[i][0] = i; for (let j = 0; j <= b.length; j++) matrix[0][j] = j; for (let i = 1; i <= a.length; i++) { for (let j = 1; j <= b.length; j++) { const cost = a[i - 1] === b[j - 1] ? 0 : 1; matrix[i][j] = Math.min(matrix[i-1][j]+1, matrix[i][j-1]+1, matrix[i-1][j-1]+cost); }} return matrix[a.length][b.length]; }
+        function getJaroWinklerSimilarity(s1, s2) { let m = 0; const range = Math.floor(Math.max(s1.length, s2.length) / 2) - 1; const s1Matches = new Array(s1.length).fill(false); const s2Matches = new Array(s2.length).fill(false); for (let i=0; i<s1.length; i++) { const low=Math.max(0,i-range); const high=Math.min(i+range+1,s2.length); for (let j=low; j<high; j++) { if (!s2Matches[j] && s1[i]===s2[j]) {s1Matches[i]=true; s2Matches[j]=true; m++; break;}}} if (m===0) return 0; let k=0, t=0; for (let i=0; i<s1.length; i++) { if (s1Matches[i]) { while(!s2Matches[k]) k++; if (s1[i]!==s2[k]) t++; k++;}} const jaro = (m/s1.length + m/s2.length + (m-t/2)/m)/3; let p=0; const l=Math.min(4,Math.min(s1.length,s2.length)); for (let i=0; i<l; i++) { if (s1[i]===s2[i]) p++; else break;} return jaro + p * 0.1 * (1 - jaro); }
+
+        function findSimilarTerms(searchTerm, N = 5) {
+            if (!searchTerm || searchTerm.length < 2) return [];
+            const lowerSearchTerm = searchTerm.toLowerCase().replace(/[^\w\s]/gi, '');
+            if (!lowerSearchTerm) return [];
+
+            const searchSoundex = getSoundex(lowerSearchTerm);
+            const searchMetaphone = getMetaphone(lowerSearchTerm);
+            const potentialMatches = new Set();
+
+            const addItemToPotentials = (itemName) => { if (paidItems.some(pi => pi.name === itemName)) potentialMatches.add(itemName); };
+            if (soundexIndex.has(searchSoundex)) soundexIndex.get(searchSoundex).forEach(addItemToPotentials);
+            if (metaphoneIndex.has(searchMetaphone)) metaphoneIndex.get(searchMetaphone).forEach(addItemToPotentials);
+            for (let i = 0; i < lowerSearchTerm.length - 1; i++) { const bigram = lowerSearchTerm.slice(i, i + 2); if (bigramIndex.has(bigram)) bigramIndex.get(bigram).forEach(addItemToPotentials); }
+            for (let i = 0; i < lowerSearchTerm.length - 2; i++) { const trigram = lowerSearchTerm.slice(i, i + 3); if (trigramIndex.has(trigram)) trigramIndex.get(trigram).forEach(addItemToPotentials); }
+            paidItems.forEach(item => { 
+                let nameToCheck = item.name;
+                preserveSuffixes.forEach(suffix => { nameToCheck = nameToCheck.replace(suffix, ""); });
+                if (nameToCheck.trim().toLowerCase().includes(lowerSearchTerm)) potentialMatches.add(item.name); 
+            });
+
+            const scoredSuggestions = Array.from(potentialMatches)
+                .map(name => { 
+                    let nameForComparison = name;
+                    preserveSuffixes.forEach(suffix => { nameForComparison = nameForComparison.replace(suffix, ""); });
+                    const lowerName = nameForComparison.trim().toLowerCase().replace(/[^\w\s]/gi, '');
+                    if(!lowerName) return {name, score: -100, levenshtein: 100};
+                    const levenshtein = levenshteinDistance(lowerSearchTerm, lowerName); 
+                    const jaroWinkler = getJaroWinklerSimilarity(lowerSearchTerm, lowerName);
+                    let score = jaroWinkler * 12 - levenshtein * 1.8; 
+                    if (getSoundex(lowerName) === searchSoundex) score += 5; 
+                    if (getMetaphone(lowerName) === searchMetaphone) score += 5;
+                    if (nameIndex.has(name.toLowerCase())) score += 4; // Check original full name for direct map presence
+                    if (lowerName.startsWith(lowerSearchTerm)) score += 6;
+                    score -= Math.abs(lowerSearchTerm.length - lowerName.length) * 0.5;
+                    return { name, score, levenshtein };
+                })
+                .filter(s => s.score > 1.0 && s.levenshtein <= Math.max(4, Math.floor(lowerSearchTerm.length * 0.65))) // More forgiving
+                .sort((a, b) => b.score - a.score);
+            const uniqueNames = new Set(); const finalSuggestions = [];
+            for (const sug of scoredSuggestions) { 
+                if (sug.name.toLowerCase() !== searchTerm.toLowerCase() && !uniqueNames.has(sug.name) && finalSuggestions.length < N) { 
+                    finalSuggestions.push(sug.name); 
+                    uniqueNames.add(sug.name);
+                }
+            }
+            return finalSuggestions;
         }
-        searchIndex.get(word).push(medicine);
-    });
-});
 
-function getIconForUnit(unit) {
-    unit = unit.toLowerCase();
-    if (unit.includes('tab') || unit.includes('cap') || unit.includes(' t')) {
-        return 'fas fa-pills';
-    } else if (unit.includes('syringe')) {
-        return 'fas fa-syringe';
-    } else if (unit.includes('vial')) {
-        return 'fas fa-vial'; 
-    } else if (unit.includes('bottle')) {
-        return 'fas fa-wine-bottle';
-    } else if (unit.includes('spray')) {
-        return 'fas fa-spray-can';
-    } else if (unit.includes('pen') || unit.includes('penfill')) {
-        return 'fas fa-pen';
-    } else if (unit.includes('tube')) {
-        return 'fas fa-prescription-bottle-alt'; 
-    } else if (unit.includes('film')) {
-        return 'fas fa-film';  
-    } else {
-        return 'fas fa-tablets';
-    }
-}
-function renderGallery(items) {
-    gallery.innerHTML = '';
-    items.forEach((medicine) => {
-        const item = document.createElement('div');
-        item.className = 'gallery-item';
-        if (medicine.isSuggestion) {
-            item.classList.add('suggestion');
+        function displaySuggestions(suggestedTerms) { suggestionsArea.innerHTML = ''; if (suggestedTerms.length > 0) { const p = document.createElement('p'); const strong = document.createElement('strong'); strong.textContent = 'Did you mean: '; p.appendChild(strong); suggestedTerms.forEach((term, index) => { const a = document.createElement('a'); a.href = '#'; a.textContent = term; a.addEventListener('click', (e) => { e.preventDefault(); searchInput.value = term; performSearchAndFilter(); }); p.appendChild(a); }); suggestionsArea.appendChild(p); } }
+        
+        function populateFilters() {
+            const units = [...new Set(paidItems.map(item => item.unit || "N/A"))].sort((a,b) => a.localeCompare(b));
+            const sourcesTranslated = [...new Set(paidItems.map(item => item.sourceTranslated || "Unknown Source"))].sort((a,b) => a.localeCompare(b));
+            
+            unitFilterSelect.innerHTML = '<option value="all">All Units</option>';
+            units.forEach(unit => { const option = document.createElement('option'); option.value = unit; option.textContent = unit; unitFilterSelect.appendChild(option);});
+            
+            companyFilterSelect.innerHTML = '<option value="all">All Sources</option>';
+            sourcesTranslated.forEach(source => { const option = document.createElement('option'); option.value = source; option.textContent = source; companyFilterSelect.appendChild(option);});
         }
-        const iconClass = getIconForUnit(medicine.unit);
-        item.innerHTML = `
-            <i class="${iconClass}"></i>
-            <div class="gallery-item-name">${medicine.name}</div>
-        `;
-        item.addEventListener('click', () => showMedicineDetails(medicine));
-        gallery.appendChild(item);
-    });
-}
 
-function showMedicineDetails(medicine) {
-    const iconClass = getIconForUnit(medicine.unit);
-    preview.innerHTML = `
-        <h2>${medicine.name}</h2>
-        <div class="preview-content">
-            <div class="preview-icon">
-                <i class="${iconClass}"></i>
-            </div>
-            <div class="preview-details">
-                <p>${medicine.unit}</p>
-                <p>${medicine.company}</p>
-                <p class="price">${medicine.price.toFixed(2)}</p>
-            </div>
-        </div>
-    `;
-}
+        function performSearchAndFilter() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const selectedUnit = unitFilterSelect.value;
+            const selectedSourceTranslated = companyFilterSelect.value; 
+            const searchTokens = searchTerm.split(/\s+/).filter(t => t.length > 0);
 
-function populateFilters() {
-    const units = [...new Set(medicines.map(med => med.unit))];
-    const companies = [...new Set(medicines.map(med => med.company))];
-    
-    units.forEach(unit => {
-        const option = document.createElement('option');
-        option.value = unit;
-        option.textContent = unit;
-        unitFilter.appendChild(option);
-    });
-    
-    companies.forEach(company => {
-        const option = document.createElement('option');
-        option.value = company;
-        option.textContent = company;
-        companyFilter.appendChild(option);
-    });
-}
+            let filtered = paidItems.filter(item => {
+                const lowerName = item.name.toLowerCase();
+                const itemSourceOriginalLower = (item.sourceOriginal || "Unknown Source").toLowerCase();
+                const itemSourceTranslatedLower = (item.sourceTranslated || "Unknown Source").toLowerCase();
 
-function levenshteinDistance(a, b) {
-    if (a.length === 0) return b.length;
-    if (b.length === 0) return a.length;
+                let matchesSearch = true;
+                if (searchTokens.length > 0) {
+                    matchesSearch = searchTokens.every(token => 
+                        lowerName.includes(token) || 
+                        itemSourceOriginalLower.includes(token) || 
+                        itemSourceTranslatedLower.includes(token)  
+                    );
+                }
+                const matchesUnit = (selectedUnit === 'all') || ((item.unit || "N/A") === selectedUnit);
+                const matchesSource = (selectedSourceTranslated === 'all') || ((item.sourceTranslated || "Unknown Source") === selectedSourceTranslated);
+                return matchesSearch && matchesUnit && matchesSource;
+            });
 
-    const matrix = [];
-
-    for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-    }
-
-    for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-    }
-
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][j] = matrix[i - 1][j - 1];
+            if (searchTerm) {
+                filtered.sort((a,b) => {
+                    const aName = a.name.toLowerCase(); const bName = b.name.toLowerCase();
+                    const aStarts = aName.startsWith(searchTerm); const bStarts = bName.startsWith(searchTerm);
+                    if (aStarts && !bStarts) return -1; if (!aStarts && bStarts) return 1;
+                    const simA = getJaroWinklerSimilarity(searchTerm, aName); const simB = getJaroWinklerSimilarity(searchTerm, bName);
+                    if (simA > simB) return -1; if (simB > simA) return 1;
+                    return aName.localeCompare(bName);
+                });
+            }
+            renderResults(filtered);
+            if (filtered.length === 0 && searchTerm.length >=2) { 
+                const suggestedTerms = findSimilarTerms(searchTerm);
+                displaySuggestions(suggestedTerms);
             } else {
-                matrix[i][j] = Math.min(
-                    matrix[i - 1][j - 1] + 1,
-                    matrix[i][j - 1] + 1,
-                    matrix[i - 1][j] + 1
-                );
+                suggestionsArea.innerHTML = '';
             }
         }
-    }
 
-    return matrix[b.length][a.length];
-}
+        function renderResults(itemsToRender) {
+            resultsArea.innerHTML = '';
+            if (itemsToRender.length === 0) {
+                resultsArea.innerHTML = `<p class="placeholder-text">No items found in the LX Paid collection.</p>`;
+                return;
+            }
+            itemsToRender.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'result-item';
+                itemEl.style.animation = `fadeIn 0.3s ease-out forwards ${index * 0.04}s`;
+                itemEl.style.opacity = 0;
 
-function findClosestMatches(input, limit = 3) {
-    const matches = medicines.map(med => ({
-        medicine: med,
-        distance: levenshteinDistance(input.toLowerCase(), med.name.toLowerCase())
-    }));
+                itemEl.innerHTML = `
+                    <div class="item-header">
+                        <h3 class="item-name">${item.name}</h3>
+                    </div>
+                    <div class="item-details">
+                        <p><strong>Unit:</strong> ${item.unit || 'N/A'}</p>
+                        <p><strong>Source:</strong> <span class="source-arabic">${item.sourceOriginal || 'N/A'}</span></p>
+                        <p><strong>Price:</strong> <span class="price">${item.price ? item.price.toFixed(2) : 'N/A'}</span></p>
+                    </div>
+                `;
+                resultsArea.appendChild(itemEl);
+            });
+        }
 
-    matches.sort((a, b) => a.distance - b.distance);
-    return matches.slice(0, limit).map(match => match.medicine);
-}
+        searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(performSearchAndFilter, 250); });
+        unitFilterSelect.addEventListener('change', performSearchAndFilter);
+        companyFilterSelect.addEventListener('change', performSearchAndFilter);
+        resetFiltersBtn.addEventListener('click', () => { searchInput.value = ''; unitFilterSelect.value = 'all'; companyFilterSelect.value = 'all'; suggestionsArea.innerHTML = ''; performSearchAndFilter(); });
 
-function renderSuggestions(suggestions) {
-    suggestionsContainer.innerHTML = '';
-    suggestions.forEach(suggestion => {
-        const suggestionElement = document.createElement('div');
-        suggestionElement.className = 'gallery-item suggestion';
-        const iconClass = getIconForUnit(suggestion.unit);
-        suggestionElement.innerHTML = `
-            <i class="${iconClass}"></i>
-            <div class="gallery-item-name">${suggestion.name}</div>
-        `;
-        suggestionElement.addEventListener('click', () => {
-            searchInput.value = suggestion.name;
-            applyFilters();
-        });
-        suggestionsContainer.appendChild(suggestionElement);
+        populateFilters();
+        performSearchAndFilter();
     });
-}
-
-renderGallery(medicines);
-populateFilters();
-
-searchInput.addEventListener('input', applyFilters);
-unitFilter.addEventListener('change', applyFilters);
-companyFilter.addEventListener('change', applyFilters);
-
-function applyFilters() {
-    const selectedUnit = unitFilter.value;
-    const selectedCompany = companyFilter.value;
-    const searchTerm = searchInput.value.toLowerCase();
-
-    let filteredMedicines = medicines;
-
-    if (selectedUnit !== 'all') {
-        filteredMedicines = filteredMedicines.filter(med => med.unit === selectedUnit);
-    }
-
-    if (selectedCompany !== 'all') {
-        filteredMedicines = filteredMedicines.filter(med => med.company === selectedCompany);
-    }
-
-    if (searchTerm) {
-        const searchWords = searchTerm.split(' ');
-        filteredMedicines = filteredMedicines.filter(med => 
-            searchWords.every(word => 
-                med.name.toLowerCase().includes(word) || 
-                med.company.toLowerCase().includes(word)
-            )
-        );
-    }
-
-    renderGallery(filteredMedicines);
-
-    if (filteredMedicines.length === 0 && searchTerm.length > 0) {
-        const closestMatches = findClosestMatches(searchTerm);
-        renderSuggestions(closestMatches);
-    } else {
-        suggestionsContainer.innerHTML = '';
-    }
-}
-
-resetFiltersButton.addEventListener('click', () => {
-    unitFilter.value = 'all';
-    companyFilter.value = 'all';
-    searchInput.value = '';
-    suggestionsContainer.innerHTML = '';
-    renderGallery(medicines);
-});
-
-renderGallery(medicines);
-</script>
+    </script>
 </body>
 </html>
