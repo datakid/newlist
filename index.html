@@ -1,399 +1,560 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LX Search p2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LX Search - Liquid Glass</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
     <style>
         :root {
-            --lx-gold-main: #c9b08f;
-            --lx-gold-accent: #e6c99f;
-            --lx-dark-bg-start: #1a1a1a;
-            --lx-dark-bg-end: #080808;
-            --lx-element-bg: #111111;
-            --lx-element-bg-light: #181818;
-            --lx-text-main: #f0f0f0;
-            --lx-text-muted: #707070;
-            --lx-text-dark: #1f1f1f;
-            --lx-glow-color: rgba(201, 176, 143, 0.2);
-            --lx-glow-color-heavy: rgba(201, 176, 143, 0.35);
-
-            --font-display: 'Playfair Display', serif;
-            --font-body: 'Inter', sans-serif;
-            --border-radius-main: 24px;
-            --border-radius-elements: 50px;
+            --base-bg: #09090b;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg-hover: rgba(255, 255, 255, 0.08);
+            --glass-bg-active: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-highlight: rgba(255, 255, 255, 0.2);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --accent: #818cf8;
+            --accent-glow: rgba(129, 140, 248, 0.3);
+            
+            --blur-heavy: blur(48px) saturate(200%);
+            --blur-medium: blur(24px) saturate(150%);
+            
+            --shadow-float: 0 32px 64px -16px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px var(--accent-glow);
+            
+            --radius-pill: 999px;
+            --radius-lg: 32px;
+            --radius-md: 20px;
+            
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.05);
+            --smooth: cubic-bezier(0.2, 0, 0, 1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.98) translateY(15px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+        @media (prefers-color-scheme: light) {
+            :root {
+                --base-bg: #f8fafc;
+                --glass-bg: rgba(0, 0, 0, 0.03);
+                --glass-bg-hover: rgba(0, 0, 0, 0.06);
+                --glass-bg-active: rgba(0, 0, 0, 0.1);
+                --glass-border: rgba(0, 0, 0, 0.05);
+                --glass-border-highlight: rgba(0, 0, 0, 0.15);
+                --text-main: #0f172a;
+                --text-muted: rgba(0, 0, 0, 0.6);
+                --accent: #4f46e5;
+                --accent-glow: rgba(79, 70, 229, 0.2);
+            }
         }
 
-        @keyframes focusGlow {
-            from { box-shadow: 0 0 15px -2px transparent, inset 0 0 0 1px var(--lx-gold-main), 0 2px 5px rgba(0,0,0,0.3); }
-            to { box-shadow: 0 0 25px -2px var(--lx-glow-color-heavy), inset 0 0 0 1px var(--lx-gold-accent), 0 2px 5px rgba(0,0,0,0.3); }
-        }
-        
-        @keyframes resultItemAppear {
-             from { opacity: 0; transform: translateY(20px); }
-             to { opacity: 1; transform: translateY(0px); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--base-bg);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
         }
 
-        body, html {
-            margin: 0; padding: 0; font-family: var(--font-body);
-            background: var(--lx-dark-bg-end);
-            background-image: radial-gradient(ellipse at top, var(--lx-dark-bg-start) 0%, var(--lx-dark-bg-end) 80%);
-            color: var(--lx-text-main); min-height: 100vh; overflow-x: hidden;
-            font-size: 16px; line-height: 1.7; letter-spacing: 0.2px;
-            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            background: var(--base-bg);
         }
 
-        .app-container {
-            width: 100%; max-width: 1024px; margin: 0 auto;
-            padding: 40px 20px; min-height: 100vh; display: flex; flex-direction: column;
-            animation: fadeIn 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.5;
+            animation: float 20s infinite alternate ease-in-out;
         }
 
-        .app-header {
-            background-color: transparent; padding: 20px 0; margin-bottom: 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        .orb-1 { width: 600px; height: 600px; background: #4f46e5; top: -100px; left: -100px; animation-delay: 0s; }
+        .orb-2 { width: 500px; height: 500px; background: #0ea5e9; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .orb-3 { width: 400px; height: 400px; background: #8b5cf6; top: 40%; left: 40%; animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.2); }
         }
 
-        .header-top { display: flex; justify-content: center; align-items: center; margin-bottom: 30px; }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            z-index: 10;
+        }
 
-        .logo {
-            font-family: var(--font-display); font-size: 2.8em; font-weight: 700;
-            color: var(--lx-gold-main); letter-spacing: 1px;
-            display: flex; align-items: center;
-            text-shadow: 0 0 20px var(--lx-glow-color), 0 0 8px var(--lx-glow-color);
+        .liquid-button {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-medium);
+            -webkit-backdrop-filter: var(--blur-medium);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-pill);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1.125rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-float);
+            transition: all 0.4s var(--smooth);
         }
-        .logo i.fa-gem { margin-right: 15px; font-size: 0.8em; opacity: 0.85; }
 
-        .search-wrapper { position: relative; width: 100%; max-width: 650px; margin: 0 auto 25px auto; }
-        
-        #searchInput {
-            width: 100%; padding: 18px 25px 18px 60px;
-            font-size: 1em; font-family: var(--font-body); font-weight: 400;
-            border: 1px solid rgba(201, 176, 143, 0.3); border-radius: var(--border-radius-elements);
-            background-color: var(--lx-element-bg); color: var(--lx-text-main);
-            outline: none; transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3), inset 0 1px 2px rgba(0,0,0,0.2);
+        .liquid-button:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-highlight);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-float), var(--shadow-glow);
         }
-        #searchInput:focus {
-            border-color: var(--lx-gold-accent); background-color: #000;
-            animation: focusGlow 0.8s alternate infinite ease-in-out;
+
+        .shortcut-badge {
+            display: flex;
+            gap: 4px;
+            background: var(--glass-bg-active);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
-        #searchInput::placeholder { color: var(--lx-text-muted); font-weight: 400; font-style: italic; }
-        
-        .search-icon {
-            position: absolute; left: 25px; top: 50%; transform: translateY(-50%);
-            color: var(--lx-text-muted); font-size: 1.1em; pointer-events: none;
-            transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
-        }
-        #searchInput:focus + .search-icon { color: var(--lx-gold-accent); text-shadow: 0 0 10px var(--lx-glow-color); }
-        
-        .filter-area { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        
-        .filter-select, .filter-btn-reset {
-            background-color: transparent; border: 1px solid rgba(201, 176, 143, 0.3);
-            color: var(--lx-text-muted); padding: 10px 22px;
-            border-radius: var(--border-radius-elements); cursor: pointer;
-            font-size: 0.8em; font-weight: 500; font-family: var(--font-body);
-            transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
-            text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center;
-        }
-        .filter-select { appearance: none; -webkit-appearance: none; -moz-appearance: none; position: relative; }
-        .filter-select::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.85em; margin-left: 10px; opacity: 0.6; transition: transform 0.25s ease-in-out; }
-        .filter-select:focus-within::after { transform: rotate(180deg); }
-        .filter-select option { background-color: var(--lx-element-bg); color: var(--lx-gold-main); font-weight: 500; }
-        
-        .filter-select:hover, .filter-btn-reset:hover {
-            transform: translateY(-3px); color: var(--lx-text-main);
-            border-color: var(--lx-gold-main); background-color: var(--lx-element-bg);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .filter-btn-reset { color: #aaa; border-color: #555; }
-        .filter-btn-reset:hover { border-color: var(--lx-gold-main); color: var(--lx-text-main); }
-        
-        .app-main { flex-grow: 1; position: relative; padding-top: 20px; }
-        
-        .suggestions-area {
-            margin: -10px auto 25px auto; max-width: 650px; width: 100%;
-            padding: 12px 25px; background-color: rgba(17, 17, 17, 0.7);
-            backdrop-filter: blur(5px); border-radius: 12px;
-            border: 1px solid rgba(201, 176, 143, 0.2); font-size: 0.9em;
-            color: var(--lx-text-muted); text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: fadeIn 0.4s ease-out;
-        }
-        .suggestions-area:empty { display: none; }
-        .suggestions-area p { margin: 0; line-height: 1.6; }
-        .suggestions-area strong { font-weight: 500; color: var(--lx-text-main); margin-right: 8px;}
-        .suggestions-area a {
-            color: var(--lx-gold-main); text-decoration: none; font-weight: 500;
-            margin: 0 3px; padding: 3px 6px; border-radius: 5px;
-            transition: all 0.2s ease; display: inline-block;
-        }
-        .suggestions-area a:hover { background-color: var(--lx-gold-main); color: var(--lx-text-dark); text-decoration: underline; }
-        .suggestions-area a:not(:last-child)::after { content: ","; color: var(--lx-text-muted); margin-left: 2px; text-decoration: none !important; }
-        
-        .results-area { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        .results-area .placeholder-text {
-            color: var(--lx-text-muted); text-align: center; font-size: 1.1em;
-            margin-top: 60px; grid-column: 1 / -1; font-weight: 300;
-        }
-        
-        .result-item {
-            background: linear-gradient(155deg, var(--lx-element-bg-light) 0%, var(--lx-element-bg) 100%);
-            border: 1px solid rgba(201, 176, 143, 0.25);
-            border-radius: var(--border-radius-main); padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative; overflow: hidden; display: flex; flex-direction: column;
-            justify-content: space-between; animation: resultItemAppear 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+
+        .search-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 10vh;
             opacity: 0;
-        }
-        .result-item::after {
-            content: ""; position: absolute; top: -10%; left: -200%; width: 70%; height: 120%;
-            background: linear-gradient( to right, transparent 0%, rgba(240, 220, 180, 0.02) 35%, rgba(240, 220, 180, 0.05) 50%, rgba(240, 220, 180, 0.02) 65%, transparent 100% );
-            transform: skewX(-25deg); transition: left 0.9s cubic-bezier(0.165, 0.84, 0.44, 1); opacity: 0;
-        }
-        .result-item:hover::after { left: 200%; opacity: 1; }
-        .result-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 20px var(--lx-glow-color);
-            border-color: var(--lx-gold-main);
+            pointer-events: none;
+            transition: opacity 0.4s var(--smooth);
         }
 
-        .item-header { margin-bottom: 15px; z-index: 1; position:relative; }
-        .item-name {
-            font-family: var(--font-display); font-size: 1.5em; font-weight: 700;
-            color: var(--lx-gold-accent); margin: 0 0 8px 0; line-height: 1.3;
+        .search-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .glass-panel {
+            width: 90%;
+            max-width: 760px;
+            height: 80vh;
+            max-height: 700px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-heavy);
+            -webkit-backdrop-filter: var(--blur-heavy);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-float), inset 0 1px 1px rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(40px) scale(0.95);
+            opacity: 0;
+            transition: all 0.5s var(--spring);
+            overflow: hidden;
+        }
+
+        .search-overlay.active .glass-panel {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            padding: 24px;
+            gap: 16px;
+            border-bottom: 1px solid var(--glass-border);
+            background: linear-gradient(to bottom, var(--glass-bg-hover), transparent);
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1.5rem;
+            outline: none;
+        }
+
+        .search-input::placeholder { color: var(--text-muted); }
+
+        .icon-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: grid; place-items: center;
+            cursor: pointer;
+            transition: all 0.3s var(--smooth);
+        }
+
+        .icon-btn:hover {
+            background: var(--glass-bg-hover);
+            transform: scale(1.05);
+        }
+
+        .glass-filters {
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            border-bottom: 1px solid var(--glass-border);
+            overflow-x: auto;
+            scrollbar-width: none;
         }
         
-        .item-details {
-            font-size: 0.95em; color: var(--lx-text-muted); font-weight: 400;
-            z-index: 1; position:relative; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;
+        .glass-filters::-webkit-scrollbar { display: none; }
+
+        .glass-select {
+            appearance: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: var(--radius-pill);
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s var(--smooth);
         }
-        .item-details strong { color: var(--lx-text-main); font-weight: 500; }
-        .item-details .price { font-weight: 600; color: var(--lx-gold-accent); font-size: 1.2em; }
-        .item-details p { margin: 0 0 8px 0; }
-        .item-details .source-arabic { font-family: 'Arial', sans-serif; }
+
+        .glass-select:focus, .glass-select:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--accent);
+        }
+
+        .glass-select option {
+            background: var(--base-bg);
+            color: var(--text-main);
+        }
+
+        .results-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            scroll-behavior: smooth;
+        }
+
+        .results-container::-webkit-scrollbar { width: 6px; }
+        .results-container::-webkit-scrollbar-thumb { background: var(--glass-border-highlight); border-radius: 10px; }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 16px;
+            background: var(--glass-bg);
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s var(--smooth);
+        }
+
+        .result-item:hover, .result-item.selected {
+            background: var(--glass-bg-active);
+            border-color: var(--glass-border-highlight);
+            transform: translateX(4px);
+        }
+
+        .result-item.selected {
+            border-left: 4px solid var(--accent);
+        }
+
+        .item-icon {
+            width: 48px; height: 48px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--glass-bg-hover), var(--glass-bg));
+            border: 1px solid var(--glass-border);
+            display: grid; place-items: center;
+            color: var(--accent);
+        }
+
+        .item-details { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        
+        .item-name { font-size: 1.125rem; font-weight: 500; }
+        
+        .item-meta {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            display: flex; gap: 8px; align-items: center;
+        }
+
+        .item-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        mark {
+            background: var(--accent-glow);
+            color: var(--accent);
+            border-radius: 4px;
+            padding: 0 2px;
+            font-weight: 600;
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-heavy);
+            -webkit-backdrop-filter: var(--blur-heavy);
+            border: 1px solid var(--glass-border-highlight);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: var(--radius-pill);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow-float);
+            animation: slideUp 0.4s var(--spring) forwards, fadeOut 0.4s var(--smooth) 2s forwards;
+        }
+
+        .status-bar {
+            padding: 12px 24px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+        }
+
+        .keyboard-hints span {
+            background: var(--glass-bg-hover);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin: 0 4px;
+        }
+
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
 
         @media (max-width: 768px) {
-            .app-container { padding: 25px 15px; }
-            .logo { font-size: 2.2em; }
-            #searchInput { padding: 16px 20px 16px 50px; }
-            .search-icon { left: 20px; }
-            .results-area { grid-template-columns: 1fr; gap: 20px;}
-            .item-name { font-size: 1.3em; }
-        }
-        @media (max-width: 480px) {
-            .logo { font-size: 2em; }
-            .filter-area { gap: 12px; }
-            .filter-select, .filter-btn-reset { width: 100%; text-align: left; justify-content: space-between; }
-            .filter-select { padding-right: 20px; }
-            .filter-select::after { position: absolute; right: 20px; top: 50%; transform: translateY(-50%);}
-            .item-name { font-size: 1.25em; }
-            .item-details { font-size: 0.9em; }
+            .glass-panel { width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; transform: translateY(100%); border: none; }
+            .search-overlay { padding-top: 0; }
+            .status-bar .keyboard-hints { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="header-top">
-                <div class="logo">
-                    <i class="fas fa-gem"></i> LX Search p2
-                </div>
-            </div>
-            <div class="search-wrapper">
-                 <input type="text" id="searchInput" placeholder="Search elite items...">
-                 <i class="fas fa-search search-icon"></i>
-            </div>
-            <div class="filter-area">
-                <select id="unitFilter" class="filter-select">
-                    <option value="all">All Units</option>
-                </select>
-                <select id="companyFilter" class="filter-select">
-                    <option value="all">All Sources</option>
-                </select>
-                 <button id="resetFilters" class="filter-btn-reset">Reset</button>
-            </div>
-        </header>
 
-        <main class="app-main">
-            <div id="suggestionsArea" class="suggestions-area"></div>
-            <div id="resultsArea" class="results-area">
-                <p class="placeholder-text">Begin your search to explore the LX Paid collection...</p>
-            </div>
-        </main>
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('searchInput');
-        const unitFilterSelect = document.getElementById('unitFilter');
-        const companyFilterSelect = document.getElementById('companyFilter');
-        const resetFiltersBtn = document.getElementById('resetFilters');
-        const resultsArea = document.getElementById('resultsArea');
-        const suggestionsArea = document.getElementById('suggestionsArea');
-        let searchTimeout;
+    <main class="hero">
+        <span class="material-symbols-rounded" style="font-size: 64px; color: var(--text-main);">hive</span>
+        <button class="liquid-button" id="triggerBtn">
+            <span class="material-symbols-rounded">search</span>
+            <span>Search LX Database</span>
+            <div class="shortcut-badge">
+                <span>Ctrl</span><span>K</span>
+            </div>
+        </button>
+    </main>
 
-        const allMasterItemsRaw = [
+    <div class="search-overlay" id="overlay">
+        <div class="glass-panel" id="panel">
+            <div class="search-header">
+                <span class="material-symbols-rounded" style="color: var(--accent)">search</span>
+                <div class="search-input-wrapper">
+                    <input type="text" id="input" class="search-input" placeholder="Type to filter..." autocomplete="off" spellcheck="false">
+                </div>
+                <button class="icon-btn" id="clearBtn" style="display: none;">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            </div>
+            <div class="glass-filters">
+                <select id="fUnit" class="glass-select"><option value="all">Any Unit</option></select>
+                <select id="fSource" class="glass-select"><option value="all">Any Source</option></select>
+            </div>
+            <div class="results-container" id="results"></div>
+            <div class="status-bar">
+                <span id="resultCount">Ready</span>
+                <div class="keyboard-hints">
+                    <span>↑↓</span> Navigate <span>↵</span> Copy <span>Esc</span> Close
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toasts"></div>
+
+    <script>
+        const rawData =[
             {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"}, {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"}, {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"}, {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Apidra قوي عاملة", unit: "Penfill", price: 44, company: "شراء موحد"}, {name: "Apidra طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"}, {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"}, {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"}, {name: "Atozet 20 / 10", unit: "10 Tab", price: 110, company: "شراء موحد"}, {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Campto", unit: "Vial", price: 60, company: "شراء موحد"}, {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"}, {name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"}, {name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"}, {name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"}, {name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"}, {name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"}, {name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"}, {name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"}, {name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"}, {name: "Crestor 10", unit: "28 Tab", price: 118, company: "شراء موحد"}, {name: "Crestor 20", unit: "14 Tab", price: 96, company: "شراء موحد"}, {name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"}, {name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"}, {name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"}, {name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"}, {name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"}, {name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"}, {name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"}, {name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"}, {name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"}, {name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"}, {name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"}, {name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"}, {name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"}, {name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"}, {name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"}, {name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"}, {name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"}, {name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"}, {name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"}, {name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"}, {name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"}, {name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"}, {name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Humalog 100 pen قوي عاملة", unit: "Pen", price: 52.87, company: "شراء موحد"}, {name: "Humalog 100 penfill قوي عاملة", unit: "Penfill", price: 48, company: "شراء موحد"}, {name: "Humalog Mix 25 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 25 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Humalog Mix 50 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 50 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"}, {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"}, {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"}, {name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"}, {name: "Jaunamet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"}, {name: "Jaunamet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"}, {name: "Jaunamet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"}, {name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"}, {name: "Lantus", unit: "Penfill", price: 20, company: "ايرادات هيئة"}, {name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"}, {name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"}, {name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"}, {name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"}, {name: "Lipiror 80", unit: "7 Tab", price: 51, company: "شراء موحد"}, {name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"}, {name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"}, {name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"}, {name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"}, {name: "Nexium 20", unit: "28 Tab", price: 140, company: "شراء موحد"}, {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"}, {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"}, {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"}, {name: "Novomix 30 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 30 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novomix 50 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 50 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novorapid قوي عاملة", unit: "Penfill", price: 39.5, company: "شراء موحد"}, {name: "Novorapid طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"}, {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"}, {name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"}, {name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"}, {name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"}, {name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"}, {name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"}, {name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"}, {name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"}, {name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"}, {name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"}, {name: "Taxoter 20", unit: "Vial", price: 240, company: "شراء موحد"}, {name: "Taxoter 80", unit: "Vial", price: 860, company: "شراء موحد"}, {name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"}, {name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"}, {name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"}, {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"}, {name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"}, {name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"}, {name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"}, {name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"}, {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"}, {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"}, {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"}, {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"}, {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"}, {name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"}, {name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"}, {name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"}, {name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"}, {name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"}, {name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"}, {name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"}, {name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"}
         ];
 
-        const preserveSuffixes = ["قوي عاملة", "طلاب"];
-
-        const translateCompanyToEnglish = (arabicCompany) => {
-            if (arabicCompany === "شراء موحد") return "Unified Purchase";
-            if (arabicCompany === "ايرادات هيئة") return "Authority Revenue";
-            return arabicCompany;
-        };
-
-        const processItemName = (originalName) => {
-            let baseName = originalName;
-            let preservedSuffix = "";
-
-            for (const suffix of preserveSuffixes) {
-                if (originalName.includes(suffix)) {
-                    const suffixIndex = originalName.indexOf(suffix);
-                    baseName = originalName.substring(0, suffixIndex).trim();
-                    preservedSuffix = ` ${suffix}`;
-                    break;
-                }
-            }
-            return baseName + preservedSuffix;
-        };
-
-        const processedItems = allMasterItemsRaw.map(item => ({
-            name: processItemName(item.name),
-            unit: item.unit,
-            price: item.price,
-            sourceOriginal: item.company,
-            sourceTranslated: translateCompanyToEnglish(item.company),
-            status: "paid"
-        }));
-
-        const paidItems = processedItems;
-
-        const nameIndex = new Map(); const companyIndex = new Map(); const termFrequency = new Map();
-        const bigramIndex = new Map(); const trigramIndex = new Map();
-        const soundexIndex = new Map(); const metaphoneIndex = new Map();
-
-        function getSoundex(str) { if (!str) return ""; str = str.toLowerCase(); const firstLetter = str.charAt(0); str = str.substring(1); str = str.replace(/[aeiouyhw]/g, ''); const s = firstLetter.toUpperCase() + str.replace(/bfpv/g, '1').replace(/cgjkqsxz/g, '2').replace(/dt/g, '3').replace(/l/g, '4').replace(/mn/g, '5').replace(/r/g, '6').replace(/(.)\1+/g, '$1'); return (s + "0000").substring(0, 4); }
-        function getMetaphone(word) { if (!word) return ""; word = word.toUpperCase(); let output = ""; let i = 0; if (word.startsWith("KN")||word.startsWith("GN")||word.startsWith("PN")||word.startsWith("AE")||word.startsWith("WR")) word = word.substring(1); if (word.startsWith("X")) word = "S" + word.substring(1); if (word.startsWith("WH")) word = "W" + word.substring(1); while (output.length < 4 && i < word.length) { let char = word[i]; let nextChar = word[i+1]||''; switch (char) { case 'B': if (!(i > 0 && word[i-1] === 'M' && !nextChar)) output += 'B'; break; case 'C': if (nextChar === 'IA' || nextChar === 'H') output += 'X'; else if (nextChar === 'I' || nextChar === 'E' || nextChar === 'Y') output += 'S'; else if (nextChar === 'K' || nextChar === 'G' || nextChar === 'Q') {} else output += 'K'; break; case 'D': output += (nextChar === 'G' && "EIY".includes(word[i+2]||'')) ? 'J' : 'T'; break; case 'G': if (nextChar === 'H' && !"AEIOU".includes(word[i+2]||'')) {} else if (nextChar === 'N' || (nextChar === 'E' && word[i+2] === 'D')) {} else if ("EIY".includes(nextChar) && !(word[i-1] === 'G')) output += 'J'; else output += 'K'; break; case 'H': if (i === 0 || "AEIOUCSPTG".includes(word[i-1])) output += 'H'; break; case 'K': if (i === 0 || word[i-1] !== 'C') output += 'K'; break; case 'P': output += (nextChar === 'H') ? 'F' : 'P'; break; case 'Q': output += 'K'; break; case 'S': output += (nextChar === 'H' || (nextChar === 'I' && (word[i+2] === 'O' || word[i+2] === 'A'))) ? 'X' : 'S'; break; case 'T': output += (nextChar === 'H' || (nextChar === 'I' && (word[i+2] === 'O' || word[i+2] === 'A'))) ? 'X' : '0'; break; case 'V': output += 'F'; break; case 'W': case 'Y': if ("AEIOU".includes(nextChar)) output += char; break; case 'X': output += 'KS'; break; case 'Z': output += 'S'; break; default: if ("AEIOU".includes(char)) { if (i === 0) output += char; } else { output += char; } break; } if (output.length > 1 && output[output.length -1] === output[output.length -2]) output = output.slice(0, -1); i++; } return output.substring(0, 4); }
-        function updateTermIndices(term, itemName) { term = term.replace(/[^\w\s]/gi, '').trim(); if(!term || term.length < 2) return; termFrequency.set(term, (termFrequency.get(term) || 0) + 1); for (let i = 0; i < term.length - 1; i++) { const bigram = term.slice(i, i + 2); if (!bigramIndex.has(bigram)) bigramIndex.set(bigram, new Set()); bigramIndex.get(bigram).add(itemName); } for (let i = 0; i < term.length - 2; i++) { const trigram = term.slice(i, i + 3); if (!trigramIndex.has(trigram)) trigramIndex.set(trigram, new Set()); trigramIndex.get(trigram).add(itemName); } const soundex = getSoundex(term); if (!soundexIndex.has(soundex)) soundexIndex.set(soundex, new Set()); soundexIndex.get(soundex).add(itemName); const metaphone = getMetaphone(term); if (!metaphoneIndex.has(metaphone)) metaphoneIndex.set(metaphone, new Set()); metaphoneIndex.get(metaphone).add(itemName); }
-
-        paidItems.forEach(item => {
-            const lowerName = item.name.toLowerCase();
-            nameIndex.set(lowerName, item);
-            let namePartForIndexing = item.name;
-            preserveSuffixes.forEach(suffix => { namePartForIndexing = namePartForIndexing.replace(suffix, ""); });
-            namePartForIndexing.trim().toLowerCase().split(/\s+/).filter(w => w.length > 1 && !/^\d+$/.test(w) && !/^\d+\/\d+$/.test(w) && !/^\d+-\d+$/.test(w)).forEach(word => updateTermIndices(word, item.name));
-            const sourceKey = item.sourceTranslated || "Unknown Source";
-            if (!companyIndex.has(sourceKey)) companyIndex.set(sourceKey, new Set());
-            companyIndex.get(sourceKey).add(item);
-            sourceKey.toLowerCase().split(/\s+/).filter(w => w.length > 1).forEach(word => updateTermIndices(word, item.name));
+        const cm = {"شراء موحد": "Unified Purchase", "ايرادات هيئة": "Authority Revenue"};
+        const db = rawData.map(i => {
+            let n = i.name, t = "";
+            ["قوي عاملة", "طلاب"].forEach(s => { if(n.includes(s)) { n = n.replace(s, "").trim(); t = s; } });
+            return {
+                raw: i, n, t, u: i.unit, p: i.price, s: cm[i.company] || i.company,
+                str: `${n} ${t} ${i.unit} ${cm[i.company] || i.company}`.toLowerCase()
+            };
         });
 
-        function levenshteinDistance(a, b) { if (a.length === 0) return b.length; if (b.length === 0) return a.length; const matrix = Array(a.length + 1).fill(null).map(() => Array(b.length + 1).fill(null)); for (let i = 0; i <= a.length; i++) matrix[i][0] = i; for (let j = 0; j <= b.length; j++) matrix[0][j] = j; for (let i = 1; i <= a.length; i++) { for (let j = 1; j <= b.length; j++) { const cost = a[i - 1] === b[j - 1] ? 0 : 1; matrix[i][j] = Math.min(matrix[i-1][j]+1, matrix[i][j-1]+1, matrix[i-1][j-1]+cost); }} return matrix[a.length][b.length]; }
-        function getJaroWinklerSimilarity(s1, s2) { let m = 0; const range = Math.floor(Math.max(s1.length, s2.length) / 2) - 1; const s1Matches = new Array(s1.length).fill(false); const s2Matches = new Array(s2.length).fill(false); for (let i=0; i<s1.length; i++) { const low=Math.max(0,i-range); const high=Math.min(i+range+1,s2.length); for (let j=low; j<high; j++) { if (!s2Matches[j] && s1[i]===s2[j]) {s1Matches[i]=true; s2Matches[j]=true; m++; break;}}} if (m===0) return 0; let k=0, t=0; for (let i=0; i<s1.length; i++) { if (s1Matches[i]) { while(!s2Matches[k]) k++; if (s1[i]!==s2[k]) t++; k++;}} const jaro = (m/s1.length + m/s2.length + (m-t/2)/m)/3; let p=0; const l=Math.min(4,Math.min(s1.length,s2.length)); for (let i=0; i<l; i++) { if (s1[i]===s2[i]) p++; else break;} return jaro + p * 0.1 * (1 - jaro); }
+        const els = {
+            ov: document.getElementById('overlay'),
+            in: document.getElementById('input'),
+            res: document.getElementById('results'),
+            fU: document.getElementById('fUnit'),
+            fS: document.getElementById('fSource'),
+            btn: document.getElementById('triggerBtn'),
+            clr: document.getElementById('clearBtn'),
+            cnt: document.getElementById('resultCount'),
+            tst: document.getElementById('toasts')
+        };
 
-        function findSimilarTerms(searchTerm, N = 5) {
-            if (!searchTerm || searchTerm.length < 2) return [];
-            const lowerSearchTerm = searchTerm.toLowerCase().replace(/[^\w\s]/gi, '');
-            if (!lowerSearchTerm) return [];
-            const searchSoundex = getSoundex(lowerSearchTerm);
-            const searchMetaphone = getMetaphone(lowerSearchTerm);
-            const potentialMatches = new Set();
-            const addItemToPotentials = (itemName) => { if (paidItems.some(pi => pi.name === itemName)) potentialMatches.add(itemName); };
-            if (soundexIndex.has(searchSoundex)) soundexIndex.get(searchSoundex).forEach(addItemToPotentials);
-            if (metaphoneIndex.has(searchMetaphone)) metaphoneIndex.get(searchMetaphone).forEach(addItemToPotentials);
-            for (let i = 0; i < lowerSearchTerm.length - 1; i++) { const bigram = lowerSearchTerm.slice(i, i + 2); if (bigramIndex.has(bigram)) bigramIndex.get(bigram).forEach(addItemToPotentials); }
-            for (let i = 0; i < lowerSearchTerm.length - 2; i++) { const trigram = lowerSearchTerm.slice(i, i + 3); if (trigramIndex.has(trigram)) trigramIndex.get(trigram).forEach(addItemToPotentials); }
-            paidItems.forEach(item => { let nameToCheck = item.name; preserveSuffixes.forEach(suffix => { nameToCheck = nameToCheck.replace(suffix, ""); }); if (nameToCheck.trim().toLowerCase().includes(lowerSearchTerm)) potentialMatches.add(item.name); });
-            const scoredSuggestions = Array.from(potentialMatches).map(name => { let nameForComparison = name; preserveSuffixes.forEach(suffix => { nameForComparison = nameForComparison.replace(suffix, ""); }); const lowerName = nameForComparison.trim().toLowerCase().replace(/[^\w\s]/gi, ''); if(!lowerName) return {name, score: -100, levenshtein: 100}; const levenshtein = levenshteinDistance(lowerSearchTerm, lowerName); const jaroWinkler = getJaroWinklerSimilarity(lowerSearchTerm, lowerName); let score = jaroWinkler * 12 - levenshtein * 1.8; if (getSoundex(lowerName) === searchSoundex) score += 5; if (getMetaphone(lowerName) === searchMetaphone) score += 5; if (nameIndex.has(name.toLowerCase())) score += 4; if (lowerName.startsWith(lowerSearchTerm)) score += 6; score -= Math.abs(lowerSearchTerm.length - lowerName.length) * 0.5; return { name, score, levenshtein }; }).filter(s => s.score > 1.0 && s.levenshtein <= Math.max(4, Math.floor(lowerSearchTerm.length * 0.65))).sort((a, b) => b.score - a.score);
-            const uniqueNames = new Set(); const finalSuggestions = [];
-            for (const sug of scoredSuggestions) { if (sug.name.toLowerCase() !== searchTerm.toLowerCase() && !uniqueNames.has(sug.name) && finalSuggestions.length < N) { finalSuggestions.push(sug.name); uniqueNames.add(sug.name); } }
-            return finalSuggestions;
-        }
+        let selectedIdx = -1, currentResults = [];[...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
+        [...new Set(db.map(i=>i.s))].sort().forEach(s => els.fS.add(new Option(s,s)));
 
-        function displaySuggestions(suggestedTerms) { suggestionsArea.innerHTML = ''; if (suggestedTerms.length > 0) { const p = document.createElement('p'); const strong = document.createElement('strong'); strong.textContent = 'Did you mean:'; p.appendChild(strong); suggestedTerms.forEach((term, index) => { const a = document.createElement('a'); a.href = '#'; a.textContent = term; a.addEventListener('click', (e) => { e.preventDefault(); searchInput.value = term; performSearchAndFilter(); }); p.appendChild(a); }); suggestionsArea.appendChild(p); } }
-
-        function populateFilters() {
-            const units = [...new Set(paidItems.map(item => item.unit || "N/A"))].sort((a,b) => a.localeCompare(b));
-            const sourcesTranslated = [...new Set(paidItems.map(item => item.sourceTranslated || "Unknown Source"))].sort((a,b) => a.localeCompare(b));
-            unitFilterSelect.innerHTML = '<option value="all">All Units</option>';
-            units.forEach(unit => { const option = document.createElement('option'); option.value = unit; option.textContent = unit; unitFilterSelect.appendChild(option);});
-            companyFilterSelect.innerHTML = '<option value="all">All Sources</option>';
-            sourcesTranslated.forEach(source => { const option = document.createElement('option'); option.value = source; option.textContent = source; companyFilterSelect.appendChild(option);});
-        }
-
-        function performSearchAndFilter() {
-            const searchTerm = searchInput.value.trim().toLowerCase();
-            const selectedUnit = unitFilterSelect.value;
-            const selectedSourceTranslated = companyFilterSelect.value;
-            const searchTokens = searchTerm.split(/\s+/).filter(t => t.length > 0);
-            let filtered = paidItems.filter(item => {
-                const lowerName = item.name.toLowerCase();
-                const itemSourceOriginalLower = (item.sourceOriginal || "Unknown Source").toLowerCase();
-                const itemSourceTranslatedLower = (item.sourceTranslated || "Unknown Source").toLowerCase();
-                let matchesSearch = true;
-                if (searchTokens.length > 0) { matchesSearch = searchTokens.every(token => lowerName.includes(token) || itemSourceOriginalLower.includes(token) || itemSourceTranslatedLower.includes(token)); }
-                const matchesUnit = (selectedUnit === 'all') || ((item.unit || "N/A") === selectedUnit);
-                const matchesSource = (selectedSourceTranslated === 'all') || ((item.sourceTranslated || "Unknown Source") === selectedSourceTranslated);
-                return matchesSearch && matchesUnit && matchesSource;
+        const highlight = (text, q) => {
+            if(!q) return text;
+            const terms = q.trim().split(/\s+/).filter(Boolean);
+            let res = text;
+            terms.forEach(term => {
+                const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+                res = res.replace(regex, '<mark>$1</mark>');
             });
-            if (searchTerm) {
-                filtered.sort((a,b) => {
-                    const aName = a.name.toLowerCase(); const bName = b.name.toLowerCase();
-                    const aStarts = aName.startsWith(searchTerm); const bStarts = bName.startsWith(searchTerm);
-                    if (aStarts && !bStarts) return -1; if (!aStarts && bStarts) return 1;
-                    const simA = getJaroWinklerSimilarity(searchTerm, aName); const simB = getJaroWinklerSimilarity(searchTerm, bName);
-                    if (simA > simB) return -1; if (simB > simA) return 1;
-                    return aName.localeCompare(bName);
-                });
-            }
-            renderResults(filtered);
-            if (filtered.length === 0 && searchTerm.length >=2) { const suggestedTerms = findSimilarTerms(searchTerm); displaySuggestions(suggestedTerms); }
-            else { suggestionsArea.innerHTML = ''; }
-        }
+            return res;
+        };
 
-        function renderResults(itemsToRender) {
-            resultsArea.innerHTML = '';
-            if (itemsToRender.length === 0) {
-                resultsArea.innerHTML = `<p class="placeholder-text">No items found in the LX Paid collection.</p>`;
-                return;
+        const render = () => {
+            const q = els.in.value.toLowerCase(), u = els.fU.value, s = els.fS.value;
+            els.clr.style.display = q ? 'block' : 'none';
+            
+            let filtered = db.filter(i => (u === 'all' || i.u === u) && (s === 'all' || i.s === s));
+
+            if(q) {
+                const terms = q.trim().split(/\s+/);
+                filtered = filtered.map(i => {
+                    let score = 0;
+                    terms.forEach(t => {
+                        if(i.str.includes(t)) score += 10;
+                        if(i.n.toLowerCase().startsWith(t)) score += 20;
+                    });
+                    return { ...i, score };
+                }).filter(i => i.score > 0).sort((a,b) => b.score - a.score);
             }
-            itemsToRender.forEach((item, index) => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'result-item';
-                itemEl.style.animationDelay = `${index * 0.05}s`;
-                itemEl.innerHTML = `
-                    <div class="item-header">
-                        <h3 class="item-name">${item.name}</h3>
-                    </div>
+
+            currentResults = filtered.slice(0, 50);
+            selectedIdx = currentResults.length > 0 ? 0 : -1;
+            
+            els.cnt.textContent = `${filtered.length} found`;
+            els.res.innerHTML = currentResults.length ? '' : 
+                `<div style="text-align:center; padding: 40px; color: var(--text-muted);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5; margin-bottom:16px;">search_off</span><h3>No matching items</h3></div>`;
+            
+            currentResults.forEach((i, idx) => {
+                const div = document.createElement('div');
+                div.className = `result-item ${idx === 0 ? 'selected' : ''}`;
+                div.onclick = () => copyItem(i);
+                div.innerHTML = `
+                    <div class="item-icon"><span class="material-symbols-rounded">medication</span></div>
                     <div class="item-details">
-                        <p><strong>Unit:</strong> ${item.unit || 'N/A'}</p>
-                        <p><strong>Source:</strong> <span class="source-arabic">${item.sourceOriginal || 'N/A'}</span></p>
-                        <p><strong>Price:</strong> <span class="price">${item.price ? item.price.toFixed(2) : 'N/A'}</span></p>
+                        <div class="item-name">${highlight(i.n, q)} ${i.t ? `<span style="color:var(--accent);font-size:0.8em;padding-left:4px">${i.t}</span>` : ''}</div>
+                        <div class="item-meta"><span>${highlight(i.u, q)}</span> • <span>${highlight(i.s, q)}</span></div>
                     </div>
+                    <div class="item-price">£${i.p.toFixed(2)}</div>
                 `;
-                resultsArea.appendChild(itemEl);
+                els.res.appendChild(div);
             });
-        }
+        };
 
-        searchInput.addEventListener('input', () => { clearTimeout(searchTimeout); searchTimeout = setTimeout(performSearchAndFilter, 250); });
-        unitFilterSelect.addEventListener('change', performSearchAndFilter);
-        companyFilterSelect.addEventListener('change', performSearchAndFilter);
-        resetFiltersBtn.addEventListener('click', () => { searchInput.value = ''; unitFilterSelect.value = 'all'; companyFilterSelect.value = 'all'; suggestionsArea.innerHTML = ''; performSearchAndFilter(); });
+        const toast = msg => {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--accent)">check_circle</span> ${msg}`;
+            els.tst.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        };
 
-        populateFilters();
-        performSearchAndFilter();
-    });
+        const copyItem = i => {
+            navigator.clipboard.writeText(`${i.n} ${i.t} | ${i.u} | £${i.p.toFixed(2)}`).then(() => {
+                toast(`Copied ${i.n} to clipboard`);
+                toggle(false);
+            });
+        };
+
+        const updateSelection = () => {
+            const items = els.res.children;
+            if(!items.length) return;
+            Array.from(items).forEach(el => el.classList.remove('selected'));
+            if(selectedIdx >= 0) {
+                const active = items[selectedIdx];
+                active.classList.add('selected');
+                active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        };
+
+        const toggle = force => {
+            const state = typeof force === 'boolean' ? force : !els.ov.classList.contains('active');
+            els.ov.classList.toggle('active', state);
+            if(state) { els.in.focus(); render(); }
+            else { els.in.blur(); els.in.value = ''; els.fU.value = 'all'; els.fS.value = 'all'; }
+        };
+
+        els.btn.onclick = () => toggle(true);
+        els.clr.onclick = () => { els.in.value = ''; render(); els.in.focus(); };
+        els.ov.onclick = e => { if(e.target === els.ov) toggle(false); };
+        els.in.oninput = render;
+        els.fU.onchange = render;
+        els.fS.onchange = render;
+
+        window.onkeydown = e => {
+            if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); toggle(); }
+            if(!els.ov.classList.contains('active')) return;
+            
+            if(e.key === 'Escape') toggle(false);
+            if(e.key === 'ArrowDown') { e.preventDefault(); selectedIdx = Math.min(selectedIdx + 1, currentResults.length - 1); updateSelection(); }
+            if(e.key === 'ArrowUp') { e.preventDefault(); selectedIdx = Math.max(selectedIdx - 1, 0); updateSelection(); }
+            if(e.key === 'Enter' && selectedIdx >= 0) { e.preventDefault(); copyItem(currentResults[selectedIdx]); }
+        };
     </script>
 </body>
 </html>
