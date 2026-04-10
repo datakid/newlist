@@ -42,6 +42,12 @@
             height: 100vh; overflow: hidden; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased;
         }
 
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--sys-surface-highest); border-radius: var(--radius-full); border: 2px solid var(--sys-bg); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--sys-primary-container); }
+        * { scrollbar-width: thin; scrollbar-color: var(--sys-surface-highest) transparent; }
+
         .ambient-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
             background: radial-gradient(circle at 15% 20%, rgba(40, 55, 100, 0.4) 0%, transparent 40%),
@@ -50,7 +56,7 @@
         }
         @keyframes breathe { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
 
-        .header { padding: 24px; display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; z-index: 10; }
+        .header { padding: 24px; display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; z-index: 10; flex-shrink: 0; }
         .header-controls { display: flex; gap: 12px; align-items: center; position: relative; }
 
         .icon-btn {
@@ -74,12 +80,12 @@
         .dropdown-item:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
         .dropdown-item.active { background: var(--sys-primary-container); color: var(--sys-primary); font-weight: 600; }
 
-        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 24px; z-index: 10; }
+        .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 24px; z-index: 10; min-height: 0; }
 
         .omnibar {
             width: 100%; background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md);
             border: 1px solid var(--sys-outline); border-radius: var(--radius-full); padding: 8px; display: flex; align-items: center; gap: 12px;
-            box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: 16px;
+            box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: 16px; flex-shrink: 0;
         }
         .omnibar:focus-within { border-color: var(--sys-outline-glow); box-shadow: var(--shadow-float), var(--shadow-glow); transform: translateY(-2px); background: var(--sys-surface-high); }
 
@@ -95,13 +101,16 @@
         .omni-input-area { flex: 1; display: flex; align-items: center; gap: 12px; padding-right: 16px; height: 36px; min-width: 0; }
         .omni-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.15rem; min-width: 0; }
         .omni-input::placeholder { color: var(--sys-on-surface-variant); }
-        .badge { background: var(--sys-primary); color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); }
+        .clear-btn { color: var(--sys-on-surface-variant); cursor: pointer; font-size: 20px; transition: color 0.2s; display: none; }
+        .clear-btn:hover { color: var(--sys-primary); }
+        
+        .badge { background: var(--sys-primary); color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); transition: transform 0.2s var(--spring); }
+        .badge.pop { transform: scale(1.2); }
 
-        .view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; scrollbar-width: none; }
+        .view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; min-height: 0; position: relative; }
         .view-section.active { display: flex; }
-        .view-section::-webkit-scrollbar { display: none; }
 
-        .filters { display: flex; gap: 12px; margin-top: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none;}
+        .filters { display: flex; gap: 12px; margin-top: 8px; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; }
         .chip {
             background: var(--sys-surface); border: 1px solid var(--sys-outline); color: var(--sys-on-bg);
             padding: 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; outline: none; transition: background 0.2s; white-space: nowrap;
@@ -109,7 +118,7 @@
         .chip:hover { background: var(--sys-surface-high); }
         .chip option { background: #18181c; color: var(--sys-on-bg); }
 
-        .results-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .results-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 24px; }
         
         .card {
             background: var(--sys-surface); border: 1px solid var(--sys-outline); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md);
@@ -153,8 +162,7 @@
 
         .tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; }
 
-        .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: 24px;}
-        .saved-orders-bar::-webkit-scrollbar { display: none; }
+        .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: 24px; flex-shrink: 0; }
         .order-chip {
             padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline);
             background: var(--sys-surface-low); color: var(--sys-on-surface-variant); cursor: pointer; white-space: nowrap; font-size: 0.95rem; font-family: inherit; transition: all 0.2s;
@@ -162,12 +170,12 @@
         .order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); }
         .order-chip:hover:not(.active) { background: var(--sys-surface-high); color: var(--sys-on-bg); }
 
-        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;}
+        .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; flex-shrink: 0; }
         .dash-title { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.5px; display: flex; align-items: center; gap: 12px;}
         .dash-total { font-size: 1.6rem; font-weight: 700; color: var(--sys-primary); }
 
-        .dash-grid { display: flex; flex-direction: column; gap: 12px; }
-        .dash-item { background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .dash-grid { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+        .dash-item { background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
         .dash-item-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--sys-outline); padding-bottom: 12px; }
         .dash-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: center; }
         .control-group { display: flex; flex-direction: column; gap: 6px; }
@@ -177,7 +185,12 @@
         .glass-input:focus { border-color: var(--sys-primary); background: rgba(0,0,0,0.5); }
         .calc-output { font-size: 1.5rem; font-weight: 600; color: var(--sys-on-bg); display: flex; align-items: center; height: 100%; }
 
-        .dash-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 24px; }
+        .dash-actions { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; 
+            padding-top: 16px; padding-bottom: 16px; margin-top: auto;
+            position: sticky; bottom: 0; background: var(--sys-bg); 
+            box-shadow: 0 -20px 40px var(--sys-bg); z-index: 20; border-top: 1px solid var(--sys-outline);
+        }
         .btn-action { padding: 14px; border-radius: var(--radius-full); border: none; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, filter 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-primary { background: var(--sys-primary); color: #000; }
         .btn-secondary { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); }
@@ -211,6 +224,7 @@
             .quick-add-zone { flex: 1; max-width: none; }
             .dash-controls { grid-template-columns: 1fr; gap: 12px;}
             .glass-input { text-align: left; }
+            .dash-actions { position: relative; box-shadow: none; border-top: none; padding-bottom: 24px; }
         }
     </style>
 </head>
@@ -258,6 +272,7 @@
             <div class="omni-input-area">
                 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
                 <input type="text" id="omniInput" class="omni-input" placeholder="Search or type / for commands..." autocomplete="off">
+                <span class="material-symbols-rounded clear-btn" id="omniClear" onclick="clearInput()">close</span>
             </div>
         </div>
 
@@ -309,6 +324,8 @@
     <div class="toast-container" id="toasts"></div>
 
     <script>
+        const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
         const rawData =[ {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"}, {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"}, {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"}, {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Apidra قوي عاملة", unit: "Penfill", price: 44, company: "شراء موحد"}, {name: "Apidra طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"}, {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"}, {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"}, {name: "Atozet 20 / 10", unit: "10 Tab", price: 110, company: "شراء موحد"}, {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Campto", unit: "Vial", price: 60, company: "شراء موحد"}, {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"}, {name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"}, {name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"}, {name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"}, {name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"}, {name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"}, {name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"}, {name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"}, {name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"}, {name: "Crestor 10", unit: "28 Tab", price: 118, company: "شراء موحد"}, {name: "Crestor 20", unit: "14 Tab", price: 96, company: "شراء موحد"}, {name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"}, {name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"}, {name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"}, {name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"}, {name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"}, {name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"}, {name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"}, {name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"}, {name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"}, {name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"}, {name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"}, {name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"}, {name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"}, {name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"}, {name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"}, {name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"}, {name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"}, {name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"}, {name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"}, {name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"}, {name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"}, {name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"}, {name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Humalog 100 pen قوي عاملة", unit: "Pen", price: 52.87, company: "شراء موحد"}, {name: "Humalog 100 penfill قوي عاملة", unit: "Penfill", price: 48, company: "شراء موحد"}, {name: "Humalog Mix 25 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 25 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Humalog Mix 50 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 50 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"}, {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"}, {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"}, {name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"}, {name: "Jaunamet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"}, {name: "Jaunamet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"}, {name: "Jaunamet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"}, {name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"}, {name: "Lantus", unit: "Penfill", price: 20, company: "ايرادات هيئة"}, {name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"}, {name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"}, {name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"}, {name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"}, {name: "Lipiror 80", unit: "7 Tab", price: 51, company: "شراء موحد"}, {name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"}, {name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"}, {name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"}, {name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"}, {name: "Nexium 20", unit: "28 Tab", price: 140, company: "شراء موحد"}, {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"}, {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"}, {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"}, {name: "Novomix 30 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 30 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novomix 50 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 50 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novorapid قوي عاملة", unit: "Penfill", price: 39.5, company: "شراء موحد"}, {name: "Novorapid طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"}, {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"}, {name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"}, {name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"}, {name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"}, {name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"}, {name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"}, {name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"}, {name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"}, {name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"}, {name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"}, {name: "Taxoter 20", unit: "Vial", price: 240, company: "شراء موحد"}, {name: "Taxoter 80", unit: "Vial", price: 860, company: "شراء موحد"}, {name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"}, {name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"}, {name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"}, {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"}, {name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"}, {name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"}, {name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"}, {name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"}, {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"}, {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"}, {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"}, {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"}, {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"}, {name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"}, {name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"}, {name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"}, {name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"}, {name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"}, {name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"}, {name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"}, {name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"} ];
 
         const insulins =["apidra", "humalog", "lantus", "novomix", "novorapid", "ryzodec", "toujeo", "tresiba", "soliqua"];
@@ -330,7 +347,7 @@
         let preferredEngine = 'brave';
 
         const els = {
-            in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'),
+            in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'), clear: document.getElementById('omniClear'),
             vSearch: document.getElementById('viewSearch'), vCalc: document.getElementById('viewCalc'),
             tSearch: document.getElementById('tabSearch'), tCalc: document.getElementById('tabCalc'),
             res: document.getElementById('resultsList'), fU: document.getElementById('fUnit'), fS: document.getElementById('fSource'),
@@ -361,11 +378,11 @@
         window.toggleEngineMenu = () => els.engineMenu.classList.toggle('active');
         window.setEngine = (eng) => {
             preferredEngine = eng; localStorage.setItem('lx_engine', eng);
-            updateEngineMenuUI(); els.engineMenu.classList.remove('active'); showToast(`Engine set to ${eng}`, "travel_explore");
+            updateEngineMenuUI(); els.engineMenu.classList.remove('active'); showToast(`Engine set to ${escapeHTML(eng)}`, "travel_explore");
         };
         const updateEngineMenuUI = () => {
             document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
-            const activeEl = document.getElementById(`eng-${preferredEngine}`);
+            const activeEl = document.getElementById(`eng-${escapeHTML(preferredEngine)}`);
             if(activeEl) activeEl.classList.add('active');
         };
 
@@ -375,13 +392,25 @@
 
         const showToast = (msg, icon="check_circle") => {
             const t = document.createElement('div'); t.className = 'toast';
-            t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-success)">${icon}</span> ${msg}`;
+            t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-success)">${escapeHTML(icon)}</span> ${escapeHTML(msg)}`;
             els.toasts.appendChild(t); setTimeout(() => t.remove(), 3000);
         };
 
         const highlight = (txt, q) => {
-            if(!q) return txt; let res = txt;
-            q.trim().split(/\s+/).filter(Boolean).forEach(term => { res = res.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<mark>$1</mark>'); }); return res;
+            let res = escapeHTML(txt);
+            if(!q) return res;
+            const safeQ = escapeHTML(q).trim().split(/\s+/).filter(Boolean);
+            safeQ.forEach(term => {
+                res = res.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<mark>$1</mark>');
+            });
+            return res;
+        };
+
+        window.clearInput = () => {
+            els.in.value = '';
+            els.clear.style.display = 'none';
+            els.in.focus();
+            renderSearch();
         };
 
         const switchView = (view) => {
@@ -397,7 +426,7 @@
         };
 
         const executeCommand = (cmd) => {
-            els.in.value = '';
+            els.in.value = ''; els.clear.style.display = 'none';
             if(cmd === '/dashboard' || cmd === '/calc') switchView('calc');
             else if(cmd === '/clear') { clearDashboard(); switchView('calc'); showToast("Dashboard cleared");}
             else if(cmd === '/search') switchView('search');
@@ -406,14 +435,14 @@
         };
 
         const renderSearch = () => {
-            let rawQ = els.in.value;
-            if(rawQ.startsWith('ظ')) { rawQ = '/' + rawQ.substring(1); els.in.value = rawQ; }
+            const rawQ = els.in.value;
             const q = rawQ.toLowerCase(), u = els.fU.value, s = els.fS.value;
             els.icon.textContent = rawQ.startsWith('/') ? 'terminal' : 'data_usage';
+            els.clear.style.display = rawQ.length > 0 ? 'block' : 'none';
 
             if (rawQ.startsWith('/')) {
                 const cmds =[{c: '/dashboard', d: 'Calculation Dashboard'}, {c: '/clear', d: 'Empty dashboard'}, {c: '/search', d: 'Go to Search'}, {c: '/export', d: 'Export dashboard to text'}, {c: '/orders', d: 'View saved orders'}].filter(cmd => cmd.c.includes(q));
-                els.res.innerHTML = cmds.map(cmd => `<div class="card" onclick="executeCommand('${cmd.c}')"><div class="card-main-info"><div class="card-icon"><span class="material-symbols-rounded">keyboard_command_key</span></div><div class="card-content"><div class="card-title">${cmd.c}</div><div class="card-subtitle">${cmd.d}</div></div></div></div>`).join('') || '<div style="text-align:center; padding:20px; color:var(--sys-on-surface-variant);">Unknown command</div>';
+                els.res.innerHTML = cmds.map(cmd => `<div class="card" onclick="executeCommand('${escapeHTML(cmd.c)}')"><div class="card-main-info"><div class="card-icon"><span class="material-symbols-rounded">keyboard_command_key</span></div><div class="card-content"><div class="card-title">${escapeHTML(cmd.c)}</div><div class="card-subtitle">${escapeHTML(cmd.d)}</div></div></div></div>`).join('') || '<div style="text-align:center; padding:20px; color:var(--sys-on-surface-variant);">Unknown command</div>';
                 return;
             }
 
@@ -421,20 +450,20 @@
             if(q) filtered = filtered.map(i => { let score = 0; q.trim().split(/\s+/).forEach(t => { if(i.str.includes(t)) score+=10; if(i.n.toLowerCase().startsWith(t)) score+=20; }); return {...i, score}; }).filter(i => i.score > 0).sort((a,b) => b.score - a.score);
 
             els.res.innerHTML = filtered.slice(0, 50).map(i => `
-                <div class="card" onclick="openDetails('${i.id}')">
+                <div class="card" onclick="openDetails('${escapeHTML(i.id)}')">
                     <div class="card-main-info">
                         <div class="card-icon" title="Info"><span class="material-symbols-rounded">medication</span></div>
                         <div class="card-content">
-                            <div class="card-title">${highlight(i.n, q)} ${i.t ? `<span class="tag">${i.t}</span>` : ''}</div>
+                            <div class="card-title">${highlight(i.n, q)} ${i.t ? `<span class="tag">${escapeHTML(i.t)}</span>` : ''}</div>
                             <div class="card-subtitle"><span>${highlight(i.u, q)}</span> • <span style="color:var(--sys-primary)">${i.p.toFixed(2)} EGP</span></div>
                         </div>
                     </div>
                     <div class="card-actions" onclick="event.stopPropagation()">
-                        <button class="copy-btn" onclick="copyItemInfo('${i.id}')" title="Copy Info"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
+                        <button class="copy-btn" onclick="copyItemInfo('${escapeHTML(i.id)}')" title="Copy Info"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
                         <div class="quick-add-zone">
-                            <input type="number" id="quick-in-${i.id}" class="quick-input" placeholder="Req" min="0" onkeydown="if(event.key==='Enter') inlineAdd('${i.id}')">
-                            <span class="quick-unit">${i.bType}</span>
-                            <button class="quick-btn" onclick="inlineAdd('${i.id}')"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
+                            <input type="number" id="quick-in-${escapeHTML(i.id)}" class="quick-input" placeholder="Req" min="0" onkeydown="if(event.key==='Enter') inlineAdd('${escapeHTML(i.id)}', this.nextElementSibling.nextElementSibling)">
+                            <span class="quick-unit">${escapeHTML(i.bType)}</span>
+                            <button class="quick-btn" onclick="inlineAdd('${escapeHTML(i.id)}', this)"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
                         </div>
                     </div>
                 </div>
@@ -443,19 +472,38 @@
 
         window.copyItemInfo = (id) => {
             const item = db.find(i => i.id === id);
+            if (!item) return;
             navigator.clipboard.writeText(`${item.n} ${item.t} | ${item.u} | ${item.p.toFixed(2)} EGP`).then(() => showToast(`Copied ${item.n}`, "content_copy"));
         };
 
-        window.inlineAdd = (id) => {
+        window.inlineAdd = (id, btnEl) => {
             const input = document.getElementById(`quick-in-${id}`);
             const req = parseFloat(input.value);
             if(!req || req <= 0) return;
             const item = db.find(i => i.id === id);
+            if (!item) return;
             const packs = Math.round(req / item.bQty);
             const cost = packs * item.p;
             dashboardMap.set(id, { item, req, packs, cost });
             currentOrderIndex = -1; saveState();
-            input.value = ''; input.blur(); showToast(`Added ${packs} packs of ${item.n}`);
+            input.value = ''; input.blur(); 
+            
+            if(btnEl) {
+                const icon = btnEl.querySelector('span');
+                const origIcon = icon.textContent;
+                btnEl.style.background = 'var(--sys-success)';
+                btnEl.style.color = '#000';
+                icon.textContent = 'check';
+                setTimeout(() => {
+                    btnEl.style.background = '';
+                    btnEl.style.color = '';
+                    icon.textContent = origIcon;
+                }, 800);
+            }
+            
+            els.badge.classList.add('pop');
+            setTimeout(() => els.badge.classList.remove('pop'), 200);
+            showToast(`Added ${packs} packs of ${item.n}`);
         };
 
         const generateSearchURL = (qStr) => {
@@ -482,17 +530,18 @@
 
         const openDetails = (id) => {
             const item = db.find(i => i.id === id);
-            document.getElementById('sheetTitle').innerHTML = `${item.n} ${item.t ? `<span class="tag" style="font-size:1rem; vertical-align:middle;">${item.t}</span>` : ''}`;
-            document.getElementById('sheetMeta').innerHTML = `<span>${item.u}</span> • <span>${item.s}</span>`;
+            if (!item) return;
+            document.getElementById('sheetTitle').innerHTML = `${escapeHTML(item.n)} ${item.t ? `<span class="tag" style="font-size:1rem; vertical-align:middle;">${escapeHTML(item.t)}</span>` : ''}`;
+            document.getElementById('sheetMeta').innerHTML = `<span>${escapeHTML(item.u)}</span> • <span>${escapeHTML(item.s)}</span>`;
             const qStr = encodeURIComponent(item.n);
             
             document.getElementById('sheetLinks').innerHTML = `
-                <a href="${generateSearchURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span> ${getEngineName()}</a>
+                <a href="${generateSearchURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span> ${escapeHTML(getEngineName())}</a>
                 <a href="${generateImageURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">image</span> Images</a>
                 <a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
                 <a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
             `;
-            document.getElementById('sheetBase').textContent = `1 Pack = ${item.bQty} ${item.bType}`;
+            document.getElementById('sheetBase').textContent = `1 Pack = ${item.bQty} ${escapeHTML(item.bType)}`;
             els.modal.classList.add('active');
         };
 
@@ -503,7 +552,7 @@
             els.dashActions.style.display = items.length ? 'grid' : 'none';
 
             els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
-            els.ordersBar.innerHTML = savedOrders.map((o, idx) => `<button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">${o.name}</button>`).join('') + `<button class="order-chip" onclick="clearDashboard()">+ New</button>`;
+            els.ordersBar.innerHTML = savedOrders.map((o, idx) => `<button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">${escapeHTML(o.name)}</button>`).join('') + `<button class="order-chip" onclick="clearDashboard()">+ New</button>`;
             els.dashTitleText.textContent = currentOrderIndex >= 0 ? savedOrders[currentOrderIndex].name : "Current Dashboard";
             els.dashStatus.textContent = currentOrderIndex >= 0 ? "Saved Order" : "Active / Unsaved";
             els.dashStatus.style.background = currentOrderIndex >= 0 ? "var(--sys-primary-container)" : "var(--sys-surface-highest)";
@@ -511,13 +560,13 @@
             els.dashGrid.innerHTML = items.map(c => `
                 <div class="dash-item">
                     <div class="dash-item-top">
-                        <div><div class="card-title">${c.item.n} <span class="tag">${c.item.t}</span></div><div class="card-subtitle">Base: ${c.item.bQty} ${c.item.bType} / Pack</div></div>
-                        <button class="icon-btn" onclick="removeDashboardItem('${c.item.id}')" style="background:transparent; border:none; color:var(--sys-secondary)"><span class="material-symbols-rounded">delete</span></button>
+                        <div><div class="card-title">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div><div class="card-subtitle">Base: ${c.item.bQty} ${escapeHTML(c.item.bType)} / Pack</div></div>
+                        <button class="icon-btn" onclick="removeDashboardItem('${escapeHTML(c.item.id)}')" style="background:transparent; border:none; color:var(--sys-secondary)"><span class="material-symbols-rounded">delete</span></button>
                     </div>
                     <div class="dash-controls">
-                        <div class="control-group"><span class="control-label">Req. ${c.item.bType}</span><input type="number" class="glass-input" value="${c.req}" min="0" oninput="updateDashItem('${c.item.id}', this.value)"></div>
-                        <div class="control-group"><span class="control-label">Packs</span><div class="calc-output" id="out-packs-${c.item.id}">${c.packs}</div></div>
-                        <div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${c.item.id}" style="color: var(--sys-primary)">${c.cost.toFixed(2)}</div></div>
+                        <div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" class="glass-input" value="${escapeHTML(c.req)}" min="0" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value)"></div>
+                        <div class="control-group"><span class="control-label">Packs</span><div class="calc-output" id="out-packs-${escapeHTML(c.item.id)}">${c.packs}</div></div>
+                        <div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${c.cost.toFixed(2)}</div></div>
                     </div>
                 </div>
             `).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">assignment</span><p style="margin-top:16px">Dashboard is empty. Search and quickly add items.</p></div>';
@@ -563,10 +612,27 @@
             }; reader.readAsText(file); els.fileUp.value = '';
         });
 
-        els.in.addEventListener('input', () => { if(activeView === 'calc' && !els.in.value.startsWith('/') && !els.in.value.startsWith('ظ')) switchView('search'); if(activeView === 'search') renderSearch(); });
+        els.in.addEventListener('input', () => { 
+            if(activeView === 'calc' && !els.in.value.startsWith('/')) switchView('search'); 
+            if(activeView === 'search') renderSearch(); 
+        });
+
         els.fU.addEventListener('change', renderSearch); els.fS.addEventListener('change', renderSearch);
         els.modal.addEventListener('click', e => { if(e.target === els.modal) els.modal.classList.remove('active'); });
-        document.addEventListener('keydown', e => { if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); els.in.focus(); } if(e.key === 'Escape') els.modal.classList.remove('active'); });
+        
+        document.addEventListener('keydown', e => { 
+            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') { 
+                e.preventDefault(); 
+                els.in.focus(); 
+            } 
+            else if (e.key === '/' || e.key === 'ظ') {
+                if (document.activeElement !== els.in) {
+                    e.preventDefault();
+                    els.in.focus();
+                }
+            }
+            if(e.key === 'Escape') els.modal.classList.remove('active'); 
+        });
 
         loadState(); renderSearch(); renderDashboard();
     </script>
