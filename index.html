@@ -165,11 +165,13 @@
 
         .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: 24px; flex-shrink: 0; }
         .order-chip {
-            padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline);
+            padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center;
             background: var(--sys-surface-low); color: var(--sys-on-surface-variant); cursor: pointer; white-space: nowrap; font-size: 0.95rem; font-family: inherit; transition: all 0.2s;
         }
         .order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); }
         .order-chip:hover:not(.active) { background: var(--sys-surface-high); color: var(--sys-on-bg); }
+        .chip-del { font-size: 16px; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--sys-outline); opacity: 0.6; transition: all 0.2s; }
+        .chip-del:hover { opacity: 1; color: var(--sys-secondary); transform: scale(1.1); }
 
         .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; flex-shrink: 0; }
         .dash-title { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.5px; display: flex; align-items: center; gap: 12px;}
@@ -300,7 +302,7 @@
                 <button class="btn-action btn-secondary" onclick="clearDashboard()"><span class="material-symbols-rounded">delete_sweep</span> Clear</button>
                 <button class="btn-action btn-secondary" onclick="exportDashboardText()"><span class="material-symbols-rounded">content_copy</span> Copy</button>
                 <button class="btn-action btn-secondary" onclick="downloadDashboard()"><span class="material-symbols-rounded">download</span> DL</button>
-                <button class="btn-action btn-primary" onclick="saveAsOrder()"><span class="material-symbols-rounded">save</span> Save Order</button>
+                <button class="btn-action btn-primary" id="btnSaveOrder" onclick="saveAsOrder()"><span class="material-symbols-rounded">save</span> Save Order</button>
             </div>
         </div>
     </main>
@@ -393,6 +395,16 @@
             localStorage.setItem('lx_calc_orders', JSON.stringify(savedOrders));
         };
 
+        const syncCurrentOrder = () => {
+            if (currentOrderIndex >= 0 && savedOrders[currentOrderIndex]) {
+                savedOrders[currentOrderIndex].items = Array.from(dashboardMap.entries());
+                let total = 0;
+                dashboardMap.forEach(c => total += c.cost);
+                savedOrders[currentOrderIndex].total = `${total.toFixed(2)} EGP`;
+            }
+            saveState();
+        };
+
         window.toggleEngineMenu = () => els.engineMenu.classList.toggle('active');
         window.setEngine = (eng) => {
             preferredEngine = eng; localStorage.setItem('lx_engine', eng);
@@ -436,7 +448,7 @@
             els.tSearch.classList.toggle('active', view === 'search'); els.tCalc.classList.toggle('active', view === 'calc');
             els.vSearch.classList.toggle('active', view === 'search'); els.vCalc.classList.toggle('active', view === 'calc');
             els.icon.textContent = view === 'calc' ? 'calculate' : 'data_usage';
-            if(view === 'search') renderSearch(); else renderDashboard();
+            if(view === 'calc') renderDashboard();
         };
 
         const executeCommand = (cmd) => {
@@ -535,7 +547,7 @@
             const packs = Math.round(req / item.bQty);
             const cost = packs * item.p;
             dashboardMap.set(id, { item, req, packs, cost });
-            currentOrderIndex = -1; saveState();
+            syncCurrentOrder();
             input.value = ''; input.blur(); 
             
             if(btnEl) {
@@ -614,8 +626,7 @@
             const cost = packs * entry.item.p;
             entry.req = req; entry.packs = packs; entry.cost = cost; 
             dashboardMap.set(id, entry); 
-            currentOrderIndex = -1; 
-            saveState(); 
+            syncCurrentOrder();
             
             const pEl = document.getElementById(`out-packs-${id}`);
             const cEl = document.getElementById(`out-cost-${id}`);
@@ -625,12 +636,15 @@
             }
             updateDashTotal();
             
-            els.dashStatus.textContent = "Active / Unsaved";
-            els.dashStatus.style.background = "var(--sys-surface-highest)";
-            els.dashTitleText.textContent = "Current Calculation";
-            
-            const activeChip = els.ordersBar.querySelector('.active');
-            if(activeChip) activeChip.classList.remove('active');
+            if(currentOrderIndex < 0) {
+                els.dashStatus.textContent = "Unsaved";
+                els.dashStatus.style.background = "var(--sys-surface-highest)";
+                els.dashStatus.style.color = "var(--sys-on-surface-variant)";
+            } else {
+                els.dashStatus.textContent = "Active Order";
+                els.dashStatus.style.background = "var(--sys-success)";
+                els.dashStatus.style.color = "#000";
+            }
         };
 
         const renderDashboard = () => {
@@ -639,11 +653,20 @@
             els.dashActions.style.display = items.length ? 'grid' : 'none';
 
             els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
-            els.ordersBar.innerHTML = savedOrders.map((o, idx) => `<button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">${escapeHTML(o.name)}</button>`).join('') + `<button class="order-chip" onclick="clearDashboard()">+ New</button>`;
+            els.ordersBar.innerHTML = savedOrders.map((o, idx) => `
+                <button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">
+                    ${escapeHTML(o.name)}
+                    <span class="material-symbols-rounded chip-del" onclick="deleteOrder(event, ${idx})">close</span>
+                </button>
+            `).join('') + `<button class="order-chip" onclick="createNewOrder()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
             
             els.dashTitleText.textContent = currentOrderIndex >= 0 ? savedOrders[currentOrderIndex].name : "Current Calculation";
-            els.dashStatus.textContent = currentOrderIndex >= 0 ? "Saved Order" : "Active / Unsaved";
-            els.dashStatus.style.background = currentOrderIndex >= 0 ? "var(--sys-primary-container)" : "var(--sys-surface-highest)";
+            els.dashStatus.textContent = currentOrderIndex >= 0 ? "Active Order" : "Unsaved";
+            els.dashStatus.style.background = currentOrderIndex >= 0 ? "var(--sys-success)" : "var(--sys-surface-highest)";
+            els.dashStatus.style.color = currentOrderIndex >= 0 ? "#000" : "var(--sys-on-surface-variant)";
+
+            const saveBtn = document.getElementById('btnSaveOrder');
+            if(saveBtn) saveBtn.innerHTML = `<span class="material-symbols-rounded">save</span> ${currentOrderIndex >= 0 ? 'Save Updates' : 'Save Order'}`;
 
             els.dashGrid.innerHTML = items.map(c => `
                 <div class="dash-item" id="dash-item-${escapeHTML(c.item.id)}">
@@ -663,10 +686,30 @@
             `).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">calculate</span><p style="margin-top:16px">Calculator is empty. Search and quickly add items.</p></div>';
         };
 
+        const autoSaveUnfinished = () => {
+            const orderName = `Unfinished ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            let total = 0; dashboardMap.forEach(c => total += c.cost);
+            savedOrders.push({ id: Date.now().toString(), name: orderName, total: `${total.toFixed(2)} EGP`, items: Array.from(dashboardMap.entries()) });
+            showToast("Unsaved work moved to Unfinished", "save");
+        };
+
+        window.createNewOrder = () => {
+            if (currentOrderIndex === -1 && dashboardMap.size > 0) {
+                if (savedOrders.length >= 10) {
+                    alert("Maximum 10 saved orders allowed. Please delete some first.");
+                    return;
+                }
+                autoSaveUnfinished();
+            }
+            dashboardMap.clear();
+            currentOrderIndex = -1;
+            saveState();
+            renderDashboard();
+        };
+
         window.removeDashboardItem = (id) => { 
             dashboardMap.delete(id); 
-            currentOrderIndex = -1; 
-            saveState(); 
+            syncCurrentOrder();
             renderDashboard();
         };
         
@@ -679,13 +722,30 @@
 
         window.saveAsOrder = () => {
             if(dashboardMap.size === 0) return;
-            if(savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed. Please clear some."); return; }
-            const orderName = `Calc ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            savedOrders.push({ id: Date.now().toString(), name: orderName, total: els.dashTotal.textContent, items: Array.from(dashboardMap.entries()) });
-            currentOrderIndex = savedOrders.length - 1; saveState(); renderDashboard(); showToast("Calculation saved", "bookmark_added");
+            const dateStr = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            if (currentOrderIndex >= 0) {
+                savedOrders[currentOrderIndex].name = `Order ${dateStr}`;
+                syncCurrentOrder();
+                renderDashboard();
+                showToast("Order saved and updated", "bookmark_added");
+            } else {
+                if(savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed."); return; }
+                savedOrders.push({ id: Date.now().toString(), name: `Order ${dateStr}`, total: els.dashTotal.textContent, items: Array.from(dashboardMap.entries()) });
+                currentOrderIndex = savedOrders.length - 1; 
+                saveState(); 
+                renderDashboard(); 
+                showToast("Order saved", "bookmark_added");
+            }
         };
 
         window.loadOrder = (idx) => { 
+            if (currentOrderIndex === -1 && dashboardMap.size > 0) {
+                if (savedOrders.length >= 10) {
+                    alert("Maximum 10 saved orders allowed. Please delete some first.");
+                    return;
+                }
+                autoSaveUnfinished();
+            }
             const order = savedOrders[idx]; 
             if(!order) return; 
             dashboardMap = new Map(order.items); 
@@ -693,6 +753,20 @@
             saveState(); 
             renderDashboard(); 
             showToast(`Loaded ${order.name}`, "restore"); 
+        };
+
+        window.deleteOrder = (e, idx) => {
+            e.stopPropagation();
+            savedOrders.splice(idx, 1);
+            if(currentOrderIndex === idx) {
+                currentOrderIndex = -1;
+                dashboardMap.clear();
+            } else if (currentOrderIndex > idx) {
+                currentOrderIndex--;
+            }
+            saveState();
+            renderDashboard();
+            showToast("Order deleted", "delete");
         };
 
         window.exportDashboardText = () => {
