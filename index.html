@@ -111,13 +111,41 @@
         .view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; padding-left: 8px; padding-right: 16px; min-height: 0; position: relative; }
         .view-section.active { display: flex; }
 
-        .filters { display: flex; gap: 12px; margin-top: 8px; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; }
+        .filters { display: flex; gap: 12px; margin-top: 8px; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; align-items: center; }
+        
+        .filter-wrapper { position: relative; display: flex; align-items: center; flex-shrink: 0; }
+        
         .chip {
             background: var(--sys-surface); border: 1px solid var(--sys-outline); color: var(--sys-on-bg);
-            padding: 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; outline: none; transition: background 0.2s; white-space: nowrap;
+            padding: 8px 32px 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; outline: none; transition: all 0.2s; white-space: nowrap;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23a0a0ab' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat; background-position: right 8px center;
         }
-        .chip:hover { background: var(--sys-surface-high); }
+        .chip:hover { background-color: var(--sys-surface-high); }
+        .chip.active-filter {
+            background-image: none;
+            border-color: var(--sys-primary); color: var(--sys-primary);
+            background-color: var(--sys-primary-container);
+        }
         .chip option { background: #18181c; color: var(--sys-on-bg); }
+
+        .filter-x {
+            position: absolute; right: 4px; width: 24px; height: 24px;
+            border-radius: 50%; background: transparent; border: none;
+            color: var(--sys-primary); display: none; place-items: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .filter-x:hover { background: rgba(0,0,0,0.2); transform: scale(1.1); }
+        .filter-x .material-symbols-rounded { font-size: 16px; }
+
+        .chip-clear { 
+            display: flex; align-items: center; gap: 6px; padding: 8px 16px; 
+            background: transparent; border: 1px dashed var(--sys-outline); 
+            color: var(--sys-on-surface-variant); transition: all 0.2s var(--spring); 
+            border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; flex-shrink: 0;
+        }
+        .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
 
         .results-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 24px; }
         
@@ -281,8 +309,21 @@
 
         <div class="view-section active" id="viewSearch">
             <div class="filters">
-                <select id="fUnit" class="chip"><option value="all">Any Unit</option></select>
-                <select id="fSource" class="chip"><option value="all">Any Source</option></select>
+                <div class="filter-wrapper">
+                    <select id="fUnit" class="chip"><option value="all">Any Unit</option></select>
+                    <button class="filter-x" id="fUnitX" onclick="clearSingleFilter('fUnit')" title="Clear Unit">
+                        <span class="material-symbols-rounded">close</span>
+                    </button>
+                </div>
+                <div class="filter-wrapper">
+                    <select id="fSource" class="chip"><option value="all">Any Source</option></select>
+                    <button class="filter-x" id="fSourceX" onclick="clearSingleFilter('fSource')" title="Clear Source">
+                        <span class="material-symbols-rounded">close</span>
+                    </button>
+                </div>
+                <button id="fClearAll" class="chip-clear" onclick="clearFilters()" title="Clear all filters">
+                    <span class="material-symbols-rounded" style="font-size: 18px;">clear_all</span> Clear All
+                </button>
             </div>
             <div class="results-list" id="resultsList"></div>
         </div>
@@ -442,6 +483,17 @@
             renderSearch();
         };
 
+        window.clearSingleFilter = (id) => {
+            document.getElementById(id).value = 'all';
+            renderSearch();
+        };
+
+        window.clearFilters = () => {
+            els.fU.value = 'all';
+            els.fS.value = 'all';
+            renderSearch();
+        };
+
         const switchView = (view) => {
             if (activeView === view) return;
             activeView = view;
@@ -487,6 +539,12 @@
 
             const qTokens = qStr.split(/\s+/).filter(Boolean);
             const u = els.fU.value, s = els.fS.value;
+            
+            els.fU.classList.toggle('active-filter', u !== 'all');
+            document.getElementById('fUnitX').style.display = u !== 'all' ? 'grid' : 'none';
+            
+            els.fS.classList.toggle('active-filter', s !== 'all');
+            document.getElementById('fSourceX').style.display = s !== 'all' ? 'grid' : 'none';
             
             let filtered = [];
             for(let i=0; i<db.length; i++) {
