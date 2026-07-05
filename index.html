@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>LX Search 3.1</title>
+<title>LX Search 4.0</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,1110 +12,1224 @@
 <style>
 :root {
 --sys-bg: #09090b;
---sys-surface-low: rgba(24, 24, 28, 0.4);
---sys-surface: rgba(28, 29, 34, 0.6);
+--sys-surface-low: rgba(24, 24, 28, 0.45);
+--sys-surface: rgba(28, 29, 34, 0.62);
 --sys-surface-high: rgba(255, 255, 255, 0.08);
 --sys-surface-highest: rgba(255, 255, 255, 0.15);
 --sys-outline: rgba(255, 255, 255, 0.1);
---sys-outline-glow: rgba(168, 199, 250, 0.4);
---sys-on-bg: #e2e2e9;
---sys-on-surface-variant: #a0a0ab;
+--sys-outline-glow: rgba(168, 199, 250, 0.45);
+--sys-on-bg: #eaeaf0;
+--sys-on-surface-variant: #adadb8;
 --sys-primary: #a8c7fa;
 --sys-primary-container: rgba(168, 199, 250, 0.15);
 --sys-secondary: #ffb4a9;
 --sys-secondary-container: rgba(255, 180, 169, 0.15);
 --sys-success: #81c995;
+--sys-warning: #f4c86a;
 --blur-md: blur(24px) saturate(150%);
 --blur-lg: blur(60px) saturate(200%);
 --radius-full: 9999px;
 --radius-xl: 32px;
 --radius-lg: 24px;
 --radius-md: 16px;
+--radius-sm: 12px;
+--space-1: 4px;
+--space-2: 8px;
+--space-3: 12px;
+--space-4: 16px;
+--space-5: 24px;
 --shadow-float: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+--shadow-card: 0 2px 10px -4px rgba(0, 0, 0, 0.45);
 --shadow-glow: 0 0 32px var(--sys-primary-container);
+--focus-ring: 0 0 0 2px var(--sys-bg), 0 0 0 4px var(--sys-primary);
 --spring: cubic-bezier(0.2, 0, 0, 1);
+--row-h: 44px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-        font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color: var(--sys-on-bg);
-        height: 100vh; overflow: hidden; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased;
-    }
-
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--sys-surface-highest); border-radius: var(--radius-full); border: 2px solid var(--sys-bg); }
-    ::-webkit-scrollbar-thumb:hover { background: var(--sys-primary-container); }
-    * { scrollbar-width: thin; scrollbar-color: var(--sys-surface-highest) transparent; }
-
-    .ambient-layer {
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-        background: radial-gradient(circle at 15% 20%, rgba(40, 55, 100, 0.4) 0%, transparent 40%),
-                    radial-gradient(circle at 85% 80%, rgba(80, 40, 80, 0.3) 0%, transparent 40%);
-        filter: var(--blur-lg); animation: breathe 15s infinite alternate ease-in-out;
-    }
-    @keyframes breathe { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
-
-    .header { padding: 24px; display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; z-index: 10; flex-shrink: 0; }
-    
-    .dock {
-        background: var(--sys-surface);
-        backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md);
-        padding: 4px; border-radius: var(--radius-full); border: 1px solid var(--sys-outline);
-        display: flex; align-items: center; gap: 4px; box-shadow: var(--shadow-float);
-    }
-    .dock-divider { width: 1px; height: 24px; background: var(--sys-outline); margin: 0 4px; }
-
-    .icon-btn {
-        background: var(--sys-surface-high); border: 1px solid var(--sys-outline); color: var(--sys-on-bg);
-        width: 40px; height: 40px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s var(--spring);
-    }
-    .icon-btn:hover { background: var(--sys-surface-highest); color: var(--sys-primary); transform: scale(1.05); }
-    .dock-btn { background: transparent; border: none; }
-    .dock-btn:hover { background: var(--sys-surface-highest); }
-
-    .dropdown-menu {
-        position: absolute; top: 50px; right: 0; background: rgba(15, 16, 20, 0.95); backdrop-filter: var(--blur-lg);
-        border: 1px solid var(--sys-outline); border-radius: var(--radius-md); padding: 8px;
-        display: flex; flex-direction: column; gap: 4px; min-width: 160px; box-shadow: var(--shadow-float);
-        opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all 0.2s var(--spring); z-index: 100;
-    }
-    .dropdown-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .dropdown-item {
-        background: transparent; border: none; color: var(--sys-on-bg); font-family: inherit; font-size: 0.95rem;
-        padding: 10px 16px; border-radius: 8px; text-align: left; cursor: pointer; transition: background 0.2s;
-        display: flex; align-items: center; gap: 12px;
-    }
-    .dropdown-item:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
-    .dropdown-item.active { background: var(--sys-primary-container); color: var(--sys-primary); font-weight: 600; }
-
-    .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 24px; z-index: 10; min-height: 0; }
-
-    .omnibar {
-        width: 100%; background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md);
-        border: 1px solid var(--sys-outline); border-radius: var(--radius-full); padding: 8px; display: flex; align-items: center; gap: 12px;
-        box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: 16px; flex-shrink: 0;
-    }
-    .omnibar:focus-within { border-color: var(--sys-outline-glow); box-shadow: var(--shadow-float), var(--shadow-glow); transform: translateY(-2px); background: var(--sys-surface-high); }
-
-    .omni-tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: var(--radius-full); padding: 4px; gap: 4px; align-items: center; flex-shrink: 0;}
-    .omni-tab {
-        padding: 8px 16px; border-radius: var(--radius-full); border: none; background: transparent; color: var(--sys-on-surface-variant);
-        font-family: inherit; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s var(--spring); height: 36px;
-    }
-    .omni-tab.active { background: var(--sys-surface-highest); color: var(--sys-on-bg); }
-    .omni-tab:hover:not(.active) { color: var(--sys-on-bg); }
-
-    .omni-divider { width: 1px; height: 24px; background: var(--sys-outline); }
-    .omni-input-area { flex: 1; display: flex; align-items: center; gap: 12px; padding-right: 16px; height: 36px; min-width: 0; }
-    .omni-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.15rem; min-width: 0; }
-    .omni-input::placeholder { color: var(--sys-on-surface-variant); }
-    .clear-btn { color: var(--sys-on-surface-variant); cursor: pointer; font-size: 20px; transition: color 0.2s; display: none; }
-    .clear-btn:hover { color: var(--sys-primary); }
-    
-    .badge { background: var(--sys-primary); color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); transition: transform 0.2s var(--spring); }
-    .badge.pop { transform: scale(1.2); }
-
-    .view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; padding-left: 8px; padding-right: 16px; min-height: 0; position: relative; }
-    .view-section.active { display: flex; }
-
-    .filters { display: flex; gap: 12px; margin-top: 8px; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; align-items: center; }
-    
-    .filter-wrapper { position: relative; display: flex; align-items: center; flex-shrink: 0; }
-    
-    .chip {
-        background: var(--sys-surface); border: 1px solid var(--sys-outline); color: var(--sys-on-bg);
-        padding: 8px 32px 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; outline: none; transition: all 0.2s; white-space: nowrap;
-        appearance: none; -webkit-appearance: none;
-        background-image: url("data:image/svg+xml;utf8,<svg fill='%23a0a0ab' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-        background-repeat: no-repeat; background-position: right 8px center;
-    }
-    .chip:hover { background-color: var(--sys-surface-high); }
-    .chip.active-filter {
-        background-image: none;
-        border-color: var(--sys-primary); color: var(--sys-primary);
-        background-color: var(--sys-primary-container);
-    }
-    .chip option { background: #18181c; color: var(--sys-on-bg); }
-
-    .filter-x {
-        position: absolute; right: 4px; width: 24px; height: 24px;
-        border-radius: 50%; background: transparent; border: none;
-        color: var(--sys-primary); display: none; place-items: center;
-        cursor: pointer; transition: all 0.2s;
-    }
-    .filter-x:hover { background: rgba(0,0,0,0.2); transform: scale(1.1); }
-    .filter-x .material-symbols-rounded { font-size: 16px; }
-
-    .chip-clear { 
-        display: flex; align-items: center; gap: 6px; padding: 8px 16px; 
-        background: transparent; border: 1px dashed var(--sys-outline); 
-        color: var(--sys-on-surface-variant); transition: all 0.2s var(--spring); 
-        border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; flex-shrink: 0;
-    }
-    .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
-
-    .results-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 24px; }
-    
-    .card {
-        background: var(--sys-surface); border: 1px solid var(--sys-outline); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md);
-        border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: center; gap: 16px; transition: all 0.2s var(--spring); cursor: pointer;
-    }
-    .card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px); background: var(--sys-surface-high); }
-    
-    .card-main-info { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
-    .card-icon { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--sys-primary-container); color: var(--sys-primary); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
-    .card-content { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
-    .card-title { font-size: 1.1rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
-    .card-subtitle { font-size: 0.85rem; color: var(--sys-on-surface-variant); display: flex; gap: 8px; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-    
-    .card-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-    
-    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type="number"] { -moz-appearance: textfield; }
-
-    .quick-add-zone {
-        display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.5); border-radius: var(--radius-full); padding: 4px 4px 4px 16px;
-        border: 1px solid var(--sys-outline); transition: border 0.2s; cursor: default; width: 220px; justify-content: space-between; flex-shrink: 0;
-    }
-    .quick-add-zone:focus-within { border-color: var(--sys-primary); }
-    .quick-input {
-        flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg);
-        text-align: left; font-family: inherit; font-size: 1.1rem; font-weight: 600; min-width: 0;
-    }
-    .quick-input::placeholder { color: var(--sys-on-surface-variant); font-weight: 400; font-size: 0.95rem;}
-    
-    .quick-unit-toggle {
-        background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-bg);
-        font-family: inherit; font-size: 0.85rem; font-weight: 600; padding: 6px 10px; border-radius: 8px;
-        display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; outline: none;
-    }
-    .quick-unit-toggle:hover { background: var(--sys-surface-high); border-color: var(--sys-primary); color: var(--sys-primary); }
-
-    .quick-btn {
-        background: var(--sys-surface-highest); color: var(--sys-on-bg); border: none; width: 36px; height: 36px; flex-shrink: 0;
-        border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
-    }
-    .quick-btn:hover { background: var(--sys-primary); color: #000; transform: scale(1.05); }
-
-    .copy-btn {
-        background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant);
-        width: 36px; height: 36px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
-    }
-    .copy-btn:hover { background: var(--sys-surface-highest); color: var(--sys-on-bg); border-color: var(--sys-on-bg);}
-
-    .tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; }
-
-    .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: 24px; flex-shrink: 0; }
-    .order-chip {
-        position: relative; overflow: hidden;
-        padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center;
-        background: var(--sys-surface-low); color: var(--sys-on-surface-variant); cursor: pointer; white-space: nowrap; font-size: 0.95rem; font-family: inherit; 
-        box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        transition: background 0.2s, box-shadow 0.2s, transform 0.2s cubic-bezier(0.2, 0, 0, 1), color 0.2s, border-color 0.2s;
-    }
-    .order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-    .order-chip:hover:not(.active) { background: var(--sys-surface-high); color: var(--sys-on-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.5); transform: translateY(-1px); }
-    .order-chip:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-    .chip-del { font-size: 16px; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--sys-outline); opacity: 0.6; transition: all 0.2s; }
-    .chip-del:hover { opacity: 1; color: var(--sys-secondary); transform: scale(1.1); }
-
-    .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; flex-shrink: 0; }
-    .dash-title { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.5px; display: flex; align-items: center; gap: 12px;}
-    .dash-total { font-size: 1.6rem; font-weight: 700; color: var(--sys-primary); }
-
-    .dash-grid { display: flex; flex-direction: column; gap: 12px; flex: 1; }
-    
-    @keyframes cardEnter {
-        from { opacity: 0; transform: translateY(10px) scale(0.98); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .dash-item { 
-        background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); 
-        padding: 20px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0;
-        animation: cardEnter 0.3s var(--spring) forwards;
-        transition: transform 0.2s var(--spring), box-shadow 0.2s var(--spring), border-color 0.2s;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .dash-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px -8px rgba(0,0,0,0.5);
-        border-color: var(--sys-outline-glow);
-    }
-
-    .dash-item-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--sys-outline); padding-bottom: 12px; }
-    .dash-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: center; }
-    .control-group { display: flex; flex-direction: column; gap: 6px; }
-    .control-label { font-size: 0.8rem; color: var(--sys-on-surface-variant); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;}
-    
-    .glass-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); font-family: inherit; font-size: 1.25rem; font-weight: 500; padding: 12px; border-radius: var(--radius-md); outline: none; transition: all 0.2s; text-align: center;}
-    .glass-input:focus { border-color: var(--sys-primary); background: rgba(0,0,0,0.5); }
-    .calc-output { font-size: 1.5rem; font-weight: 600; color: var(--sys-on-bg); display: flex; align-items: center; height: 100%; }
-
-    .trash-btn {
-        background: transparent; border: none; color: var(--sys-on-surface-variant);
-        width: 36px; height: 36px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer;
-        transition: all 0.2s var(--spring);
-    }
-    .trash-btn:hover { color: var(--sys-secondary); background: var(--sys-secondary-container); transform: scale(1.1); }
-
-    .dash-actions { 
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; 
-        padding-top: 16px; padding-bottom: 16px; margin-top: auto;
-        position: sticky; bottom: 0; background: var(--sys-bg); 
-        box-shadow: 0 -20px 40px var(--sys-bg); z-index: 20; border-top: 1px solid var(--sys-outline);
-    }
-    .btn-action { padding: 14px; border-radius: var(--radius-full); border: none; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, filter 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
-    .btn-primary { background: var(--sys-primary); color: #000; }
-    .btn-secondary { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); }
-    .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
-
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
-    .modal-overlay.active { opacity: 1; pointer-events: auto; }
-    .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 16, 20, 0.95); border-top: 1px solid var(--sys-outline); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 32px 24px; transform: translateY(100%); transition: transform 0.5s var(--spring); z-index: 101; display: flex; flex-direction: column; gap: 24px; max-height: 90vh; overflow-y: auto;}
-    .modal-overlay.active .bottom-sheet { transform: translateY(0); }
-    .handle { width: 40px; height: 4px; background: var(--sys-outline); border-radius: var(--radius-full); margin: -16px auto 16px; flex-shrink: 0;}
-    .engine-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;}
-    .engine-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md); background: var(--sys-surface-high); color: var(--sys-on-bg); text-decoration: none; font-size: 0.9rem; transition: background 0.2s; }
-    .engine-btn:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
-
-    .toast-container { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 1000; width: 90%; max-width: 400px; align-items: center;}
-    .toast { position: relative; overflow: hidden; background: var(--sys-surface); backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-primary-container); color: var(--sys-on-bg); padding: 12px 24px; border-radius: var(--radius-full); display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-float); animation: slideUp 0.4s var(--spring) forwards, fadeOut 0.4s var(--spring) 2.5s forwards; font-weight: 500; width: 100%; justify-content: center;}
-    .toast.undo-toast { animation: slideUp 0.4s var(--spring) forwards, fadeOut 0.4s var(--spring) 29.6s forwards; }
-    .toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--sys-secondary); width: 100%; transform-origin: left; animation: shrinkTimer 30s linear forwards; }
-    @keyframes shrinkTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
-    mark { background: var(--sys-primary-container); color: var(--sys-primary); border-radius: 4px; padding: 0 2px; }
-    @media (max-width: 768px) {
-        .header { padding: 16px; }
-        .main-container { padding: 0 16px; }
-        .omnibar { flex-direction: column; border-radius: var(--radius-lg); padding: 12px; gap: 8px;}
-        .omni-tabs { width: 100%; justify-content: space-between; }
-        .omni-tab { flex: 1; justify-content: center; }
-        .omni-divider { width: 100%; height: 1px; }
-        .omni-input-area { width: 100%; padding-right: 0; }
-        .card { flex-direction: column; align-items: stretch; gap: 12px;}
-        .card-actions { width: 100%; justify-content: space-between; }
-        .quick-add-zone { flex: 1; max-width: none; }
-        .dash-controls { grid-template-columns: 1fr; gap: 12px;}
-        .glass-input { text-align: left; }
-        .dash-actions { position: relative; box-shadow: none; border-top: none; padding-bottom: 24px; }
-    }
+html { height: 100%; }
+body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color: var(--sys-on-bg); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sys-surface-highest); border-radius: var(--radius-full); border: 2px solid var(--sys-bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--sys-primary-container); }
+* { scrollbar-width: thin; scrollbar-color: var(--sys-surface-highest) transparent; }
+:focus { outline: none; }
+:focus-visible { box-shadow: var(--focus-ring); }
+.card:focus-visible, .order-chip:focus-visible { box-shadow: var(--focus-ring); }
+.ambient-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: radial-gradient(circle at 15% 20%, rgba(40, 55, 100, 0.4) 0%, transparent 40%), radial-gradient(circle at 85% 80%, rgba(80, 40, 80, 0.3) 0%, transparent 40%); filter: var(--blur-lg); animation: breathe 15s infinite alternate ease-in-out; }
+@keyframes breathe { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
+.header { padding: var(--space-5); display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; z-index: 10; flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: var(--space-3); }
+.brand .material-symbols-rounded { color: var(--sys-primary); font-size: 32px; }
+.brand-sub { font-size: 0.7rem; font-weight: 500; color: var(--sys-on-surface-variant); letter-spacing: 0.4px; margin-top: 2px; }
+.dock { background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); padding: 4px; border-radius: var(--radius-full); border: 1px solid var(--sys-outline); display: flex; align-items: center; gap: 4px; box-shadow: var(--shadow-float); }
+.dock-divider { width: 1px; height: 24px; background: var(--sys-outline); margin: 0 4px; }
+.icon-btn { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); width: 40px; height: 40px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s var(--spring); }
+.icon-btn:hover { background: var(--sys-surface-highest); color: var(--sys-primary); transform: scale(1.05); }
+.dock-btn { background: transparent; border: none; }
+.dock-btn:hover { background: var(--sys-surface-highest); }
+.dropdown-menu { position: absolute; top: 50px; right: 0; background: rgba(15, 16, 20, 0.97); backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-md); padding: 8px; display: flex; flex-direction: column; gap: 4px; min-width: 170px; box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all 0.2s var(--spring); z-index: 100; }
+.dropdown-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.dropdown-item { background: transparent; border: none; color: var(--sys-on-bg); font-family: inherit; font-size: 0.95rem; padding: 10px 16px; border-radius: var(--radius-sm); text-align: left; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 12px; width: 100%; }
+.dropdown-item:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
+.dropdown-item.active { background: var(--sys-primary-container); color: var(--sys-primary); font-weight: 600; }
+.main-container { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 var(--space-5); z-index: 10; min-height: 0; }
+.omnibar { width: 100%; background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border: 1px solid var(--sys-outline); border-radius: var(--radius-full); padding: 8px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: var(--space-4); flex-shrink: 0; }
+.omnibar:focus-within { border-color: var(--sys-outline-glow); box-shadow: var(--shadow-float), var(--shadow-glow); transform: translateY(-2px); background: var(--sys-surface-high); }
+.omni-tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: var(--radius-full); padding: 4px; gap: 4px; align-items: center; flex-shrink: 0; }
+.omni-tab { padding: 8px 16px; border-radius: var(--radius-full); border: none; background: transparent; color: var(--sys-on-surface-variant); font-family: inherit; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s var(--spring); height: var(--row-h); }
+.omni-tab.active { background: var(--sys-surface-highest); color: var(--sys-on-bg); }
+.omni-tab:hover:not(.active) { color: var(--sys-on-bg); }
+.omni-divider { width: 1px; height: 24px; background: var(--sys-outline); }
+.omni-input-area { flex: 1; display: flex; align-items: center; gap: 8px; padding-right: 8px; height: var(--row-h); min-width: 0; }
+.omni-input-area .material-symbols-rounded#omniIcon { flex-shrink: 0; }
+.omni-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.1rem; min-width: 0; }
+.omni-input::placeholder { color: var(--sys-on-surface-variant); }
+.omni-side-btn { color: var(--sys-on-surface-variant); cursor: pointer; width: 30px; height: 30px; border-radius: var(--radius-full); border: none; background: transparent; display: grid; place-items: center; transition: all 0.2s var(--spring); flex-shrink: 0; }
+.omni-side-btn:hover { color: var(--sys-primary); background: var(--sys-surface-highest); }
+.omni-side-btn.cmd-active { color: var(--sys-primary); background: var(--sys-primary-container); }
+.badge { background: var(--sys-primary); color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); transition: transform 0.2s var(--spring); }
+.badge.pop { transform: scale(1.2); }
+.view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; padding-left: 8px; padding-right: 16px; min-height: 0; position: relative; overscroll-behavior: contain; }
+.view-section.active { display: flex; }
+.hint-row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font-size: 0.82rem; color: var(--sys-on-surface-variant); padding: var(--space-1) var(--space-1) var(--space-3); flex-shrink: 0; }
+.hint-row kbd { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 6px; padding: 2px 7px; font-family: inherit; font-size: 0.78rem; color: var(--sys-on-bg); }
+.hint-cmd { color: var(--sys-primary); cursor: pointer; background: none; border: none; font-family: inherit; font-size: 0.82rem; padding: 0; text-decoration: underline; text-underline-offset: 2px; }
+.filters { display: flex; gap: 12px; margin-top: 0; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; align-items: center; }
+.filter-wrapper { position: relative; display: flex; align-items: center; flex-shrink: 0; }
+.chip { background: var(--sys-surface); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); padding: 8px 32px 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; outline: none; transition: all 0.2s; white-space: nowrap; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='%23a0a0ab' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
+.chip:hover { background-color: var(--sys-surface-high); }
+.chip.active-filter { background-image: none; border-color: var(--sys-primary); color: var(--sys-primary); background-color: var(--sys-primary-container); }
+.chip option { background: #18181c; color: var(--sys-on-bg); }
+.filter-x { position: absolute; right: 4px; width: 24px; height: 24px; border-radius: 50%; background: transparent; border: none; color: var(--sys-primary); display: none; place-items: center; cursor: pointer; transition: all 0.2s; }
+.filter-x:hover { background: rgba(0,0,0,0.2); transform: scale(1.1); }
+.filter-x .material-symbols-rounded { font-size: 16px; }
+.chip-clear { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px dashed var(--sys-outline); color: var(--sys-on-surface-variant); transition: all 0.2s var(--spring); border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
+.chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
+.results-meta { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-1) 0; flex-shrink: 0; }
+.results-list { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-5); }
+.card { background: var(--sys-surface); border: 1px solid var(--sys-outline); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: all 0.2s var(--spring); cursor: pointer; box-shadow: var(--shadow-card); }
+.card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px); background: var(--sys-surface-high); }
+.card-main-info { display: flex; align-items: center; gap: var(--space-4); flex: 1; min-width: 0; }
+.card-icon { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--sys-primary-container); color: var(--sys-primary); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
+.card-icon.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
+.card-content { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+.card-title { font-size: 1.05rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; }
+.card-subtitle { font-size: 0.85rem; color: var(--sys-on-surface-variant); display: flex; gap: 8px; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.price-tag { color: var(--sys-primary); font-weight: 500; }
+.price-tag.dynamic { color: var(--sys-secondary); }
+.card-actions { display: flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+.copy-btn { background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant); width: var(--row-h); height: var(--row-h); border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+.copy-btn:hover { background: var(--sys-surface-highest); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
+.action-pill { display: flex; align-items: center; height: var(--row-h); background: rgba(0,0,0,0.5); border-radius: var(--radius-full); border: 1px solid var(--sys-outline); padding: 0 4px 0 14px; gap: 8px; transition: border-color 0.2s; flex-shrink: 0; }
+.action-pill:focus-within { border-color: var(--sys-primary); }
+.action-pill.has-sp { padding-left: 12px; }
+.pill-input { background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.05rem; font-weight: 600; min-width: 0; width: 56px; }
+.pill-input::placeholder { color: var(--sys-on-surface-variant); font-weight: 400; font-size: 0.9rem; }
+.pill-input.sp-input { color: var(--sys-secondary); width: 72px; }
+.pill-suffix { color: var(--sys-on-surface-variant); font-size: 0.72rem; font-weight: 500; flex-shrink: 0; }
+.pill-sep { width: 1px; align-self: stretch; margin: 10px 0; background: var(--sys-outline); flex-shrink: 0; }
+.pill-toggle { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-bg); font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 6px 10px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
+.pill-toggle:hover { background: var(--sys-surface-high); border-color: var(--sys-primary); color: var(--sys-primary); }
+.pill-add { background: var(--sys-surface-highest); color: var(--sys-on-bg); border: none; width: 36px; height: 36px; flex-shrink: 0; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; }
+.pill-add:hover { background: var(--sys-primary); color: #000; transform: scale(1.05); }
+.tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; flex-shrink: 0; }
+.tag.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
+.load-sentinel { height: 1px; width: 100%; flex-shrink: 0; }
+.saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: var(--space-5); flex-shrink: 0; }
+.order-chip { position: relative; overflow: hidden; padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center; background: var(--sys-surface-low); color: var(--sys-on-surface-variant); cursor: pointer; white-space: nowrap; font-size: 0.95rem; font-family: inherit; box-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: background 0.2s, box-shadow 0.2s, transform 0.2s var(--spring), color 0.2s, border-color 0.2s; }
+.order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+.order-chip:hover:not(.active) { background: var(--sys-surface-high); color: var(--sys-on-bg); box-shadow: 0 4px 10px rgba(0,0,0,0.5); transform: translateY(-1px); }
+.order-chip:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+.chip-del { font-size: 16px; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--sys-outline); opacity: 0.6; transition: all 0.2s; }
+.chip-del:hover { opacity: 1; color: var(--sys-secondary); transform: scale(1.1); }
+.dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-5); flex-wrap: wrap; gap: var(--space-4); flex-shrink: 0; }
+.dash-title { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.5px; display: flex; align-items: center; gap: var(--space-3); }
+.dash-total { font-size: 1.5rem; font-weight: 700; color: var(--sys-primary); }
+.dash-grid { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; }
+@keyframes cardEnter { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.dash-item { background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); flex-shrink: 0; animation: cardEnter 0.3s var(--spring) forwards; transition: transform 0.2s var(--spring), box-shadow 0.2s var(--spring), border-color 0.2s; box-shadow: var(--shadow-card); }
+.dash-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -8px rgba(0,0,0,0.5); border-color: var(--sys-outline-glow); }
+.dash-item-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--sys-outline); padding-bottom: var(--space-3); }
+.dash-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-4); align-items: end; }
+.control-group { display: flex; flex-direction: column; gap: 6px; }
+.control-label { font-size: 0.78rem; color: var(--sys-on-surface-variant); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.glass-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); font-family: inherit; font-size: 1.2rem; font-weight: 500; padding: 12px; border-radius: var(--radius-md); outline: none; transition: all 0.2s; text-align: center; }
+.glass-input:focus { border-color: var(--sys-primary); background: rgba(0,0,0,0.5); }
+.calc-output { font-size: 1.4rem; font-weight: 600; color: var(--sys-on-bg); display: flex; align-items: center; height: 100%; padding-bottom: 6px; }
+.trash-btn { background: transparent; border: none; color: var(--sys-on-surface-variant); width: 36px; height: 36px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s var(--spring); }
+.trash-btn:hover { color: var(--sys-secondary); background: var(--sys-secondary-container); transform: scale(1.1); }
+.dash-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-3); padding-top: var(--space-4); padding-bottom: var(--space-4); margin-top: auto; position: sticky; bottom: 0; background: var(--sys-bg); box-shadow: 0 -20px 40px var(--sys-bg); z-index: 20; border-top: 1px solid var(--sys-outline); }
+.btn-action { padding: 14px; border-radius: var(--radius-full); border: none; font-family: inherit; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, filter 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary { background: var(--sys-primary); color: #000; }
+.btn-secondary { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); }
+.btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.4s; }
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
+.bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 16, 20, 0.97); border-top: 1px solid var(--sys-outline); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: 32px 24px; transform: translateY(100%); transition: transform 0.5s var(--spring); z-index: 101; display: flex; flex-direction: column; gap: var(--space-5); max-height: 90vh; overflow-y: auto; }
+.modal-overlay.active .bottom-sheet { transform: translateY(0); }
+.handle { width: 40px; height: 4px; background: var(--sys-outline); border-radius: var(--radius-full); margin: -16px auto 16px; flex-shrink: 0; }
+.engine-links { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-2); }
+.engine-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md); background: var(--sys-surface-high); color: var(--sys-on-bg); text-decoration: none; font-size: 0.9rem; transition: background 0.2s; }
+.engine-btn:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
+.toast-container { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 1000; width: 90%; max-width: 400px; align-items: center; }
+.toast { position: relative; overflow: hidden; background: var(--sys-surface); backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-primary-container); color: var(--sys-on-bg); padding: 12px 24px; border-radius: var(--radius-full); display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-float); animation: slideUp 0.4s var(--spring) forwards, fadeOut 0.4s var(--spring) 2.5s forwards; font-weight: 500; width: 100%; justify-content: center; }
+.toast.undo-toast { animation: slideUp 0.4s var(--spring) forwards, fadeOut 0.4s var(--spring) 29.6s forwards; }
+.toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--sys-secondary); width: 100%; transform-origin: left; animation: shrinkTimer 30s linear forwards; }
+@keyframes shrinkTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+mark { background: var(--sys-primary-container); color: var(--sys-primary); border-radius: 4px; padding: 0 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+@media (max-width: 768px) {
+.header { padding: 16px; }
+.main-container { padding: 0 16px; }
+.omnibar { flex-direction: column; border-radius: var(--radius-lg); padding: 12px; gap: 8px; }
+.omni-tabs { width: 100%; justify-content: space-between; }
+.omni-tab { flex: 1; justify-content: center; }
+.omni-divider { width: 100%; height: 1px; }
+.omni-input-area { width: 100%; }
+.card { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+.card-actions { width: 100%; justify-content: space-between; }
+.action-pill { flex: 1; }
+.dash-controls { grid-template-columns: 1fr; gap: var(--space-3); }
+.glass-input { text-align: left; }
+.dash-actions { position: relative; box-shadow: none; border-top: none; padding-bottom: 24px; }
+.hint-row { display: none; }
+}
 </style>
 </head>
 <body>
 <div class="ambient-layer"></div>
-
 <header class="header">
-    <div style="display: flex; align-items: center; gap: 12px;">
-        <span class="material-symbols-rounded" style="color: var(--sys-primary); font-size: 32px;">stream</span>
-        LX Search 3.1
-    </div>
-    <div class="dock">
-        <button class="icon-btn dock-btn" id="modeToggleBtn" onclick="toggleGlobalMode()" title="Toggle Default Add Mode">
-            <span class="material-symbols-rounded">straighten</span>
-        </button>
-        <div class="dock-divider"></div>
-        <button class="icon-btn dock-btn" onclick="document.getElementById('fileUpload').click()" title="Import Order">
-            <span class="material-symbols-rounded">upload</span>
-        </button>
-        <div style="position: relative;">
-            <button class="icon-btn dock-btn" id="engineToggleBtn" onclick="toggleEngineMenu()" title="Search Engine">
-                <span class="material-symbols-rounded">travel_explore</span>
-            </button>
-            <div class="dropdown-menu" id="engineMenu">
-                <button class="dropdown-item" onclick="setEngine('brave')" id="eng-brave"><span class="material-symbols-rounded">explore</span> Brave</button>
-                <button class="dropdown-item" onclick="setEngine('ddg')" id="eng-ddg"><span class="material-symbols-rounded">cruelty_free</span> DuckDuckGo</button>
-                <button class="dropdown-item" onclick="setEngine('startpage')" id="eng-startpage"><span class="material-symbols-rounded">lock</span> Startpage</button>
-                <button class="dropdown-item" onclick="setEngine('google')" id="eng-google"><span class="material-symbols-rounded">travel_explore</span> Google</button>
-                <button class="dropdown-item" onclick="setEngine('bing')" id="eng-bing"><span class="material-symbols-rounded">search</span> Bing</button>
-            </div>
-        </div>
-        <input type="file" id="fileUpload" accept=".json" style="display:none">
-    </div>
+<div class="brand">
+<span class="material-symbols-rounded">stream</span>
+<div>
+LX Search
+<div class="brand-sub">v4.0</div>
+</div>
+</div>
+<div class="dock">
+<button class="icon-btn dock-btn" id="modeToggleBtn" onclick="toggleGlobalMode()" title="Toggle default add mode" aria-label="Toggle default add mode">
+<span class="material-symbols-rounded">straighten</span>
+</button>
+<div class="dock-divider"></div>
+<button class="icon-btn dock-btn" onclick="document.getElementById('fileUpload').click()" title="Import order" aria-label="Import order">
+<span class="material-symbols-rounded">upload</span>
+</button>
+<div style="position: relative;">
+<button class="icon-btn dock-btn" id="engineToggleBtn" onclick="toggleEngineMenu()" title="Search engine" aria-label="Search engine" aria-haspopup="true" aria-expanded="false">
+<span class="material-symbols-rounded">travel_explore</span>
+</button>
+<div class="dropdown-menu" id="engineMenu" role="menu">
+<button class="dropdown-item" onclick="setEngine('brave')" id="eng-brave" role="menuitem"><span class="material-symbols-rounded">explore</span> Brave</button>
+<button class="dropdown-item" onclick="setEngine('ddg')" id="eng-ddg" role="menuitem"><span class="material-symbols-rounded">cruelty_free</span> DuckDuckGo</button>
+<button class="dropdown-item" onclick="setEngine('startpage')" id="eng-startpage" role="menuitem"><span class="material-symbols-rounded">lock</span> Startpage</button>
+<button class="dropdown-item" onclick="setEngine('google')" id="eng-google" role="menuitem"><span class="material-symbols-rounded">travel_explore</span> Google</button>
+<button class="dropdown-item" onclick="setEngine('bing')" id="eng-bing" role="menuitem"><span class="material-symbols-rounded">search</span> Bing</button>
+</div>
+</div>
+<input type="file" id="fileUpload" accept=".json" style="display:none">
+</div>
 </header>
-
 <main class="main-container">
-    <div class="omnibar">
-        <div class="omni-tabs">
-            <button class="omni-tab active" id="tabSearch" onclick="switchView('search')">
-                <span class="material-symbols-rounded" style="font-size: 20px;">search</span> Search
-            </button>
-            <button class="omni-tab" id="tabCalc" onclick="switchView('calc')">
-                <span class="material-symbols-rounded" style="font-size: 20px;">calculate</span> Calculator
-                <span class="badge" id="cartBadge" style="display: none;">0</span>
-            </button>
-        </div>
-        <div class="omni-divider"></div>
-        <div class="omni-input-area">
-            <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
-            <input type="text" id="omniInput" class="omni-input" placeholder="Search or type / for commands..." autocomplete="off">
-            <span class="material-symbols-rounded clear-btn" id="omniClear" onclick="clearInput()">close</span>
-        </div>
-    </div>
-
-    <div class="view-section active" id="viewSearch">
-        <div class="filters">
-            <div class="filter-wrapper">
-                <select id="fUnit" class="chip"><option value="all">Any Unit</option></select>
-                <button class="filter-x" id="fUnitX" onclick="clearSingleFilter('fUnit')" title="Clear Unit">
-                    <span class="material-symbols-rounded">close</span>
-                </button>
-            </div>
-            <div class="filter-wrapper">
-                <select id="fSource" class="chip"><option value="all">Any Source</option></select>
-                <button class="filter-x" id="fSourceX" onclick="clearSingleFilter('fSource')" title="Clear Source">
-                    <span class="material-symbols-rounded">close</span>
-                </button>
-            </div>
-            <button id="fClearAll" class="chip-clear" onclick="clearFilters()" title="Clear all filters">
-                <span class="material-symbols-rounded" style="font-size: 18px;">clear_all</span> Clear All
-            </button>
-        </div>
-        <div class="results-list" id="resultsList"></div>
-    </div>
-
-    <div class="view-section" id="viewCalc">
-        <div class="saved-orders-bar" id="ordersBar"></div>
-
-        <div class="dash-header">
-            <h2 class="dash-title">
-                <span id="dashTitleText">Current Calculation</span>
-                <span class="tag" style="font-size:0.8rem; background: var(--sys-surface-highest); color: var(--sys-on-surface-variant)" id="dashStatus">Unsaved</span>
-            </h2>
-            <div class="dash-total" id="dashTotal">0.00 EGP</div>
-        </div>
-        <div class="dash-grid" id="dashGrid"></div>
-        <div class="dash-actions" id="dashActions" style="display: none;">
-            <button class="btn-action btn-secondary" onclick="clearDashboard()"><span class="material-symbols-rounded">delete_sweep</span> Clear</button>
-            <button class="btn-action btn-secondary" onclick="exportDashboardText()"><span class="material-symbols-rounded">content_copy</span> Copy</button>
-            <button class="btn-action btn-secondary" onclick="downloadDashboard()"><span class="material-symbols-rounded">download</span> DL</button>
-            <button class="btn-action btn-primary" id="btnSaveOrder" onclick="saveAsOrder()"><span class="material-symbols-rounded">save</span> Save Order</button>
-        </div>
-    </div>
-</main>
-
-<div class="modal-overlay" id="modalOverlay">
-    <div class="bottom-sheet">
-        <div class="handle"></div>
-        <div>
-            <h2 id="sheetTitle" style="font-size: 2rem; margin-bottom: 8px;"></h2>
-            <div class="card-subtitle" id="sheetMeta"></div>
-            <div id="sheetPriceData" style="margin-top: 20px; margin-bottom: 12px;"></div>
-            <div class="engine-links" id="sheetLinks"></div>
-        </div>
-        <div id="sheetAddCalc"></div>
-    </div>
+<div class="omnibar">
+<div class="omni-tabs">
+<button class="omni-tab active" id="tabSearch" onclick="switchView('search')">
+<span class="material-symbols-rounded" style="font-size: 20px;">search</span> Search
+</button>
+<button class="omni-tab" id="tabCalc" onclick="switchView('calc')">
+<span class="material-symbols-rounded" style="font-size: 20px;">calculate</span> Calculator
+<span class="badge" id="cartBadge" style="display: none;">0</span>
+</button>
+</div>
+<div class="omni-divider"></div>
+<div class="omni-input-area">
+<span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
+<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press / for commands..." autocomplete="off" aria-label="Search medicines or type a command">
+<button class="omni-side-btn" id="cmdToggleBtn" onclick="toggleCommandMode()" title="Command palette" aria-label="Toggle command palette">
+<span class="material-symbols-rounded" style="font-size: 20px;">terminal</span>
+</button>
+<button class="omni-side-btn" id="omniClear" onclick="clearInput()" title="Clear search" aria-label="Clear search" style="display:none;">
+<span class="material-symbols-rounded" style="font-size: 20px;">close</span>
+</button>
+</div>
+</div>
+<div class="view-section active" id="viewSearch">
+<div class="hint-row" id="hintRow">
+<span class="material-symbols-rounded" style="font-size:16px;">keyboard</span>
+<span><kbd>Tab</kbd> move between items</span>
+<span><kbd>Enter</kbd> open</span>
+<span><kbd>Ctrl</kbd>+<kbd>K</kbd> focus search</span>
+<span>·</span>
+<button class="hint-cmd" onclick="toggleCommandMode()">/ commands</button>
+</div>
+<div class="filters">
+<div class="filter-wrapper">
+<select id="fUnit" class="chip" aria-label="Filter by unit"><option value="all">Any Unit</option></select>
+<button class="filter-x" id="fUnitX" onclick="clearSingleFilter('fUnit')" title="Clear unit filter" aria-label="Clear unit filter">
+<span class="material-symbols-rounded">close</span>
+</button>
+</div>
+<div class="filter-wrapper">
+<select id="fSource" class="chip" aria-label="Filter by source"><option value="all">Any Source</option></select>
+<button class="filter-x" id="fSourceX" onclick="clearSingleFilter('fSource')" title="Clear source filter" aria-label="Clear source filter">
+<span class="material-symbols-rounded">close</span>
+</button>
+</div>
+<button id="fClearAll" class="chip-clear" onclick="clearFilters()" title="Clear all filters">
+<span class="material-symbols-rounded" style="font-size: 18px;">clear_all</span> Clear All
+</button>
+</div>
+<div class="results-meta" id="resultsMeta" aria-live="polite"></div>
+<div class="results-list" id="resultsList" role="listbox" aria-label="Search results"></div>
 </div>
 
-<div class="toast-container" id="toasts"></div>
+<div class="view-section" id="viewCalc">
+<div class="saved-orders-bar" id="ordersBar"></div>
 
+<div class="dash-header">
+<h2 class="dash-title">
+<span id="dashTitleText">Current Calculation</span>
+<span class="tag" style="font-size:0.8rem; background: var(--sys-surface-highest); color: var(--sys-on-surface-variant)" id="dashStatus">Unsaved</span>
+</h2>
+<div class="dash-total" id="dashTotal">0.00 EGP</div>
+</div>
+<div class="dash-grid" id="dashGrid"></div>
+<div class="dash-actions" id="dashActions" style="display: none;">
+<button class="btn-action btn-secondary" onclick="clearDashboard()"><span class="material-symbols-rounded">delete_sweep</span> Clear</button>
+<button class="btn-action btn-secondary" onclick="exportDashboardText()"><span class="material-symbols-rounded">content_copy</span> Copy</button>
+<button class="btn-action btn-secondary" onclick="downloadDashboard()"><span class="material-symbols-rounded">download</span> DL</button>
+<button class="btn-action btn-primary" id="btnSaveOrder" onclick="saveAsOrder()"><span class="material-symbols-rounded">save</span> Save Order</button>
+</div>
+</div>
+</main>
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="bottom-sheet">
+<div class="handle"></div>
+<div>
+<h2 id="sheetTitle" style="font-size: 2rem; margin-bottom: 8px;"></h2>
+<div class="card-subtitle" id="sheetMeta"></div>
+<div id="sheetPriceData" style="margin-top: 20px; margin-bottom: 12px;"></div>
+<div class="engine-links" id="sheetLinks"></div>
+</div>
+<div id="sheetAddCalc"></div>
+</div>
+</div>
+<div class="toast-container" id="toasts" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
-    const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-    const rawData =[ {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"}, {name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"}, {name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"}, {name: "Amaryl M", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Apidra قوي عاملة", unit: "Penfill", price: 44, company: "شراء موحد"}, {name: "Apidra طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"}, {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"}, {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"}, {name: "Atozet 20 / 10", unit: "10 Tab", price: 110, company: "شراء موحد"}, {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"}, {name: "Campto", unit: "Vial", price: 60, company: "شراء موحد"}, {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"}, {name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"}, {name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"}, {name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"}, {name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"}, {name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"}, {name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"}, {name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"}, {name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"}, {name: "Crestor 10", unit: "28 Tab", price: 118, company: "شراء موحد"}, {name: "Crestor 20", unit: "14 Tab", price: 96, company: "شراء موحد"}, {name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"}, {name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"}, {name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"}, {name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"}, {name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"}, {name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"}, {name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"}, {name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"}, {name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"}, {name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"}, {name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"}, {name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"}, {name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"}, {name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"}, {name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"}, {name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"}, {name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"}, {name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"}, {name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"}, {name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"}, {name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"}, {name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"}, {name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"}, {name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"}, {name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"}, {name: "Humalog 100 pen قوي عاملة", unit: "Pen", price: 52.87, company: "شراء موحد"}, {name: "Humalog 100 penfill قوي عاملة", unit: "Penfill", price: 48, company: "شراء موحد"}, {name: "Humalog Mix 25 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 25 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Humalog Mix 50 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Humalog Mix 50 طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"}, {name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"}, {name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"}, {name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"}, {name: "Jaunamet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"}, {name: "Jaunamet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"}, {name: "Jaunamet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"}, {name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"}, {name: "Lantus", unit: "Penfill", price: 20, company: "ايرادات هيئة"}, {name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"}, {name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"}, {name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"}, {name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"}, {name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"}, {name: "Lipiror 80", unit: "7 Tab", price: 51, company: "شراء موحد"}, {name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"}, {name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"}, {name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"}, {name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"}, {name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"}, {name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"}, {name: "Nexium 20", unit: "28 Tab", price: 140, company: "شراء موحد"}, {name: "Norditropine", unit: "Pen", price: 30, company: "شراء موحد"}, {name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"}, {name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"}, {name: "Novomix 30 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 30 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novomix 50 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"}, {name: "Novomix 50 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"}, {name: "Novorapid قوي عاملة", unit: "Penfill", price: 39.5, company: "شراء موحد"}, {name: "Novorapid طلاب", unit: "Penfill", price: 20, company: "شراء موحد"}, {name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"}, {name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"}, {name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"}, {name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"}, {name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"}, {name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"}, {name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"}, {name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"}, {name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"}, {name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"}, {name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"}, {name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"}, {name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"}, {name: "Taxoter 20", unit: "Vial", price: 240, company: "شراء موحد"}, {name: "Taxoter 80", unit: "Vial", price: 860, company: "شراء موحد"}, {name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"}, {name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"}, {name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"}, {name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"}, {name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"}, {name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"}, {name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"}, {name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"}, {name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"}, {name: "Trilepital 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"}, {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"}, {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"}, {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"}, {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"}, {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"}, {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"}, {name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"}, {name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"}, {name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"}, {name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"}, {name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"}, {name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"}, {name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"}, {name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"} ];
+const rawData = [
+{name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"},
+{name: "Amaryl 2", unit: "30 Tab", price: 27, company: "شراء موحد"},
+{name: "Amaryl 3", unit: "30 Tab", price: 30, company: "شراء موحد"},
+{name: "Amaryl 4", unit: "30 Tab", price: 37.5, company: "شراء موحد"},
+{name: "Amaryl M 2/500", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
+{name: "Anoro Ellipta", unit: "Inhaler", price: 0, dp: true, company: "شراء موحد"},
+{name: "Apidra قوي عاملة", unit: "Cartridge", price: 44, company: "شراء موحد"},
+{name: "Apidra طلاب", unit: "Cartridge", price: 20, company: "شراء موحد"},
+{name: "Approval 150", unit: "14 Tab", price: 47.5, company: "شراء موحد"},
+{name: "Approval 300", unit: "14 Tab", price: 42, company: "شراء موحد"},
+{name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"},
+{name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"},
+{name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"},
+{name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"},
+{name: "Atozet 10 / 20", unit: "10 Tab", price: 110, company: "شراء موحد"},
+{name: "Brezetri", unit: "Inhaler", price: 0, dp: true, company: "شراء موحد"},
+{name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
+{name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
+{name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"},
+{name: "Cardura 4", unit: "14 Tab", price: 31, company: "شراء موحد"},
+{name: "Carnvita forte", unit: "30 Tab", price: 20, company: "شراء موحد"},
+{name: "Celebrex 200", unit: "10 Tab", price: 51.5, company: "شراء موحد"},
+{name: "Co Aprovel 150 / 12.5", unit: "14 Tab", price: 47.5, company: "شراء موحد"},
+{name: "Co Aprovel 300 / 12.5", unit: "14 Tab", price: 45, company: "شراء موحد"},
+{name: "Concor 2.5", unit: "30 Tab", price: 10, company: "شراء موحد"},
+{name: "Concor 5", unit: "30 Tab", price: 26, company: "شراء موحد"},
+{name: "Concor 5 plus", unit: "30 Tab", price: 22.5, company: "شراء موحد"},
+{name: "Cosopt", unit: "Bottle", price: 52, company: "شراء موحد"},
+{name: "Coveram 10 /10", unit: "15 Tab", price: 65, company: "شراء موحد"},
+{name: "Coveram 5 / 5", unit: "15 Tab", price: 48, company: "شراء موحد"},
+{name: "Coversyl 5", unit: "30 Tab", price: 53, company: "شراء موحد"},
+{name: "Coversyl 5 plus", unit: "15 Tab", price: 30.5, company: "شراء موحد"},
+{name: "Coversyl plus 10 / 2.25", unit: "15 Tab", price: 20, company: "شراء موحد"},
+{name: "Cozaar 50", unit: "7 Tab", price: 22.25, company: "شراء موحد"},
+{name: "Crestor 10", unit: "7 Tab", price: 29.5, company: "شراء موحد"},
+{name: "Crestor 20", unit: "7 Tab", price: 48, company: "شراء موحد"},
+{name: "Crestor 5", unit: "7 Tab", price: 18, company: "شراء موحد"},
+{name: "Daflon 500", unit: "30 Tab", price: 30, company: "شراء موحد"},
+{name: "Daivobet", unit: "Tube", price: 20, company: "شراء موحد"},
+{name: "Depakine Ch 500", unit: "30 Tab", price: 45, company: "شراء موحد"},
+{name: "Depakine Syrup", unit: "Bottle", price: 16, company: "شراء موحد"},
+{name: "Diamicron 30 Mr", unit: "30 Tab", price: 16, company: "شراء موحد"},
+{name: "Diamicron 60 Mr", unit: "30 Tab", price: 20, company: "شراء موحد"},
+{name: "Diamicron 80", unit: "20 Tab", price: 9, company: "شراء موحد"},
+{name: "Dorofen", unit: "30 Cap", price: 10, company: "شراء موحد"},
+{name: "Dostinex", unit: "2 Tab", price: 54.25, company: "شراء موحد"},
+{name: "Eliquis 2.5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"},
+{name: "Eliquis 5", unit: "20 Tab", price: 50, company: "ايرادات هيئة"},
+{name: "Eloxatin 100", unit: "Vial", price: 800, company: "شراء موحد"},
+{name: "Eloxatin 50", unit: "Vial", price: 500, company: "شراء موحد"},
+{name: "Enerzair", unit: "30 Cap", price: 0, dp: true, company: "شراء موحد"},
+{name: "Entresto 100", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
+{name: "Entresto 200", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
+{name: "Entresto 50", unit: "28 Tab", price: 50, company: "ايرادات هيئة"},
+{name: "Etodolac 600", unit: "10 Tab", price: 15.5, company: "شراء موحد"},
+{name: "Exforge Hct 160 / 10 / 25", unit: "14 Tab", price: 70.5, company: "شراء موحد"},
+{name: "Exforge Hct 160 / 5 /12.5", unit: "14 Tab", price: 73.5, company: "شراء موحد"},
+{name: "Femara 2.5", unit: "30 Tab", price: 52.59, company: "شراء موحد"},
+{name: "Flagyl 250", unit: "20 Tab", price: 5.5, company: "شراء موحد"},
+{name: "Foradil", unit: "30 Cap", price: 75, company: "شراء موحد"},
+{name: "Forxiga 10", unit: "28 Tab", price: 222, company: "شراء موحد"},
+{name: "Forxiga 5", unit: "28 Tab", price: 234, company: "شراء موحد"},
+{name: "Galvus 50", unit: "28 Tab", price: 65, company: "شراء موحد"},
+{name: "Galvus Met 50 / 1000", unit: "30 Tab", price: 86.5, company: "شراء موحد"},
+{name: "Galvus Met 50 / 850", unit: "30 Tab", price: 79.5, company: "شراء موحد"},
+{name: "Genuphil", unit: "50 Tab", price: 20, company: "شراء موحد"},
+{name: "Glucophage 1000", unit: "30 Tab", price: 12.5, company: "شراء موحد"},
+{name: "Glucophage 500", unit: "50 Tab", price: 14.5, company: "شراء موحد"},
+{name: "Glucophage Xr 1000", unit: "30 Tab", price: 42.5, company: "شراء موحد"},
+{name: "Glucovance 5 / 1000", unit: "30 Tab", price: 20, company: "شراء موحد"},
+{name: "Glucovance 5 / 500", unit: "30 Tab", price: 26.5, company: "شراء موحد"},
+{name: "Humalog 100 pen قوي عاملة", unit: "Pen", price: 52.87, company: "شراء موحد"},
+{name: "Humalog 100 penfill قوي عاملة", unit: "Penfill", price: 48, company: "شراء موحد"},
+{name: "Humalog Mix 25 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
+{name: "Humalog Mix 25 طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
+{name: "Humalog Mix 50 قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
+{name: "Humalog Mix 50 طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
+{name: "Hyzaar 50", unit: "7 Tab", price: 22, company: "شراء موحد"},
+{name: "Isoptin 80", unit: "30 Tab", price: 6.5, company: "شراء موحد"},
+{name: "Janumet 50 / 1000", unit: "56 Tab", price: 195, company: "شراء موحد"},
+{name: "Janumet 50 / 500", unit: "56 Tab", price: 204, company: "شراء موحد"},
+{name: "Janumet 50 / 850", unit: "56 Tab", price: 175, company: "شراء موحد"},
+{name: "Januvia 100", unit: "28 Tab", price: 193, company: "شراء موحد"},
+{name: "Januvia 50", unit: "28 Tab", price: 165, company: "شراء موحد"},
+{name: "Lasilactone 50 / 20", unit: "30 Tab", price: 8, company: "شراء موحد"},
+{name: "Lasix 40", unit: "24 Tab", price: 9, company: "شراء موحد"},
+{name: "Lipanthyl 300", unit: "30 Tab", price: 26, company: "شراء موحد"},
+{name: "Lipitor 10", unit: "7 Tab", price: 28.5, company: "شراء موحد"},
+{name: "Lipitor 20", unit: "7 Tab", price: 32, company: "شراء موحد"},
+{name: "Lipitor 40", unit: "7 Tab", price: 46.5, company: "شراء موحد"},
+{name: "Lipitor 80", unit: "7 Tab", price: 51, company: "شراء موحد"},
+{name: "Lustral 50", unit: "7 Tab", price: 26.5, company: "شراء موحد"},
+{name: "Mena Q", unit: "20 Cap", price: 37, company: "شراء موحد"},
+{name: "Methyltechno", unit: "30 Film", price: 12, company: "شراء موحد"},
+{name: "Natrilix Sr", unit: "30 Tab", price: 16, company: "شراء موحد"},
+{name: "Natrixam 1.5 / 10", unit: "28 Tab", price: 43, company: "شراء موحد"},
+{name: "Natrixam 1.5 / 5", unit: "28 Tab", price: 43, company: "شراء موحد"},
+{name: "Nebicard 5", unit: "14 Tab", price: 13, company: "شراء موحد"},
+{name: "Nexium 20", unit: "7 Tab", price: 35, company: "شراء موحد"},
+{name: "Nolvadex 10", unit: "30 Tab", price: 18, company: "شراء موحد"},
+{name: "Norvasc 10", unit: "10 Tab", price: 25.5, company: "شراء موحد"},
+{name: "Norvasc 5", unit: "10 Tab", price: 23.5, company: "شراء موحد"},
+{name: "Novomix 30 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
+{name: "Novomix 30 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
+{name: "Novomix 50 Mix قوي عاملة", unit: "Pen", price: 60, company: "شراء موحد"},
+{name: "Novomix 50 Mix طلاب", unit: "Pen", price: 20, company: "شراء موحد"},
+{name: "Novorapid قوي عاملة", unit: "Penfill", price: 39.5, company: "شراء موحد"},
+{name: "Novorapid طلاب", unit: "Penfill", price: 20, company: "شراء موحد"},
+{name: "Orthoglobe", unit: "30 Tab", price: 10, company: "شراء موحد"},
+{name: "Plavix 75", unit: "28 Tab", price: 40, company: "ايرادات هيئة"},
+{name: "Plendil 5", unit: "30 Tab", price: 33, company: "شراء موحد"},
+{name: "Pletaal 100", unit: "20 Tab", price: 64, company: "شراء موحد"},
+{name: "Pletaal 50", unit: "20 Tab", price: 44.5, company: "شراء موحد"},
+{name: "Procorolan 5", unit: "28 Tab", price: 50, company: "شراء موحد"},
+{name: "Procorolan 7.5", unit: "28 Tab", price: 50, company: "شراء موحد"},
+{name: "Ryzodec", unit: "Pen", price: 100, company: "شراء موحد"},
+{name: "Singulair 10", unit: "14 Tab", price: 84.5, company: "شراء موحد"},
+{name: "Singulair 5", unit: "14 Tab", price: 77.75, company: "شراء موحد"},
+{name: "Soliqua 100 / 33", unit: "Pen", price: 162, company: "شراء موحد"},
+{name: "Soliqua 100 / 50", unit: "Pen", price: 287, company: "شراء موحد"},
+{name: "Spiriva", unit: "Inhaler", price: 0, dp: true, company: "شراء موحد"},
+{name: "Tareg 40", unit: "15 Tab", price: 49, company: "شراء موحد"},
+{name: "Tarolimus", unit: "Tube", price: 15, company: "شراء موحد"},
+{name: "Tegretol 200", unit: "30 Tab", price: 13, company: "شراء موحد"},
+{name: "Tegretol 200 Cr", unit: "20 Tab", price: 7.5, company: "شراء موحد"},
+{name: "Tegretol 400 Cr", unit: "20 Tab", price: 9, company: "شراء موحد"},
+{name: "Tenormin 100", unit: "14 Tab", price: 9.5, company: "شراء موحد"},
+{name: "Tenormin 50", unit: "14 Tab", price: 7.25, company: "شراء موحد"},
+{name: "Tentavier 160mcg", unit: "Spray", price: 27, company: "شراء موحد"},
+{name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"},
+{name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"},
+{name: "Tresiba cartridge قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"},
+{name: "Tresiba cartridge طلاب", unit: "Pen", price: 25, company: "شراء موحد"},
+{name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"},
+{name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"},
+{name: "Trileptal 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"},
+{name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"},
+{name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"},
+{name: "Tritace Comp LS 2.5 / 12.5", unit: "14 Tab", price: 18, company: "شراء موحد"},
+{name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"},
+{name: "Tritace protect 10", unit: "20 Tab", price: 29, company: "شراء موحد"},
+{name: "Trivestal ret", unit: "30 Tab", price: 27.25, company: "شراء موحد"},
+{name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"},
+{name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"},
+{name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"},
+{name: "Xarelto 20", unit: "28 Tab", price: 140, company: "ايرادات هيئة"},
+{name: "Xigduo 5 /1000", unit: "56 Tab", price: 98.5, company: "شراء موحد"},
+{name: "Zestril 10", unit: "10 Tab", price: 7.5, company: "شراء موحد"},
+{name: "Zestril 20", unit: "10 Tab", price: 8.5, company: "شراء موحد"},
+{name: "Zestril 5", unit: "10 Tab", price: 6.25, company: "شراء موحد"},
+{name: "Zocor 10", unit: "7 Tab", price: 22.75, company: "شراء موحد"},
+{name: "Zocor 20", unit: "14 Tab", price: 60.5, company: "شراء موحد"},
+{name: "Zocor 40", unit: "14 Tab", price: 57, company: "شراء موحد"}
+];
 
-    const insulins =["apidra", "humalog", "lantus", "novomix", "novorapid", "ryzodec", "toujeo", "tresiba", "soliqua"];
-    const cm = {"شراء موحد": "Unified Purchase", "ايرادات هيئة": "Authority Revenue"};
-    
-    const getIconForUnit = (unitStr) => {
-        const u = unitStr.toLowerCase();
-        if (u.includes('tab') || u.includes('cap')) return 'pill';
-        if (u.includes('pen') || u.includes('penfill')) return 'syringe';
-        if (u.includes('vial')) return 'vaccines';
-        if (u.includes('bottle')) return 'medication';
-        return 'medical_services';
-    };
+const insulins = ["apidra", "humalog", "lantus", "novomix", "novorapid", "ryzodec", "toujeo", "tresiba", "soliqua"];
+const cm = {"شراء موحد": "Unified Purchase", "ايرادات هيئة": "Authority Revenue"};
 
-    const db = rawData.map(i => {
-        let n = i.name, t = "";
-        ["قوي عاملة", "طلاب"].forEach(s => { if(n.includes(s)){ n = n.replace(s, "").trim(); t = s; } });
-        const nLower = n.toLowerCase();
-        const isInsulin = insulins.some(kw => nLower.includes(kw));
-        let bQty = 1, bType = i.unit;
-        if(isInsulin) { bQty = nLower.includes('toujeo') ? 450 : 300; bType = 'IU'; }
-        else { let match = i.unit.match(/(\d+)/); if(match) { bQty = parseInt(match[1]); bType = i.unit.replace(/\d+/g, '').trim() || 'Unit'; } }
-        const sName = cm[i.company] || i.company;
-        const searchStr = `${n} ${t} ${i.unit} ${sName}`.toLowerCase();
-        const icon = getIconForUnit(i.unit);
-        return { id: Math.random().toString(36).substr(2, 9), n, nLower, t, u: i.unit, p: i.price, s: sName, bQty, bType, isInsulin, searchStr, icon };
-    });
+const getIconForUnit = (unitStr) => {
+const u = unitStr.toLowerCase();
+if (u.includes('tab') || u.includes('cap')) return 'pill';
+if (u.includes('pen') || u.includes('cartridge')) return 'syringe';
+if (u.includes('vial')) return 'vaccines';
+if (u.includes('bottle')) return 'medication';
+if (u.includes('spray') || u.includes('inhaler')) return 'air';
+return 'medical_services';
+};
 
-    let activeView = 'search';
-    let dashboardMap = new Map();
-    let savedOrders = [];
-    let currentOrderIndex = -1;
-    let preferredEngine = 'brave';
-    let focusedCardIndex = -1;
-    
-    let lastDeletedOrder = null;
-    let lastDeletedIndex = -1;
-    let undoTimeoutId = null;
-    
-    let globalAddMode = 'unit';
+const db = rawData.map(i => {
+let n = i.name, t = "";
+["قوي عاملة", "طلاب"].forEach(s => { if(n.includes(s)){ n = n.replace(s, "").trim(); t = s; } });
+const nLower = n.toLowerCase();
+const isInsulin = insulins.some(kw => nLower.includes(kw));
+let bQty = 1, bType = i.unit;
+if(isInsulin) { bQty = nLower.includes('toujeo') ? 450 : 300; bType = 'IU'; }
+else { let match = i.unit.match(/(\d+)/); if(match) { bQty = parseInt(match[1]); bType = i.unit.replace(/\d+/g, '').trim() || 'Unit'; } }
+const sName = cm[i.company] || i.company;
+const searchStr = `${n} ${t} ${i.unit} ${sName}`.toLowerCase();
+const icon = getIconForUnit(i.unit);
+return { id: Math.random().toString(36).substr(2, 9), n, nLower, t, u: i.unit, p: i.price, s: sName, bQty, bType, isInsulin, searchStr, icon, isDynamic: !!i.dp };
+});
 
-    const els = {
-        in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'), clear: document.getElementById('omniClear'),
-        vSearch: document.getElementById('viewSearch'), vCalc: document.getElementById('viewCalc'),
-        tSearch: document.getElementById('tabSearch'), tCalc: document.getElementById('tabCalc'),
-        res: document.getElementById('resultsList'), fU: document.getElementById('fUnit'), fS: document.getElementById('fSource'),
-        dashGrid: document.getElementById('dashGrid'), dashTotal: document.getElementById('dashTotal'),
-        dashActions: document.getElementById('dashActions'), badge: document.getElementById('cartBadge'),
-        modal: document.getElementById('modalOverlay'), toasts: document.getElementById('toasts'),
-        ordersBar: document.getElementById('ordersBar'), dashStatus: document.getElementById('dashStatus'),
-        dashTitleText: document.getElementById('dashTitleText'), fileUp: document.getElementById('fileUpload'),
-        engineMenu: document.getElementById('engineMenu')
-    };
-    
-    [...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
-    [...new Set(db.map(i=>i.s))].sort().forEach(s => els.fS.add(new Option(s,s)));
+const CHUNK_SIZE = 40;
+let activeView = 'search';
+let dashboardMap = new Map();
+let savedOrders = [];
+let currentOrderIndex = -1;
+let preferredEngine = 'brave';
+let focusedCardIndex = -1;
+let lastDeletedOrder = null;
+let lastDeletedIndex = -1;
+let undoTimeoutId = null;
+let globalAddMode = 'unit';
+let currentResults = [];
+let renderedCount = 0;
+let resultsObserver = null;
+let lastFocusedBeforeModal = null;
 
-    const loadState = () => {
-        try {
-            dashboardMap = new Map(JSON.parse(localStorage.getItem('lx_current_calc') || '[]'));
-            savedOrders = JSON.parse(localStorage.getItem('lx_calc_orders') || '[]');
-            if (!Array.isArray(savedOrders)) savedOrders = [];
-            preferredEngine = localStorage.getItem('lx_engine') || 'brave';
-            globalAddMode = localStorage.getItem('lx_add_mode') || 'unit';
-            updateEngineMenuUI();
-            updateDockUI();
-        } catch(e) {}
-    };
+const els = {
+in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'), clear: document.getElementById('omniClear'),
+vSearch: document.getElementById('viewSearch'), vCalc: document.getElementById('viewCalc'),
+tSearch: document.getElementById('tabSearch'), tCalc: document.getElementById('tabCalc'),
+res: document.getElementById('resultsList'), fU: document.getElementById('fUnit'), fS: document.getElementById('fSource'),
+dashGrid: document.getElementById('dashGrid'), dashTotal: document.getElementById('dashTotal'),
+dashActions: document.getElementById('dashActions'), badge: document.getElementById('cartBadge'),
+modal: document.getElementById('modalOverlay'), toasts: document.getElementById('toasts'),
+ordersBar: document.getElementById('ordersBar'), dashStatus: document.getElementById('dashStatus'),
+dashTitleText: document.getElementById('dashTitleText'), fileUp: document.getElementById('fileUpload'),
+engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta'),
+cmdBtn: document.getElementById('cmdToggleBtn')
+};
 
-    const saveState = () => {
-        localStorage.setItem('lx_current_calc', JSON.stringify(Array.from(dashboardMap.entries())));
-        localStorage.setItem('lx_calc_orders', JSON.stringify(savedOrders));
-    };
+[...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
+[...new Set(db.map(i=>i.s))].sort().forEach(s => els.fS.add(new Option(s,s)));
 
-    const syncCurrentOrder = () => {
-        if (currentOrderIndex >= 0 && savedOrders[currentOrderIndex]) {
-            savedOrders[currentOrderIndex].items = Array.from(dashboardMap.entries());
-            let total = 0;
-            dashboardMap.forEach(c => total += c.cost);
-            savedOrders[currentOrderIndex].total = `${total.toFixed(2)} EGP`;
-        }
-        saveState();
-    };
+const loadState = () => {
+try {
+dashboardMap = new Map(JSON.parse(localStorage.getItem('lx_current_calc') || '[]'));
+savedOrders = JSON.parse(localStorage.getItem('lx_calc_orders') || '[]');
+if (!Array.isArray(savedOrders)) savedOrders = [];
+preferredEngine = localStorage.getItem('lx_engine') || 'brave';
+globalAddMode = localStorage.getItem('lx_add_mode') || 'unit';
+updateEngineMenuUI();
+updateDockUI();
+} catch(e) {}
+};
 
-    window.toggleEngineMenu = () => els.engineMenu.classList.toggle('active');
-    window.setEngine = (eng) => {
-        preferredEngine = eng; localStorage.setItem('lx_engine', eng);
-        updateEngineMenuUI(); els.engineMenu.classList.remove('active'); showToast(`Engine set to ${escapeHTML(eng)}`, "travel_explore");
-    };
-    const updateEngineMenuUI = () => {
-        document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
-        const activeEl = document.getElementById(`eng-${escapeHTML(preferredEngine)}`);
-        if(activeEl) activeEl.classList.add('active');
-    };
+const saveState = () => {
+localStorage.setItem('lx_current_calc', JSON.stringify(Array.from(dashboardMap.entries())));
+localStorage.setItem('lx_calc_orders', JSON.stringify(savedOrders));
+};
 
-    window.toggleGlobalMode = () => {
-        globalAddMode = globalAddMode === 'unit' ? 'pack' : 'unit';
-        localStorage.setItem('lx_add_mode', globalAddMode);
-        updateDockUI();
-        if(activeView === 'search') renderSearch();
-        showToast(`Global Default set to: ${globalAddMode === 'unit' ? 'Base Unit' : 'Packages'}`, "settings");
-    };
+const syncCurrentOrder = () => {
+if (currentOrderIndex >= 0 && savedOrders[currentOrderIndex]) {
+savedOrders[currentOrderIndex].items = Array.from(dashboardMap.entries());
+let total = 0;
+dashboardMap.forEach(c => total += c.cost);
+savedOrders[currentOrderIndex].total = `${total.toFixed(2)} EGP`;
+}
+saveState();
+};
 
-    const updateDockUI = () => {
-        const btn = document.getElementById('modeToggleBtn');
-        if(btn) {
-            btn.innerHTML = `<span class="material-symbols-rounded">${globalAddMode === 'unit' ? 'straighten' : 'inventory_2'}</span>`;
-            btn.title = globalAddMode === 'unit' ? 'Adding by Base Unit' : 'Adding by Package';
-        }
-    };
+window.toggleEngineMenu = () => {
+const active = els.engineMenu.classList.toggle('active');
+document.getElementById('engineToggleBtn').setAttribute('aria-expanded', String(active));
+};
+window.setEngine = (eng) => {
+preferredEngine = eng; localStorage.setItem('lx_engine', eng);
+updateEngineMenuUI(); els.engineMenu.classList.remove('active'); showToast(`Engine set to ${escapeHTML(eng)}`, "travel_explore");
+};
+const updateEngineMenuUI = () => {
+document.querySelectorAll('.dropdown-item').forEach(el => el.classList.remove('active'));
+const activeEl = document.getElementById(`eng-${escapeHTML(preferredEngine)}`);
+if(activeEl) activeEl.classList.add('active');
+};
 
-    document.addEventListener('click', (e) => {
-        if(!e.target.closest('.dock')) els.engineMenu.classList.remove('active');
-    });
+window.toggleGlobalMode = () => {
+globalAddMode = globalAddMode === 'unit' ? 'pack' : 'unit';
+localStorage.setItem('lx_add_mode', globalAddMode);
+updateDockUI();
+if(activeView === 'search') renderSearch();
+showToast(`Global default set to: ${globalAddMode === 'unit' ? 'Base Unit' : 'Packages'}`, "settings");
+};
 
-    const showToast = (msg, icon="check_circle") => {
-        Array.from(els.toasts.children).forEach(t => {
-            if(t.getAttribute('data-msg') === msg) { clearTimeout(t.to); t.remove(); }
-        });
-        while(els.toasts.children.length >= 3) els.toasts.firstChild.remove();
-        const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('data-msg', msg);
-        t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-success)">${escapeHTML(icon)}</span> ${escapeHTML(msg)}`;
-        els.toasts.appendChild(t); t.to = setTimeout(() => t.remove(), 3000);
-    };
+const updateDockUI = () => {
+const btn = document.getElementById('modeToggleBtn');
+if(btn) {
+btn.innerHTML = `<span class="material-symbols-rounded">${globalAddMode === 'unit' ? 'straighten' : 'inventory_2'}</span>`;
+btn.title = globalAddMode === 'unit' ? 'Adding by base unit' : 'Adding by package';
+}
+};
 
-    const showUndoToast = (msg, icon="delete") => {
-        while(els.toasts.children.length >= 3) els.toasts.firstChild.remove();
-        const t = document.createElement('div'); t.className = 'toast undo-toast';
-        t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-secondary)">${escapeHTML(icon)}</span> <span style="flex:1; text-align:left;">${escapeHTML(msg)}</span>
-        <button onclick="undoDelete()" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
-        els.toasts.appendChild(t);
-        clearTimeout(undoTimeoutId);
-        undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; }, 30000);
-        setTimeout(() => t.remove(), 30000);
-    };
+document.addEventListener('click', (e) => {
+if(!e.target.closest('.dock')) { els.engineMenu.classList.remove('active'); document.getElementById('engineToggleBtn').setAttribute('aria-expanded', 'false'); }
+});
 
-    window.checkMax = (el) => {
-        if (el.value.length > 7) el.value = el.value.slice(0, 7);
-        let val = parseFloat(el.value);
-        if (val > 999999) {
-            el.value = 999999;
-            showToast("Maximum amount is 999,999", "warning");
-        }
-    };
+const showToast = (msg, icon="check_circle") => {
+Array.from(els.toasts.children).forEach(t => {
+if(t.getAttribute('data-msg') === msg) { clearTimeout(t.to); t.remove(); }
+});
+while(els.toasts.children.length >= 3) els.toasts.firstChild.remove();
+const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('data-msg', msg);
+t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-success)">${escapeHTML(icon)}</span> ${escapeHTML(msg)}`;
+els.toasts.appendChild(t); t.to = setTimeout(() => t.remove(), 3000);
+};
 
-    const highlight = (txt, qTokens) => {
-        let res = escapeHTML(txt);
-        if(!qTokens || !qTokens.length) return res;
-        qTokens.forEach(term => {
-            res = res.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<mark>$1</mark>');
-        });
-        return res;
-    };
+const showUndoToast = (msg, icon="delete") => {
+while(els.toasts.children.length >= 3) els.toasts.firstChild.remove();
+const t = document.createElement('div'); t.className = 'toast undo-toast';
+t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-secondary)">${escapeHTML(icon)}</span> <span style="flex:1; text-align:left;">${escapeHTML(msg)}</span>
+<button onclick="undoDelete()" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
+els.toasts.appendChild(t);
+clearTimeout(undoTimeoutId);
+undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; }, 30000);
+setTimeout(() => t.remove(), 30000);
+};
 
-    window.clearInput = () => {
-        els.in.value = '';
-        els.clear.style.display = 'none';
-        els.in.focus();
-        renderSearch();
-    };
+window.checkMax = (el) => {
+if (el.value.length > 7) el.value = el.value.slice(0, 7);
+let val = parseFloat(el.value);
+if (val > 999999) { el.value = 999999; showToast("Maximum amount is 999,999", "warning"); }
+};
 
-    window.clearSingleFilter = (id) => {
-        document.getElementById(id).value = 'all';
-        renderSearch();
-    };
+const highlight = (txt, qTokens) => {
+let res = escapeHTML(txt);
+if(!qTokens || !qTokens.length) return res;
+qTokens.forEach(term => {
+res = res.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'), '<mark>$1</mark>');
+});
+return res;
+};
 
-    window.clearFilters = () => {
-        els.fU.value = 'all';
-        els.fS.value = 'all';
-        renderSearch();
-    };
+window.clearInput = () => { els.in.value = ''; els.clear.style.display = 'none'; els.in.focus(); renderSearch(); };
+window.clearSingleFilter = (id) => { document.getElementById(id).value = 'all'; renderSearch(); };
+window.clearFilters = () => { els.fU.value = 'all'; els.fS.value = 'all'; renderSearch(); };
 
-    const switchView = (view) => {
-        if (activeView === view) return;
-        activeView = view;
-        els.tSearch.classList.toggle('active', view === 'search'); els.tCalc.classList.toggle('active', view === 'calc');
-        els.vSearch.classList.toggle('active', view === 'search'); els.vCalc.classList.toggle('active', view === 'calc');
-        els.icon.textContent = view === 'calc' ? 'calculate' : 'data_usage';
-        if(view === 'calc') renderDashboard();
-    };
+window.toggleCommandMode = () => {
+if(els.in.value.startsWith('/')) { els.in.value = ''; }
+else { els.in.value = '/'; }
+els.in.focus();
+if(activeView !== 'search') switchView('search');
+renderSearch();
+};
 
-    const executeCommand = (cmd) => {
-        els.in.value = ''; els.clear.style.display = 'none';
-        if(cmd === '/calc') switchView('calc');
-        else if(cmd === '/clear') { clearDashboard(); switchView('calc'); showToast("Calculator cleared");}
-        else if(cmd === '/search') switchView('search');
-        else if(cmd === '/export') { exportDashboardText(); switchView('calc'); }
-        else if(cmd === '/orders') switchView('calc');
-    };
+const switchView = (view) => {
+if (activeView === view) return;
+activeView = view;
+els.tSearch.classList.toggle('active', view === 'search'); els.tCalc.classList.toggle('active', view === 'calc');
+els.vSearch.classList.toggle('active', view === 'search'); els.vCalc.classList.toggle('active', view === 'calc');
+els.icon.textContent = view === 'calc' ? 'calculate' : 'data_usage';
+if(view === 'calc') renderDashboard();
+};
 
-    const updateFocus = () => {
-        const cards = els.res.querySelectorAll('.card');
-        cards.forEach((c, i) => {
-            if(i === focusedCardIndex) {
-                c.classList.add('focused');
-                c.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-            } else {
-                c.classList.remove('focused');
-            }
-        });
-    };
+const executeCommand = (cmd) => {
+els.in.value = ''; els.clear.style.display = 'none';
+if(cmd === '/calc') switchView('calc');
+else if(cmd === '/clear') { clearDashboard(); switchView('calc'); showToast("Calculator cleared");}
+else if(cmd === '/search') switchView('search');
+else if(cmd === '/export') { exportDashboardText(); switchView('calc'); }
+else if(cmd === '/orders') switchView('calc');
+};
+window.executeCommand = executeCommand;
 
-    window.toggleQuickMode = (e, id, bType) => {
-        e.stopPropagation();
-        const btn = document.getElementById(`quick-toggle-${id}`);
-        if(!btn) return;
-        const currentMode = btn.getAttribute('data-mode');
-        const newMode = currentMode === 'unit' ? 'pack' : 'unit';
-        btn.setAttribute('data-mode', newMode);
-        btn.innerHTML = `${newMode === 'pack' ? 'Packs' : escapeHTML(bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>`;
-    };
+const disconnectObserver = () => { if(resultsObserver) { resultsObserver.disconnect(); resultsObserver = null; } };
 
-    const renderSearch = () => {
-        const rawQ = els.in.value;
-        const qStr = rawQ.toLowerCase().trim();
-        els.icon.textContent = rawQ.startsWith('/') ? 'terminal' : (activeView === 'calc' ? 'calculate' : 'data_usage');
-        els.clear.style.display = rawQ.length > 0 ? 'block' : 'none';
+const cardTemplate = (i, qTokens, isPack) => `
+<div class="card" id="card-${escapeHTML(i.id)}" role="option" tabindex="0" aria-selected="false"
+aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}"
+onclick="openDetails('${escapeHTML(i.id)}')"
+onkeydown="cardKeydown(event, '${escapeHTML(i.id)}')">
+<div class="card-main-info">
+<div class="card-icon${i.isDynamic ? ' dynamic' : ''}" aria-hidden="true"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
+<div class="card-content">
+<div class="card-title">${highlight(i.n, qTokens)} ${i.t ? `<span class="tag">${escapeHTML(i.t)}</span>` : ''}</div>
+<div class="card-subtitle"><span>${highlight(i.u, qTokens)}</span> • <span class="price-tag${i.isDynamic ? ' dynamic' : ''}">${i.isDynamic ? '50% Supply Price' : i.p.toFixed(2) + ' EGP'}</span></div>
+</div>
+</div>
+<div class="card-actions" onclick="event.stopPropagation()">
+<button class="copy-btn" onclick="copyItemInfo('${escapeHTML(i.id)}')" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
+<div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
+${i.isDynamic ? `
+<input type="number" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)">
+<span class="pill-suffix">EGP</span>
+<span class="pill-sep"></span>
+` : ''}
+<input type="number" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter'){event.preventDefault(); inlineAdd('${escapeHTML(i.id)}', this.parentElement.querySelector('.pill-add'));}">
+<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" onclick="toggleQuickMode(event, '${escapeHTML(i.id)}', '${escapeHTML(i.bType)}')">
+${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
+</button>
+<button class="pill-add" onclick="inlineAdd('${escapeHTML(i.id)}', this)" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
+</div>
+</div>
+</div>
+`;
 
-        if (rawQ.startsWith('/')) {
-            const cmds =[{c: '/calc', d: 'Calculation Calculator'}, {c: '/clear', d: 'Empty calculator'}, {c: '/search', d: 'Go to Search'}, {c: '/export', d: 'Export calculation to text'}, {c: '/orders', d: 'View saved orders'}].filter(cmd => cmd.c.includes(qStr));
-            els.res.innerHTML = cmds.map((cmd) => `<div class="card" onclick="executeCommand('${escapeHTML(cmd.c)}')"><div class="card-main-info"><div class="card-icon"><span class="material-symbols-rounded">keyboard_command_key</span></div><div class="card-content"><div class="card-title">${escapeHTML(cmd.c)}</div><div class="card-subtitle">${escapeHTML(cmd.d)}</div></div></div></div>`).join('') || '<div style="text-align:center; padding:20px; color:var(--sys-on-surface-variant);">Unknown command</div>';
-            focusedCardIndex = -1;
-            return;
-        }
+const commandCardTemplate = (cmd) => `
+<div class="card" role="option" tabindex="0" onclick="executeCommand('${escapeHTML(cmd.c)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); executeCommand('${escapeHTML(cmd.c)}');}">
+<div class="card-main-info">
+<div class="card-icon"><span class="material-symbols-rounded">keyboard_command_key</span></div>
+<div class="card-content">
+<div class="card-title">${escapeHTML(cmd.c)}</div>
+<div class="card-subtitle">${escapeHTML(cmd.d)}</div>
+</div>
+</div>
+</div>
+`;
 
-        const qTokens = qStr.split(/\s+/).filter(Boolean);
-        const u = els.fU.value, s = els.fS.value;
-        
-        els.fU.classList.toggle('active-filter', u !== 'all');
-        document.getElementById('fUnitX').style.display = u !== 'all' ? 'grid' : 'none';
-        
-        els.fS.classList.toggle('active-filter', s !== 'all');
-        document.getElementById('fSourceX').style.display = s !== 'all' ? 'grid' : 'none';
-        
-        let filtered = [];
-        for(let i=0; i<db.length; i++) {
-            const item = db[i];
-            if(u !== 'all' && item.u !== u) continue;
-            if(s !== 'all' && item.s !== s) continue;
-            
-            let score = 0;
-            if(qTokens.length > 0) {
-                let matchedAll = true;
-                for(let j=0; j<qTokens.length; j++) {
-                    const tk = qTokens[j];
-                    if(!item.searchStr.includes(tk)) { matchedAll = false; break; }
-                    if(item.nLower.startsWith(tk)) score += 20;
-                    else score += 10;
-                }
-                if(!matchedAll) continue;
-            }
-            filtered.push({...item, score});
-        }
-        if(qTokens.length > 0) filtered.sort((a,b) => b.score - a.score);
+const appendNextChunk = () => {
+if(renderedCount >= currentResults.length) return;
+const sentinel = document.getElementById('loadSentinel');
+if(sentinel) sentinel.remove();
+const isPack = globalAddMode === 'pack';
+const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
+const html = chunk.map(i => cardTemplate(i, qTokens, isPack)).join('');
+els.res.insertAdjacentHTML('beforeend', html);
+renderedCount += chunk.length;
+updateResultsMeta();
+if(renderedCount < currentResults.length) {
+els.res.insertAdjacentHTML('beforeend', '<div class="load-sentinel" id="loadSentinel"></div>');
+const newSentinel = document.getElementById('loadSentinel');
+disconnectObserver();
+resultsObserver = new IntersectionObserver((entries) => {
+if(entries[0].isIntersecting) appendNextChunk();
+}, { root: els.res, rootMargin: '600px' });
+resultsObserver.observe(newSentinel);
+}
+};
 
-        const isPack = globalAddMode === 'pack';
-        
-        els.res.innerHTML = filtered.slice(0, 50).map((i) => `
-            <div class="card" onclick="openDetails('${escapeHTML(i.id)}')">
-                <div class="card-main-info">
-                    <div class="card-icon" title="Info"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
-                    <div class="card-content">
-                        <div class="card-title">${highlight(i.n, qTokens)} ${i.t ? `<span class="tag">${escapeHTML(i.t)}</span>` : ''}</div>
-                        <div class="card-subtitle"><span>${highlight(i.u, qTokens)}</span> • <span style="color:var(--sys-primary)">${i.p.toFixed(2)} EGP</span></div>
-                    </div>
-                </div>
-                <div class="card-actions" onclick="event.stopPropagation()">
-                    <button class="copy-btn" onclick="copyItemInfo('${escapeHTML(i.id)}')" title="Copy Info"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
-                    <div class="quick-add-zone">
-                        <input type="number" id="quick-in-${escapeHTML(i.id)}" class="quick-input" placeholder="0" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') inlineAdd('${escapeHTML(i.id)}', this.parentElement.querySelector('.quick-btn'))">
-                        <button class="quick-unit-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" onclick="toggleQuickMode(event, '${escapeHTML(i.id)}', '${escapeHTML(i.bType)}')">
-                            ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
-                        </button>
-                        <button class="quick-btn" onclick="inlineAdd('${escapeHTML(i.id)}', this)"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
-                    </div>
-                </div>
-            </div>
-        `).join('') || '<div style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
-        
-        focusedCardIndex = -1;
-    };
+const loadAllRemaining = () => {
+disconnectObserver();
+while(renderedCount < currentResults.length) {
+const isPack = globalAddMode === 'pack';
+const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+const sentinel = document.getElementById('loadSentinel');
+if(sentinel) sentinel.remove();
+const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
+els.res.insertAdjacentHTML('beforeend', chunk.map(i => cardTemplate(i, qTokens, isPack)).join(''));
+renderedCount += chunk.length;
+}
+updateResultsMeta();
+};
 
-    window.copyItemInfo = (id) => {
-        const item = db.find(i => i.id === id);
-        if (!item) return;
-        navigator.clipboard.writeText(`${item.n} ${item.t} | ${item.u} | ${item.p.toFixed(2)} EGP`).then(() => showToast(`Copied ${item.n}`, "content_copy"));
-    };
+const updateResultsMeta = () => {
+if(!currentResults.length) { els.meta.textContent = ''; return; }
+els.meta.textContent = renderedCount >= currentResults.length
+? `${currentResults.length} result${currentResults.length === 1 ? '' : 's'}`
+: `Showing ${renderedCount} of ${currentResults.length} — scroll for more`;
+};
 
-    window.inlineAdd = (id, btnEl) => {
-        const input = document.getElementById(`quick-in-${id}`);
-        const rawReq = parseFloat(input.value);
-        if(isNaN(rawReq) || rawReq <= 0 || rawReq > 999999) return;
-        
-        const item = db.find(i => i.id === id);
-        if (!item) return;
-        
-        const toggleBtn = document.getElementById(`quick-toggle-${id}`);
-        const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
-        
-        const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
-        const packs = Math.round(req / item.bQty);
-        const cost = packs * item.p;
-        
-        dashboardMap.set(id, { item, req, packs, cost });
-        syncCurrentOrder();
-        input.value = ''; input.blur(); 
-        
-        if(btnEl) {
-            const icon = btnEl.querySelector('span');
-            const origIcon = icon.textContent;
-            btnEl.style.background = 'var(--sys-success)';
-            btnEl.style.color = '#000';
-            icon.textContent = 'check';
-            setTimeout(() => {
-                btnEl.style.background = '';
-                btnEl.style.color = '';
-                icon.textContent = origIcon;
-            }, 800);
-        }
-        
-        els.badge.classList.add('pop');
-        els.badge.style.display = 'block';
-        els.badge.textContent = dashboardMap.size;
-        setTimeout(() => els.badge.classList.remove('pop'), 200);
-        showToast(`Added ${packs} packs of ${item.n}`);
-        if(activeView === 'calc') renderDashboard();
-    };
-    
-    window.currentModalAddMode = 'unit';
+const renderSearch = () => {
+const rawQ = els.in.value;
+const qStr = rawQ.toLowerCase().trim();
+els.icon.textContent = rawQ.startsWith('/') ? 'terminal' : (activeView === 'calc' ? 'calculate' : 'data_usage');
+els.clear.style.display = rawQ.length > 0 ? 'flex' : 'none';
+els.cmdBtn.classList.toggle('cmd-active', rawQ.startsWith('/'));
+document.getElementById('hintRow').style.display = rawQ.length ? 'none' : 'flex';
 
-    window.setModalAddMode = (mode, id) => {
-        currentModalAddMode = mode;
-        document.getElementById('mtg-unit').classList.toggle('active', mode === 'unit');
-        document.getElementById('mtg-pack').classList.toggle('active', mode === 'pack');
-        const item = db.find(i => i.id === id);
-        document.getElementById('modal-calc-label').textContent = mode === 'unit' ? item.bType : 'Packs';
-    };
+disconnectObserver();
 
-    window.modalAdd = (id) => {
-        const qty = parseFloat(document.getElementById('modal-calc-qty').value);
-        if(isNaN(qty) || qty <= 0 || qty > 999999) return;
-        const item = db.find(i => i.id === id);
-        let req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
-        
-        const packs = Math.round(req / item.bQty);
-        const cost = packs * item.p;
-        dashboardMap.set(id, { item, req, packs, cost });
-        syncCurrentOrder();
-        
-        els.badge.classList.add('pop');
-        els.badge.style.display = 'block';
-        els.badge.textContent = dashboardMap.size;
-        setTimeout(() => els.badge.classList.remove('pop'), 200);
-        showToast(`Added ${packs} packs of ${item.n}`);
-        if(activeView === 'calc') renderDashboard();
-        
-        els.modal.classList.remove('active');
-    };
+if (rawQ.startsWith('/')) {
+document.querySelector('.filters').style.display = 'none';
+els.meta.textContent = '';
+const cmds =[{c: '/calc', d: 'Open the calculator'}, {c: '/clear', d: 'Empty the calculator'}, {c: '/search', d: 'Go to search'}, {c: '/export', d: 'Export calculation to text'}, {c: '/orders', d: 'View saved orders'}].filter(cmd => cmd.c.includes(qStr));
+els.res.innerHTML = cmds.map(cmd => commandCardTemplate(cmd)).join('') || '<div style="text-align:center; padding:20px; color:var(--sys-on-surface-variant);">Unknown command</div>';
+currentResults = []; renderedCount = 0;
+focusedCardIndex = -1;
+return;
+}
+document.querySelector('.filters').style.display = 'flex';
 
-    const generateSearchURL = (qStr) => {
-        if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}`;
-        if(preferredEngine === 'startpage') return `https://www.startpage.com/do/dsearch?query=${qStr}`;
-        if(preferredEngine === 'google') return `https://www.google.com/search?q=${qStr}`;
-        if(preferredEngine === 'bing') return `https://www.bing.com/search?q=${qStr}`;
-        return `https://search.brave.com/search?q=${qStr}`;
-    };
-    const generateImageURL = (qStr) => {
-        if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}&ia=images&iax=images`;
-        if(preferredEngine === 'startpage') return `https://www.startpage.com/do/dsearch?query=${qStr}&cat=images`;
-        if(preferredEngine === 'google') return `https://www.google.com/search?tbm=isch&q=${qStr}`;
-        if(preferredEngine === 'bing') return `https://www.bing.com/images/search?q=${qStr}`;
-        return `https://search.brave.com/images?q=${qStr}`;
-    };
-    const getEngineName = () => {
-        if(preferredEngine === 'ddg') return 'DuckDuckGo';
-        if(preferredEngine === 'startpage') return 'Startpage';
-        if(preferredEngine === 'google') return 'Google';
-        if(preferredEngine === 'bing') return 'Bing';
-        return 'Brave Search';
-    };
+const qTokens = qStr.split(/\s+/).filter(Boolean);
+const u = els.fU.value, s = els.fS.value;
 
-    const openDetails = (id) => {
-        const item = db.find(i => i.id === id);
-        if (!item) return;
-        document.getElementById('sheetTitle').innerHTML = `${escapeHTML(item.n)} ${item.t ? `<span class="tag" style="font-size:1rem; vertical-align:middle;">${escapeHTML(item.t)}</span>` : ''}`;
-        document.getElementById('sheetMeta').innerHTML = `<span>${escapeHTML(item.u)}</span> • <span>${escapeHTML(item.s)}</span>`;
-        
-        document.getElementById('sheetPriceData').innerHTML = `
-            <div style="background: var(--sys-surface-low); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--sys-outline); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;">
-                <div style="display: flex; flex-direction: column; gap: 4px; min-width: 120px;">
-                    <span style="font-size: 0.9rem; color: var(--sys-on-surface-variant); font-weight: 500;">1 Package (${item.bQty} ${escapeHTML(item.bType)})</span>
-                    <span style="font-size: 1.4rem; font-weight: 600; color: var(--sys-primary);">${item.p.toFixed(2)} EGP</span>
-                </div>
-                <div style="width: 1px; height: 40px; background: var(--sys-outline); flex-shrink: 0;"></div>
-                <div style="display: flex; flex-direction: column; gap: 4px; text-align: right; min-width: 120px;">
-                    <span style="font-size: 0.9rem; color: var(--sys-on-surface-variant); font-weight: 500;">1 ${escapeHTML(item.bType)}</span>
-                    <span style="font-size: 1.4rem; font-weight: 600; color: var(--sys-primary);">${(item.p / item.bQty).toFixed(2)} EGP</span>
-                </div>
-            </div>
-        `;
+els.fU.classList.toggle('active-filter', u !== 'all'); document.getElementById('fUnitX').style.display = u !== 'all' ? 'grid' : 'none';
+els.fS.classList.toggle('active-filter', s !== 'all'); document.getElementById('fSourceX').style.display = s !== 'all' ? 'grid' : 'none';
 
-        const qStr = encodeURIComponent(item.n);
-        
-        document.getElementById('sheetLinks').innerHTML = `
-            <a href="${generateSearchURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span> ${escapeHTML(getEngineName())}</a>
-            <a href="${generateImageURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">image</span> Images</a>
-            <a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
-            <a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
-        `;
-        
-        document.getElementById('sheetAddCalc').innerHTML = `
-            <div style="background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-weight: 600; color: var(--sys-on-bg);">Quick Add to Calculator</div>
-                    <span class="tag" style="background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant);">1 Pack = ${item.bQty} ${escapeHTML(item.bType)}</span>
-                </div>
-                <div style="display: flex; background: rgba(0,0,0,0.5); border-radius: var(--radius-full); padding: 4px; border: 1px solid var(--sys-outline);">
-                    <button class="omni-tab active" id="mtg-unit" onclick="setModalAddMode('unit', '${escapeHTML(id)}')" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
-                    <button class="omni-tab" id="mtg-pack" onclick="setModalAddMode('pack', '${escapeHTML(id)}')" style="flex:1; justify-content:center; height:32px;">By Packages</button>
-                </div>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <input type="number" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd('${escapeHTML(id)}')" style="padding:10px; font-size:1.1rem; text-align:left;">
-                    <span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
-                    <button onclick="modalAdd('${escapeHTML(id)}')" style="background:var(--sys-primary); color:#000; border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
-                </div>
-            </div>
-        `;
-        window.currentModalAddMode = 'unit';
-        
-        els.modal.classList.add('active');
-        setTimeout(() => { const i = document.getElementById('modal-calc-qty'); if(i) i.focus(); }, 100);
-    };
+let filtered = [];
+for(let i=0; i<db.length; i++) {
+const item = db[i];
+if(u !== 'all' && item.u !== u) continue;
+if(s !== 'all' && item.s !== s) continue;
 
-    const updateDashTotal = () => {
-        let total = 0;
-        dashboardMap.forEach(c => total += c.cost);
-        els.dashTotal.textContent = `${total.toFixed(2)} EGP`;
-        els.badge.textContent = dashboardMap.size;
-        els.badge.style.display = dashboardMap.size ? 'block' : 'none';
-    };
+let score = 0;
+if(qTokens.length > 0) {
+let matchedAll = true;
+for(let j=0; j<qTokens.length; j++) {
+const tk = qTokens[j];
+if(!item.searchStr.includes(tk)) { matchedAll = false; break; }
+if(item.nLower.startsWith(tk)) score += 20; else score += 10;
+}
+if(!matchedAll) continue;
+}
+filtered.push({...item, score});
+}
+if(qTokens.length > 0) filtered.sort((a,b) => b.score - a.score);
 
-    window.updateDashItem = (id, val, mode = 'req') => {
-        let rawVal = parseFloat(val);
-        if(isNaN(rawVal) || rawVal < 0) rawVal = 0;
-        
-        if(rawVal > 999999) {
-            rawVal = 999999;
-            showToast("Maximum amount is 999,999", "warning");
-        }
-        
-        const entry = dashboardMap.get(id); 
-        if(!entry) return;
-        
-        let req, packs, cost;
-        if (mode === 'pack') {
-            packs = rawVal;
-            req = packs * entry.item.bQty;
-        } else {
-            req = rawVal;
-            packs = Math.round(req / entry.item.bQty);
-        }
-        cost = packs * entry.item.p;
-        
-        entry.req = req; entry.packs = packs; entry.cost = cost; 
-        dashboardMap.set(id, entry); 
-        syncCurrentOrder();
-        
-        const reqEl = document.getElementById(`dash-in-${id}`);
-        const packEl = document.getElementById(`dash-packs-${id}`);
-        const cEl = document.getElementById(`out-cost-${id}`);
-        
-        if(mode === 'pack' && reqEl) reqEl.value = req;
-        if(mode === 'req' && packEl) packEl.value = packs;
-        if(mode === 'req' && reqEl && parseFloat(reqEl.value) > 999999) reqEl.value = 999999;
-        if(mode === 'pack' && packEl && parseFloat(packEl.value) > 999999) packEl.value = 999999;
-        if(cEl) cEl.textContent = cost.toFixed(2);
-        
-        updateDashTotal();
-        
-        if(currentOrderIndex < 0) {
-            els.dashStatus.textContent = "Unsaved";
-            els.dashStatus.style.background = "var(--sys-surface-highest)";
-            els.dashStatus.style.color = "var(--sys-on-surface-variant)";
-        } else {
-            els.dashStatus.textContent = "Active Order";
-            els.dashStatus.style.background = "var(--sys-success)";
-            els.dashStatus.style.color = "#000";
-        }
-    };
+currentResults = filtered;
+renderedCount = 0;
+els.res.innerHTML = filtered.length ? '' : '<div style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
+if(filtered.length) appendNextChunk();
+else updateResultsMeta();
 
-    const renderDashboard = () => {
-        const items = Array.from(dashboardMap.values()); 
-        updateDashTotal();
-        els.dashActions.style.display = items.length ? 'grid' : 'none';
+focusedCardIndex = -1;
+};
 
-        els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
-        els.ordersBar.innerHTML = savedOrders.map((o, idx) => `
-            <button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">
-                ${escapeHTML(o.name)}
-                <span class="material-symbols-rounded chip-del" onclick="deleteOrder(event, ${idx})">close</span>
-            </button>
-        `).join('') + `<button class="order-chip" onclick="createNewOrder()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
-        
-        els.dashTitleText.textContent = currentOrderIndex >= 0 ? savedOrders[currentOrderIndex].name : "Current Calculation";
-        els.dashStatus.textContent = currentOrderIndex >= 0 ? "Active Order" : "Unsaved";
-        els.dashStatus.style.background = currentOrderIndex >= 0 ? "var(--sys-success)" : "var(--sys-surface-highest)";
-        els.dashStatus.style.color = currentOrderIndex >= 0 ? "#000" : "var(--sys-on-surface-variant)";
+window.copyItemInfo = (id) => {
+const item = db.find(i => i.id === id);
+if (!item) return;
+const pStr = item.isDynamic ? '50% Supply Price' : `${item.p.toFixed(2)} EGP`;
+navigator.clipboard.writeText(`${item.n} ${item.t} | ${item.u} | ${pStr}`).then(() => showToast(`Copied ${item.n}`, "content_copy"));
+};
 
-        const saveBtn = document.getElementById('btnSaveOrder');
-        if(saveBtn) saveBtn.innerHTML = `<span class="material-symbols-rounded">save</span> ${currentOrderIndex >= 0 ? 'Save Updates' : 'Save Order'}`;
+window.toggleQuickMode = (e, id, bType) => {
+e.stopPropagation();
+const btn = document.getElementById(`quick-toggle-${id}`);
+if(!btn) return;
+const currentMode = btn.getAttribute('data-mode');
+const newMode = currentMode === 'unit' ? 'pack' : 'unit';
+btn.setAttribute('data-mode', newMode);
+btn.innerHTML = `${newMode === 'pack' ? 'Packs' : escapeHTML(bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>`;
+};
 
-        els.dashGrid.innerHTML = items.map(c => `
-            <div class="dash-item" id="dash-item-${escapeHTML(c.item.id)}">
-                <div class="dash-item-top">
-                    <div>
-                        <div class="card-title">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div>
-                        <div class="card-subtitle">Base: ${c.item.bQty} ${escapeHTML(c.item.bType)} / Pack</div>
-                    </div>
-                    <button class="trash-btn" onclick="removeDashboardItem('${escapeHTML(c.item.id)}')"><span class="material-symbols-rounded">delete</span></button>
-                </div>
-                <div class="dash-controls">
-                    <div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(c.req)}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'req')"></div>
-                    <div class="control-group"><span class="control-label">Packs</span><input type="number" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(c.packs)}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'pack')"></div>
-                    <div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${c.cost.toFixed(2)}</div></div>
-                </div>
-            </div>
-        `).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">calculate</span><p style="margin-top:16px">Calculator is empty. Search and quickly add items.</p></div>';
-    };
+window.inlineAdd = (id, btnEl) => {
+const input = document.getElementById(`quick-in-${id}`);
+const rawReq = parseFloat(input.value);
+if(isNaN(rawReq) || rawReq <= 0 || rawReq > 999999) return;
+const item = db.find(i => i.id === id);
+if (!item) return;
 
-    const autoSaveUnfinished = () => {
-        const orderName = `Unfinished ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-        let total = 0; dashboardMap.forEach(c => total += c.cost);
-        savedOrders.push({ id: Date.now().toString(), name: orderName, total: `${total.toFixed(2)} EGP`, items: Array.from(dashboardMap.entries()) });
-        showToast("Unsaved work moved to Unfinished", "save");
-    };
+let sp = 0;
+if(item.isDynamic) {
+const spInput = document.getElementById(`quick-sp-${id}`);
+sp = parseFloat(spInput.value);
+if(isNaN(sp) || sp < 0) {
+showToast("Please enter Supply Price", "warning");
+spInput.focus();
+return;
+}
+}
 
-    window.createNewOrder = () => {
-        if (currentOrderIndex === -1 && dashboardMap.size > 0) {
-            if (savedOrders.length >= 10) {
-                alert("Maximum 10 saved orders allowed. Please delete some first.");
-                return;
-            }
-            autoSaveUnfinished();
-        }
-        dashboardMap.clear();
-        currentOrderIndex = -1;
-        saveState();
-        renderDashboard();
-    };
+const toggleBtn = document.getElementById(`quick-toggle-${id}`);
+const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
 
-    window.removeDashboardItem = (id) => { 
-        dashboardMap.delete(id); 
-        syncCurrentOrder();
-        renderDashboard();
-    };
-    
-    window.clearDashboard = () => { 
-        dashboardMap.clear(); 
-        currentOrderIndex = -1; 
-        saveState(); 
-        renderDashboard(); 
-    };
+const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
+const packs = Math.round(req / item.bQty);
+const cost = item.isDynamic ? packs * (sp * 0.5) : packs * item.p;
 
-    window.saveAsOrder = () => {
-        if(dashboardMap.size === 0) return;
-        const dateStr = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-        if (currentOrderIndex >= 0) {
-            savedOrders[currentOrderIndex].name = `Order ${dateStr}`;
-            syncCurrentOrder();
-            renderDashboard();
-            showToast("Order saved and updated", "bookmark_added");
-        } else {
-            if(savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed."); return; }
-            savedOrders.push({ id: Date.now().toString(), name: `Order ${dateStr}`, total: els.dashTotal.textContent, items: Array.from(dashboardMap.entries()) });
-            currentOrderIndex = savedOrders.length - 1; 
-            saveState(); 
-            renderDashboard(); 
-            showToast("Order saved", "bookmark_added");
-        }
-    };
+dashboardMap.set(id, { item, req, packs, cost, supplyPrice: sp });
+syncCurrentOrder();
 
-    window.loadOrder = (idx) => { 
-        if (currentOrderIndex === -1 && dashboardMap.size > 0) {
-            if (savedOrders.length >= 10) {
-                alert("Maximum 10 saved orders allowed. Please delete some first.");
-                return;
-            }
-            autoSaveUnfinished();
-        }
-        const order = savedOrders[idx]; 
-        if(!order) return; 
-        dashboardMap = new Map(order.items); 
-        currentOrderIndex = idx; 
-        saveState(); 
-        renderDashboard(); 
-        showToast(`Loaded ${order.name}`, "restore"); 
-    };
+input.value = ''; input.blur();
+if(item.isDynamic) document.getElementById(`quick-sp-${id}`).value = '';
 
-    window.deleteOrder = (e, idx) => {
-        e.stopPropagation();
-        lastDeletedOrder = savedOrders[idx];
-        lastDeletedIndex = idx;
-        savedOrders.splice(idx, 1);
-        if(currentOrderIndex === idx) {
-            currentOrderIndex = -1;
-            dashboardMap.clear();
-        } else if (currentOrderIndex > idx) {
-            currentOrderIndex--;
-        }
-        saveState();
-        renderDashboard();
-        showUndoToast(`Order deleted`, "delete");
-    };
-    
-    window.undoDelete = () => {
-        if(!lastDeletedOrder) return;
-        savedOrders.splice(lastDeletedIndex, 0, lastDeletedOrder);
-        if (currentOrderIndex !== -1 && currentOrderIndex >= lastDeletedIndex) {
-            currentOrderIndex++;
-        }
-        lastDeletedOrder = null;
-        saveState();
-        renderDashboard();
-        showToast("Order restored", "restore");
-        const toastBtn = document.querySelector('.undo-toast button');
-        if(toastBtn && toastBtn.parentElement) toastBtn.parentElement.remove();
-    };
+if(btnEl) {
+const icon = btnEl.querySelector('span');
+const origIcon = icon.textContent;
+btnEl.style.background = 'var(--sys-success)'; btnEl.style.color = '#000'; icon.textContent = 'check';
+setTimeout(() => { btnEl.style.background = ''; btnEl.style.color = ''; icon.textContent = origIcon; }, 800);
+}
 
-    window.exportDashboardText = () => {
-        const items = Array.from(dashboardMap.values()); if(!items.length) return;
-        let txt = `${els.dashTitleText.textContent}:\n\n`; items.forEach(c => { txt += `- ${c.item.n}: Req ${c.req} ${c.item.bType} -> ${c.packs} Packs = ${c.cost.toFixed(2)} EGP\n`; });
-        txt += `\nTotal: ${els.dashTotal.textContent}`; navigator.clipboard.writeText(txt).then(() => showToast("Copied to clipboard", "content_copy"));
-    };
+els.badge.classList.add('pop'); els.badge.style.display = 'block'; els.badge.textContent = dashboardMap.size;
+setTimeout(() => els.badge.classList.remove('pop'), 200);
+showToast(`Added ${packs} packs of ${item.n}`);
+if(activeView === 'calc') renderDashboard();
+};
 
-    window.downloadDashboard = () => {
-        if(dashboardMap.size === 0) return;
-        const blob = new Blob([JSON.stringify({ title: els.dashTitleText.textContent, items: Array.from(dashboardMap.entries()) }, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `LX_Calc_${Date.now()}.json`;
-        a.click(); URL.revokeObjectURL(url); showToast("Download started", "download_done");
-    };
+window.currentModalAddMode = 'unit';
 
-    els.fileUp.addEventListener('change', (e) => {
-        const file = e.target.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            try { 
-                const data = JSON.parse(ev.target.result); 
-                if(data.items) { 
-                    dashboardMap = new Map(data.items); 
-                    currentOrderIndex = -1; 
-                    saveState(); 
-                    renderDashboard(); 
-                    showToast("Calculation loaded from file", "file_download_done"); 
-                } 
-            } catch(err) { alert("Invalid file format"); }
-        }; reader.readAsText(file); els.fileUp.value = '';
-    });
+window.setModalAddMode = (mode, id) => {
+currentModalAddMode = mode;
+document.getElementById('mtg-unit').classList.toggle('active', mode === 'unit');
+document.getElementById('mtg-pack').classList.toggle('active', mode === 'pack');
+const item = db.find(i => i.id === id);
+document.getElementById('modal-calc-label').textContent = mode === 'unit' ? item.bType : 'Packs';
+};
 
-    els.in.addEventListener('input', () => { 
-        if(activeView === 'calc' && !els.in.value.startsWith('/')) switchView('search'); 
-        if(activeView === 'search') renderSearch(); 
-    });
+window.modalAdd = (id) => {
+const qty = parseFloat(document.getElementById('modal-calc-qty').value);
+if(isNaN(qty) || qty <= 0 || qty > 999999) return;
+const item = db.find(i => i.id === id);
 
-    els.fU.addEventListener('change', renderSearch); els.fS.addEventListener('change', renderSearch);
-    els.modal.addEventListener('click', e => { if(e.target === els.modal) els.modal.classList.remove('active'); });
-    
-    document.addEventListener('keydown', e => { 
-        if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') { 
-            e.preventDefault(); 
-            els.in.focus(); 
-        } 
-        else if (e.key === '/' || e.key === 'ظ') {
-            if (document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT') {
-                e.preventDefault();
-                els.in.focus();
-            }
-        }
-        if(e.key === 'Escape') els.modal.classList.remove('active'); 
+let sp = 0;
+if (item.isDynamic) {
+const spInput = document.getElementById('modal-calc-sp');
+sp = parseFloat(spInput.value);
+if (isNaN(sp) || sp < 0) {
+showToast("Please enter Supply Price", "warning");
+spInput.focus();
+return;
+}
+}
 
-        if(activeView === 'search' && document.activeElement === els.in) {
-            const cards = els.res.querySelectorAll('.card');
-            if(!cards.length) return;
-            
-            if(e.key === 'ArrowDown') {
-                e.preventDefault();
-                focusedCardIndex = Math.min(focusedCardIndex + 1, cards.length - 1);
-                updateFocus();
-            } else if(e.key === 'ArrowUp') {
-                e.preventDefault();
-                focusedCardIndex = Math.max(focusedCardIndex - 1, 0);
-                updateFocus();
-            } else if(e.key === 'Enter') {
-                if(focusedCardIndex >= 0 && cards[focusedCardIndex]) {
-                    e.preventDefault();
-                    cards[focusedCardIndex].click();
-                }
-            }
-        }
-    });
+let req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
+const packs = Math.round(req / item.bQty);
+const cost = item.isDynamic ? packs * (sp * 0.5) : packs * item.p;
 
-    loadState(); renderSearch(); renderDashboard();
+dashboardMap.set(id, { item, req, packs, cost, supplyPrice: sp });
+syncCurrentOrder();
+
+els.badge.classList.add('pop'); els.badge.style.display = 'block'; els.badge.textContent = dashboardMap.size;
+setTimeout(() => els.badge.classList.remove('pop'), 200);
+showToast(`Added ${packs} packs of ${item.n}`);
+if(activeView === 'calc') renderDashboard();
+closeModal();
+};
+
+const generateSearchURL = (qStr) => {
+if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}`;
+if(preferredEngine === 'startpage') return `https://www.startpage.com/do/dsearch?query=${qStr}`;
+if(preferredEngine === 'google') return `https://www.google.com/search?q=${qStr}`;
+if(preferredEngine === 'bing') return `https://www.bing.com/search?q=${qStr}`;
+return `https://search.brave.com/search?q=${qStr}`;
+};
+const generateImageURL = (qStr) => {
+if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}&ia=images&iax=images`;
+if(preferredEngine === 'startpage') return `https://www.startpage.com/do/dsearch?query=${qStr}&cat=images`;
+if(preferredEngine === 'google') return `https://www.google.com/search?tbm=isch&q=${qStr}`;
+if(preferredEngine === 'bing') return `https://www.bing.com/images/search?q=${qStr}`;
+return `https://search.brave.com/images?q=${qStr}`;
+};
+const getEngineName = () => {
+if(preferredEngine === 'ddg') return 'DuckDuckGo';
+if(preferredEngine === 'startpage') return 'Startpage';
+if(preferredEngine === 'google') return 'Google';
+if(preferredEngine === 'bing') return 'Bing';
+return 'Brave Search';
+};
+
+const openDetails = (id) => {
+const item = db.find(i => i.id === id);
+if (!item) return;
+lastFocusedBeforeModal = document.activeElement;
+document.getElementById('sheetTitle').innerHTML = `${escapeHTML(item.n)} ${item.t ? `<span class="tag" style="font-size:1rem; vertical-align:middle;">${escapeHTML(item.t)}</span>` : ''}`;
+document.getElementById('sheetMeta').innerHTML = `<span>${escapeHTML(item.u)}</span> • <span>${escapeHTML(item.s)}</span>`;
+
+document.getElementById('sheetPriceData').innerHTML = `
+<div style="background: var(--sys-surface-low); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--sys-outline); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;">
+${item.isDynamic ? `
+<span style="font-size: 1.2rem; font-weight: 600; color: var(--sys-secondary);">Price: 50% of Supply Price</span>
+` : `
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 120px;">
+<span style="font-size: 0.9rem; color: var(--sys-on-surface-variant); font-weight: 500;">1 Package (${item.bQty} ${escapeHTML(item.bType)})</span>
+<span style="font-size: 1.4rem; font-weight: 600; color: var(--sys-primary);">${item.p.toFixed(2)} EGP</span>
+</div>
+<div style="width: 1px; height: 40px; background: var(--sys-outline); flex-shrink: 0;"></div>
+<div style="display: flex; flex-direction: column; gap: 4px; text-align: right; min-width: 120px;">
+<span style="font-size: 0.9rem; color: var(--sys-on-surface-variant); font-weight: 500;">1 ${escapeHTML(item.bType)}</span>
+<span style="font-size: 1.4rem; font-weight: 600; color: var(--sys-primary);">${(item.p / item.bQty).toFixed(2)} EGP</span>
+</div>
+`}
+</div>
+`;
+
+const qStr = encodeURIComponent(item.n);
+document.getElementById('sheetLinks').innerHTML = `
+<a href="${generateSearchURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span> ${escapeHTML(getEngineName())}</a>
+<a href="${generateImageURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">image</span> Images</a>
+<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
+<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
+`;
+document.getElementById('sheetAddCalc').innerHTML = `
+<div style="background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div style="font-weight: 600; color: var(--sys-on-bg);">Quick Add to Calculator</div>
+<span class="tag" style="background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant);">1 Pack = ${item.bQty} ${escapeHTML(item.bType)}</span>
+</div>
+${item.isDynamic ? `
+<div style="display: flex; gap: 12px; align-items: center;">
+<input type="number" id="modal-calc-sp" class="glass-input" placeholder="Enter Supply Price..." aria-label="Supply price" min="0" oninput="checkMax(this)" style="padding:10px; font-size:1.1rem; text-align:left; border-color: var(--sys-secondary);">
+<span style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">EGP</span>
+</div>
+` : ''}
+<div style="display: flex; background: rgba(0,0,0,0.5); border-radius: var(--radius-full); padding: 4px; border: 1px solid var(--sys-outline);">
+<button class="omni-tab active" id="mtg-unit" onclick="setModalAddMode('unit', '${escapeHTML(id)}')" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
+<button class="omni-tab" id="mtg-pack" onclick="setModalAddMode('pack', '${escapeHTML(id)}')" style="flex:1; justify-content:center; height:32px;">By Packages</button>
+</div>
+<div style="display: flex; gap: 12px; align-items: center;">
+<input type="number" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd('${escapeHTML(id)}')" style="padding:10px; font-size:1.1rem; text-align:left;">
+<span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
+<button onclick="modalAdd('${escapeHTML(id)}')" style="background:var(--sys-primary); color:#000; border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
+</div>
+</div>
+`;
+window.currentModalAddMode = 'unit';
+els.modal.classList.add('active');
+setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus(); }, 100);
+};
+window.openDetails = openDetails;
+
+const closeModal = () => {
+els.modal.classList.remove('active');
+if(lastFocusedBeforeModal && document.contains(lastFocusedBeforeModal)) lastFocusedBeforeModal.focus();
+};
+
+const updateDashTotal = () => {
+let total = 0;
+dashboardMap.forEach(c => total += c.cost);
+els.dashTotal.textContent = `${total.toFixed(2)} EGP`;
+els.badge.textContent = dashboardMap.size;
+els.badge.style.display = dashboardMap.size ? 'block' : 'none';
+};
+
+window.updateDashItem = (id, val, mode = 'req') => {
+let rawVal = parseFloat(val);
+if(isNaN(rawVal) || rawVal < 0) rawVal = 0;
+if(rawVal > 999999) { rawVal = 999999; showToast("Maximum amount is 999,999", "warning"); }
+
+const entry = dashboardMap.get(id);
+if(!entry) return;
+
+let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0;
+
+if (mode === 'pack') {
+packs = rawVal; req = packs * entry.item.bQty;
+} else if (mode === 'req') {
+req = rawVal; packs = Math.round(req / entry.item.bQty);
+} else if (mode === 'sp') {
+sp = rawVal;
+}
+
+let cost = entry.item.isDynamic ? packs * (sp * 0.5) : packs * entry.item.p;
+
+entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
+dashboardMap.set(id, entry);
+syncCurrentOrder();
+
+const reqEl = document.getElementById(`dash-in-${id}`);
+const packEl = document.getElementById(`dash-packs-${id}`);
+const cEl = document.getElementById(`out-cost-${id}`);
+
+if(mode !== 'req' && reqEl) reqEl.value = req;
+if(mode !== 'pack' && packEl) packEl.value = packs;
+if(mode !== 'req' && reqEl && parseFloat(reqEl.value) > 999999) reqEl.value = 999999;
+if(mode !== 'pack' && packEl && parseFloat(packEl.value) > 999999) packEl.value = 999999;
+if(cEl) cEl.textContent = cost.toFixed(2);
+
+updateDashTotal();
+
+if(currentOrderIndex < 0) {
+els.dashStatus.textContent = "Unsaved"; els.dashStatus.style.background = "var(--sys-surface-highest)"; els.dashStatus.style.color = "var(--sys-on-surface-variant)";
+} else {
+els.dashStatus.textContent = "Active Order"; els.dashStatus.style.background = "var(--sys-success)"; els.dashStatus.style.color = "#000";
+}
+};
+
+const renderDashboard = () => {
+const items = Array.from(dashboardMap.values());
+updateDashTotal();
+els.dashActions.style.display = items.length ? 'grid' : 'none';
+els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
+els.ordersBar.innerHTML = savedOrders.map((o, idx) => `
+<button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">
+${escapeHTML(o.name)}
+<span class="material-symbols-rounded chip-del" onclick="deleteOrder(event, ${idx})" role="button" tabindex="0" aria-label="Delete order ${escapeHTML(o.name)}">close</span>
+</button>
+`).join('') + `<button class="order-chip" onclick="createNewOrder()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
+
+els.dashTitleText.textContent = currentOrderIndex >= 0 ? savedOrders[currentOrderIndex].name : "Current Calculation";
+els.dashStatus.textContent = currentOrderIndex >= 0 ? "Active Order" : "Unsaved";
+els.dashStatus.style.background = currentOrderIndex >= 0 ? "var(--sys-success)" : "var(--sys-surface-highest)";
+els.dashStatus.style.color = currentOrderIndex >= 0 ? "#000" : "var(--sys-on-surface-variant)";
+
+const saveBtn = document.getElementById('btnSaveOrder');
+if(saveBtn) saveBtn.innerHTML = `<span class="material-symbols-rounded">save</span> ${currentOrderIndex >= 0 ? 'Save Updates' : 'Save Order'}`;
+
+els.dashGrid.innerHTML = items.map(c => `
+<div class="dash-item" id="dash-item-${escapeHTML(c.item.id)}">
+<div class="dash-item-top">
+<div>
+<div class="card-title">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div>
+<div class="card-subtitle">Base: ${c.item.bQty} ${escapeHTML(c.item.bType)} / Pack</div>
+</div>
+<button class="trash-btn" onclick="removeDashboardItem('${escapeHTML(c.item.id)}')" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
+</div>
+<div class="dash-controls">
+<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(c.req)}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
+<div class="control-group"><span class="control-label">Packs</span><input type="number" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(c.packs)}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'pack')" aria-label="Packs"></div>
+${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${c.supplyPrice}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'sp')" aria-label="Supply price"></div>` : ''}
+<div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${c.cost.toFixed(2)}</div></div>
+</div>
+</div>
+`).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">calculate</span><p style="margin-top:16px">Calculator is empty. Search and quickly add items.</p></div>';
+};
+
+const autoSaveUnfinished = () => {
+const orderName = `Unfinished ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+let total = 0; dashboardMap.forEach(c => total += c.cost);
+savedOrders.push({ id: Date.now().toString(), name: orderName, total: `${total.toFixed(2)} EGP`, items: Array.from(dashboardMap.entries()) });
+showToast("Unsaved work moved to Unfinished", "save");
+};
+
+window.createNewOrder = () => {
+if (currentOrderIndex === -1 && dashboardMap.size > 0) {
+if (savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed. Please delete some first."); return; }
+autoSaveUnfinished();
+}
+dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard();
+};
+
+window.removeDashboardItem = (id) => { dashboardMap.delete(id); syncCurrentOrder(); renderDashboard(); };
+window.clearDashboard = () => { dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard(); };
+
+window.saveAsOrder = () => {
+if(dashboardMap.size === 0) return;
+const dateStr = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+if (currentOrderIndex >= 0) {
+savedOrders[currentOrderIndex].name = `Order ${dateStr}`; syncCurrentOrder(); renderDashboard(); showToast("Order saved and updated", "bookmark_added");
+} else {
+if(savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed."); return; }
+savedOrders.push({ id: Date.now().toString(), name: `Order ${dateStr}`, total: els.dashTotal.textContent, items: Array.from(dashboardMap.entries()) });
+currentOrderIndex = savedOrders.length - 1; saveState(); renderDashboard(); showToast("Order saved", "bookmark_added");
+}
+};
+
+window.loadOrder = (idx) => {
+if (currentOrderIndex === -1 && dashboardMap.size > 0) {
+if (savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed. Please delete some first."); return; }
+autoSaveUnfinished();
+}
+const order = savedOrders[idx]; if(!order) return;
+dashboardMap = new Map(order.items); currentOrderIndex = idx; saveState(); renderDashboard(); showToast(`Loaded ${order.name}`, "restore");
+};
+
+window.deleteOrder = (e, idx) => {
+e.stopPropagation(); lastDeletedOrder = savedOrders[idx]; lastDeletedIndex = idx; savedOrders.splice(idx, 1);
+if(currentOrderIndex === idx) { currentOrderIndex = -1; dashboardMap.clear(); }
+else if (currentOrderIndex > idx) { currentOrderIndex--; }
+saveState(); renderDashboard(); showUndoToast(`Order deleted`, "delete");
+};
+
+window.undoDelete = () => {
+if(!lastDeletedOrder) return;
+savedOrders.splice(lastDeletedIndex, 0, lastDeletedOrder);
+if (currentOrderIndex !== -1 && currentOrderIndex >= lastDeletedIndex) { currentOrderIndex++; }
+lastDeletedOrder = null; saveState(); renderDashboard(); showToast("Order restored", "restore");
+const toastBtn = document.querySelector('.undo-toast button'); if(toastBtn && toastBtn.parentElement) toastBtn.parentElement.remove();
+};
+
+window.exportDashboardText = () => {
+const items = Array.from(dashboardMap.values()); if(!items.length) return;
+let txt = `${els.dashTitleText.textContent}:\n\n`;
+items.forEach(c => {
+const dpInfo = c.item.isDynamic ? ` [Supply Price: ${c.supplyPrice}]` : '';
+txt += `- ${c.item.n}: Req ${c.req} ${c.item.bType} -> ${c.packs} Packs${dpInfo} = ${c.cost.toFixed(2)} EGP\n`;
+});
+txt += `\nTotal: ${els.dashTotal.textContent}`; navigator.clipboard.writeText(txt).then(() => showToast("Copied to clipboard", "content_copy"));
+};
+
+window.downloadDashboard = () => {
+if(dashboardMap.size === 0) return;
+const blob = new Blob([JSON.stringify({ title: els.dashTitleText.textContent, items: Array.from(dashboardMap.entries()) }, null, 2)], { type: "application/json" });
+const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `LX_Calc_${Date.now()}.json`;
+a.click(); URL.revokeObjectURL(url); showToast("Download started", "download_done");
+};
+
+els.fileUp.addEventListener('change', (e) => {
+const file = e.target.files[0]; if(!file) return;
+const reader = new FileReader();
+reader.onload = (ev) => {
+try {
+const data = JSON.parse(ev.target.result);
+if(data.items) { dashboardMap = new Map(data.items); currentOrderIndex = -1; saveState(); renderDashboard(); showToast("Calculation loaded from file", "file_download_done"); }
+} catch(err) { alert("Invalid file format"); }
+}; reader.readAsText(file); els.fileUp.value = '';
+});
+
+els.in.addEventListener('input', () => {
+if(activeView === 'calc' && !els.in.value.startsWith('/')) switchView('search');
+if(activeView === 'search') renderSearch();
+});
+
+els.fU.addEventListener('change', renderSearch); els.fS.addEventListener('change', renderSearch);
+els.modal.addEventListener('click', e => { if(e.target === els.modal) closeModal(); });
+
+const updateFocus = (cards) => {
+cards.forEach((c, i) => {
+const isFocused = i === focusedCardIndex;
+c.classList.toggle('focused', isFocused);
+c.setAttribute('aria-selected', String(isFocused));
+if(isFocused) { c.focus(); c.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+});
+};
+
+const moveFocus = (delta) => {
+if(focusedCardIndex + delta >= renderedCount - 5 && renderedCount < currentResults.length) appendNextChunk();
+const cards = Array.from(els.res.querySelectorAll('.card'));
+if(!cards.length) return;
+focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cards.length - 1);
+updateFocus(cards);
+};
+
+window.cardKeydown = (e, id) => {
+if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetails(id); return; }
+if(e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1); }
+else if(e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1); }
+};
+
+document.addEventListener('keydown', e => {
+if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') { e.preventDefault(); els.in.focus(); return; }
+if (e.key === '/' && document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT') {
+e.preventDefault(); switchView('search'); els.in.focus(); return;
+}
+if(e.key === 'Escape') { closeModal(); return; }
+if(activeView === 'search' && document.activeElement === els.in) {
+const cards = els.res.querySelectorAll('.card');
+if(!cards.length) return;
+if(e.key === 'ArrowDown') { e.preventDefault(); focusedCardIndex = 0; moveFocus(0); }
+else if(e.key === 'ArrowUp') { e.preventDefault(); focusedCardIndex = cards.length - 1; moveFocus(0); }
+else if(e.key === 'Enter') { if(focusedCardIndex >= 0 && cards[focusedCardIndex]) { e.preventDefault(); cards[focusedCardIndex].click(); } }
+}
+if(activeView === 'search' && e.key === 'End' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
+e.preventDefault(); loadAllRemaining();
+const cards = Array.from(els.res.querySelectorAll('.card'));
+focusedCardIndex = cards.length - 1; updateFocus(cards);
+}
+if(activeView === 'search' && e.key === 'Home' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
+e.preventDefault();
+const cards = Array.from(els.res.querySelectorAll('.card'));
+focusedCardIndex = 0; updateFocus(cards);
+}
+});
+
+loadState(); renderSearch(); renderDashboard();
 </script>
 </body>
 </html>
