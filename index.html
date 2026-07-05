@@ -74,9 +74,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .dock-btn:hover { background: var(--sys-surface-highest); }
 .dropdown-menu { position: absolute; top: 50px; right: 0; background: rgba(15, 16, 20, 0.97); backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-md); padding: 8px; display: flex; flex-direction: column; gap: 4px; min-width: 170px; box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all 0.2s var(--spring); z-index: 100; }
 .dropdown-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
-.dropdown-item { background: transparent; border: none; color: var(--sys-on-bg); font-family: inherit; font-size: 0.95rem; padding: 10px 16px; border-radius: var(--radius-sm); text-align: left; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 12px; width: 100%; }
+.dropdown-item { background: transparent; border: none; color: var(--sys-on-bg); font-family: inherit; font-size: 0.95rem; padding: 10px 16px; border-radius: var(--radius-sm); text-align: left; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 12px; width: 100%; text-decoration: none; }
 .dropdown-item:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
 .dropdown-item.active { background: var(--sys-primary-container); color: var(--sys-primary); font-weight: 600; }
+.quick-links-popover { position: fixed; background: rgba(15, 16, 20, 0.97); backdrop-filter: var(--blur-lg); -webkit-backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-md); padding: 8px; display: flex; flex-direction: column; gap: 4px; min-width: 190px; box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translateY(-6px); transition: all 0.15s var(--spring); z-index: 250; }
+.quick-links-popover.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 var(--space-5); z-index: 10; min-height: 0; }
 .omnibar { width: 100%; background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border: 1px solid var(--sys-outline); border-radius: var(--radius-full); padding: 8px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: var(--space-4); flex-shrink: 0; }
 .omnibar:focus-within { border-color: var(--sys-outline-glow); box-shadow: var(--shadow-float), var(--shadow-glow); transform: translateY(-2px); background: var(--sys-surface-high); }
@@ -200,6 +202,8 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 .cmdk-item .material-symbols-rounded { color: var(--sys-on-surface-variant); font-size: 20px; flex-shrink: 0; }
 .cmdk-item-title { font-size: 0.98rem; color: var(--sys-on-bg); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmdk-item-sub { font-size: 0.8rem; color: var(--sys-on-surface-variant); flex-shrink: 0; }
+.cmdk-quick-link-btn { background: transparent; border: none; color: var(--sys-on-surface-variant); width: 28px; height: 28px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
+.cmdk-quick-link-btn:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
 .cmdk-item.active { background: var(--sys-primary-container); }
 .cmdk-item.active .material-symbols-rounded, .cmdk-item.active .cmdk-item-title { color: var(--sys-primary); }
 .cmdk-empty { text-align: center; padding: 32px 16px; color: var(--sys-on-surface-variant); font-size: 0.9rem; }
@@ -343,6 +347,7 @@ LX Search
 <div class="cmdk-list" id="cmdkList" role="listbox" aria-label="Command palette results"></div>
 </div>
 </div>
+<div class="quick-links-popover" id="quickLinksPopover" role="menu" aria-label="Quick web search links"></div>
 <div class="toast-container" id="toasts" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
 const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -663,6 +668,7 @@ window.clearFilters = () => { els.fU.value = 'all'; els.fS.value = 'all'; render
 
 const switchView = (view) => {
 if (activeView === view) return;
+closeQuickLinks();
 activeView = view;
 els.tSearch.classList.toggle('active', view === 'search'); els.tCalc.classList.toggle('active', view === 'calc');
 els.vSearch.classList.toggle('active', view === 'search'); els.vCalc.classList.toggle('active', view === 'calc');
@@ -685,6 +691,7 @@ onkeydown="cardKeydown(event, '${escapeHTML(i.id)}')">
 </div>
 </div>
 <div class="card-actions" onclick="event.stopPropagation()">
+<button class="copy-btn" onclick="toggleQuickLinks(event, '${escapeHTML(i.id)}')" title="Search the web" aria-label="Search the web for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span></button>
 <button class="copy-btn" onclick="copyItemInfo('${escapeHTML(i.id)}')" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
 <div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
 ${i.isDynamic ? `
@@ -755,6 +762,7 @@ if(qtyInput) { qtyInput.focus(); qtyInput.closest('.card').scrollIntoView({ bloc
 };
 
 const renderSearch = () => {
+closeQuickLinks();
 const rawQ = els.in.value;
 const qStr = rawQ.toLowerCase().trim();
 els.icon.textContent = activeView === 'calc' ? 'calculate' : 'data_usage';
@@ -898,6 +906,37 @@ if(activeView === 'calc') renderDashboard();
 closeModal();
 };
 
+const qlPop = document.getElementById('quickLinksPopover');
+let quickLinksOpenId = null;
+
+window.toggleQuickLinks = (e, id) => {
+e.stopPropagation();
+if(quickLinksOpenId === id) { closeQuickLinks(); return; }
+const item = db.find(i => i.id === id);
+if(!item) return;
+quickLinksOpenId = id;
+const qStr = encodeURIComponent(item.n);
+qlPop.innerHTML = `
+<a href="${generateSearchURL(qStr)}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">travel_explore</span> ${escapeHTML(getEngineName())}</a>
+<a href="${generateImageURL(qStr)}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">image</span> Images</a>
+<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">medical_services</span> Drugs.com</a>
+<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">psychology</span> Perplexity</a>
+`;
+const rect = e.currentTarget.getBoundingClientRect();
+const popWidth = 210;
+let left = Math.min(rect.left, window.innerWidth - popWidth - 8);
+qlPop.style.left = `${Math.max(8, left)}px`;
+qlPop.style.top = `${Math.min(rect.bottom + 6, window.innerHeight - 180)}px`;
+qlPop.classList.add('active');
+};
+
+window.closeQuickLinks = () => { quickLinksOpenId = null; qlPop.classList.remove('active'); };
+
+document.addEventListener('click', (e) => {
+if(quickLinksOpenId && !e.target.closest('.quick-links-popover') && !e.target.closest('[onclick*="toggleQuickLinks"]')) closeQuickLinks();
+});
+els.res.addEventListener('scroll', closeQuickLinks);
+
 const generateSearchURL = (qStr) => {
 if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}`;
 if(preferredEngine === 'startpage') return `https://www.startpage.com/do/dsearch?query=${qStr}`;
@@ -921,6 +960,7 @@ return 'Brave Search';
 };
 
 const openDetails = (id) => {
+closeQuickLinks();
 const item = db.find(i => i.id === id);
 if (!item) return;
 lastFocusedBeforeModal = document.activeElement;
@@ -1218,7 +1258,7 @@ baseCommands().filter(c => !qStr || c.title.toLowerCase().includes(qStr)).forEac
 if(qStr) {
 const qTokens = qStr.split(/\s+/).filter(Boolean);
 db.filter(item => qTokens.every(tk => item.searchStr.includes(tk))).slice(0, 8).forEach(m => cmdkItems.push({
-type: 'medicine', icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
+type: 'medicine', id: m.id, icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
 sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
 action: () => { closeCmdk(); switchView('search'); els.in.value = m.n; els.in.dispatchEvent(new Event('input')); focusCardById(m.id); }
 }));
@@ -1237,6 +1277,7 @@ html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="o
 <span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
 <span class="cmdk-item-title">${escapeHTML(item.title)}</span>
 <span class="cmdk-item-sub">${escapeHTML(item.sub || '')}</span>
+${item.type === 'medicine' ? `<button class="cmdk-quick-link-btn" onclick="event.stopPropagation(); toggleQuickLinks(event, '${escapeHTML(item.id)}')" title="Search the web" aria-label="Search the web for ${escapeHTML(item.title)}"><span class="material-symbols-rounded" style="font-size:16px">travel_explore</span></button>` : ''}
 </div>`;
 });
 cmdkEls.list.innerHTML = html;
@@ -1272,7 +1313,10 @@ return;
 if (e.key === '/' && document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT') {
 e.preventDefault(); openCmdk(); return;
 }
-if(e.key === 'Escape') { closeModal(); return; }
+if(e.key === 'Escape') {
+if(quickLinksOpenId) { closeQuickLinks(); return; }
+closeModal(); return;
+}
 if(activeView === 'search' && document.activeElement === els.in) {
 const cards = els.res.querySelectorAll('.card');
 if(!cards.length) return;
