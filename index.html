@@ -271,7 +271,7 @@ LX Search
 <div class="omni-divider"></div>
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
-<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines..." autocomplete="off" aria-label="Search medicines">
+<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" aria-label="Search medicines">
 <button class="omni-side-btn" id="omniClear" onclick="clearInput()" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
@@ -745,6 +745,15 @@ els.meta.textContent = renderedCount >= currentResults.length
 : `Showing ${renderedCount} of ${currentResults.length} — scroll for more`;
 };
 
+const focusCardById = (id) => {
+setTimeout(() => {
+let guard = 0;
+while(!document.getElementById(`quick-in-${id}`) && renderedCount < currentResults.length && guard < 30) { appendNextChunk(); guard++; }
+const qtyInput = document.getElementById(`quick-in-${id}`);
+if(qtyInput) { qtyInput.focus(); qtyInput.closest('.card').scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+}, 30);
+};
+
 const renderSearch = () => {
 const rawQ = els.in.value;
 const qStr = rawQ.toLowerCase().trim();
@@ -1211,7 +1220,7 @@ const qTokens = qStr.split(/\s+/).filter(Boolean);
 db.filter(item => qTokens.every(tk => item.searchStr.includes(tk))).slice(0, 8).forEach(m => cmdkItems.push({
 type: 'medicine', icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
 sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
-action: () => { closeCmdk(); switchView('search'); openDetails(m.id); }
+action: () => { closeCmdk(); switchView('search'); els.in.value = m.n; els.in.dispatchEvent(new Event('input')); focusCardById(m.id); }
 }));
 }
 cmdkActiveIndex = cmdkItems.length ? 0 : -1;
