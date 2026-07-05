@@ -41,9 +41,9 @@
 --shadow-float: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
 --shadow-card: 0 2px 10px -4px rgba(0, 0, 0, 0.45);
 --shadow-glow: 0 0 32px var(--sys-primary-container);
---focus-ring: 0 0 0 2px var(--sys-bg), 0 0 0 4px var(--sys-primary);
+--focus-ring: 0 0 0 3px var(--sys-primary-container), 0 0 0 1px var(--sys-outline-glow);
 --spring: cubic-bezier(0.2, 0, 0, 1);
---row-h: 44px;
+--row-h: 52px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { height: 100%; }
@@ -55,7 +55,11 @@ body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color
 * { scrollbar-width: thin; scrollbar-color: var(--sys-surface-highest) transparent; }
 :focus { outline: none; }
 :focus-visible { box-shadow: var(--focus-ring); }
-.card:focus-visible, .order-chip:focus-visible { box-shadow: var(--focus-ring); }
+input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: none; }
+.card:focus-visible, .order-chip:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible { box-shadow: var(--focus-ring); }
+.omni-input:focus-visible { box-shadow: none; }
+.action-pill:focus-within { border-color: var(--sys-primary); box-shadow: 0 0 0 3px var(--sys-primary-container); }
+.glass-input:focus-visible { box-shadow: none; }
 .ambient-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: radial-gradient(circle at 15% 20%, rgba(40, 55, 100, 0.4) 0%, transparent 40%), radial-gradient(circle at 85% 80%, rgba(80, 40, 80, 0.3) 0%, transparent 40%); filter: var(--blur-lg); animation: breathe 15s infinite alternate ease-in-out; }
 @keyframes breathe { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
 .header { padding: var(--space-5); display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; z-index: 10; flex-shrink: 0; }
@@ -87,14 +91,12 @@ body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color
 .omni-input::placeholder { color: var(--sys-on-surface-variant); }
 .omni-side-btn { color: var(--sys-on-surface-variant); cursor: pointer; width: 30px; height: 30px; border-radius: var(--radius-full); border: none; background: transparent; display: grid; place-items: center; transition: all 0.2s var(--spring); flex-shrink: 0; }
 .omni-side-btn:hover { color: var(--sys-primary); background: var(--sys-surface-highest); }
-.omni-side-btn.cmd-active { color: var(--sys-primary); background: var(--sys-primary-container); }
 .badge { background: var(--sys-primary); color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); transition: transform 0.2s var(--spring); }
 .badge.pop { transform: scale(1.2); }
 .view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; padding-left: 8px; padding-right: 16px; min-height: 0; position: relative; overscroll-behavior: contain; }
 .view-section.active { display: flex; }
-.hint-row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; font-size: 0.82rem; color: var(--sys-on-surface-variant); padding: var(--space-1) var(--space-1) var(--space-3); flex-shrink: 0; }
-.hint-row kbd { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 6px; padding: 2px 7px; font-family: inherit; font-size: 0.78rem; color: var(--sys-on-bg); }
-.hint-cmd { color: var(--sys-primary); cursor: pointer; background: none; border: none; font-family: inherit; font-size: 0.82rem; padding: 0; text-decoration: underline; text-underline-offset: 2px; }
+.cmdk-badge { display: flex; align-items: center; gap: 3px; color: var(--sys-on-surface-variant); background: rgba(255,255,255,0.04); border: 1px solid var(--sys-outline); border-radius: var(--radius-sm); padding: 5px 8px; font-family: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--spring); flex-shrink: 0; }
+.cmdk-badge:hover { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); }
 .filters { display: flex; gap: 12px; margin-top: 0; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; align-items: center; }
 .filter-wrapper { position: relative; display: flex; align-items: center; flex-shrink: 0; }
 .chip { background: var(--sys-surface); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); padding: 8px 32px 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; outline: none; transition: all 0.2s; white-space: nowrap; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='%23a0a0ab' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); background-repeat: no-repeat; background-position: right 8px center; }
@@ -108,7 +110,7 @@ body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color
 .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
 .results-meta { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-1) 0; flex-shrink: 0; }
 .results-list { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-5); }
-.card { background: var(--sys-surface); border: 1px solid var(--sys-outline); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: all 0.2s var(--spring); cursor: pointer; box-shadow: var(--shadow-card); }
+.card { background: var(--sys-surface); border: 1px solid var(--sys-outline); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: all 0.2s var(--spring); cursor: pointer; box-shadow: var(--shadow-card); }
 .card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px); background: var(--sys-surface-high); }
 .card-main-info { display: flex; align-items: center; gap: var(--space-4); flex: 1; min-width: 0; }
 .card-icon { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--sys-primary-container); color: var(--sys-primary); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
@@ -123,17 +125,17 @@ input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-i
 input[type="number"] { -moz-appearance: textfield; }
 .copy-btn { background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant); width: var(--row-h); height: var(--row-h); border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
 .copy-btn:hover { background: var(--sys-surface-highest); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
-.action-pill { display: flex; align-items: center; height: var(--row-h); background: rgba(0,0,0,0.5); border-radius: var(--radius-full); border: 1px solid var(--sys-outline); padding: 0 4px 0 14px; gap: 8px; transition: border-color 0.2s; flex-shrink: 0; }
+.action-pill { display: flex; align-items: center; height: var(--row-h); background: rgba(0,0,0,0.45); border-radius: var(--radius-full); border: 1px solid var(--sys-outline); padding: 0 6px 0 20px; gap: 10px; transition: border-color 0.2s, box-shadow 0.2s; flex-shrink: 0; }
 .action-pill:focus-within { border-color: var(--sys-primary); }
-.action-pill.has-sp { padding-left: 12px; }
-.pill-input { background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.05rem; font-weight: 600; min-width: 0; width: 56px; }
-.pill-input::placeholder { color: var(--sys-on-surface-variant); font-weight: 400; font-size: 0.9rem; }
-.pill-input.sp-input { color: var(--sys-secondary); width: 72px; }
-.pill-suffix { color: var(--sys-on-surface-variant); font-size: 0.72rem; font-weight: 500; flex-shrink: 0; }
-.pill-sep { width: 1px; align-self: stretch; margin: 10px 0; background: var(--sys-outline); flex-shrink: 0; }
-.pill-toggle { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-bg); font-family: inherit; font-size: 0.82rem; font-weight: 600; padding: 6px 10px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
+.action-pill.has-sp { padding-left: 18px; }
+.pill-input { background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.2rem; font-weight: 600; min-width: 0; width: 68px; text-align: left; }
+.pill-input::placeholder { color: var(--sys-on-surface-variant); font-weight: 400; font-size: 0.95rem; }
+.pill-input.sp-input { color: var(--sys-secondary); width: 88px; }
+.pill-suffix { color: var(--sys-on-surface-variant); font-size: 0.75rem; font-weight: 500; flex-shrink: 0; }
+.pill-sep { width: 1px; align-self: stretch; margin: 12px 0; background: var(--sys-outline); flex-shrink: 0; }
+.pill-toggle { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-bg); font-family: inherit; font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
 .pill-toggle:hover { background: var(--sys-surface-high); border-color: var(--sys-primary); color: var(--sys-primary); }
-.pill-add { background: var(--sys-surface-highest); color: var(--sys-on-bg); border: none; width: 36px; height: 36px; flex-shrink: 0; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; }
+.pill-add { background: var(--sys-surface-highest); color: var(--sys-on-bg); border: none; width: 42px; height: 42px; flex-shrink: 0; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; }
 .pill-add:hover { background: var(--sys-primary); color: #000; transform: scale(1.05); }
 .tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; flex-shrink: 0; }
 .tag.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
@@ -183,6 +185,24 @@ input[type="number"] { -moz-appearance: textfield; }
 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
 mark { background: var(--sys-primary-container); color: var(--sys-primary); border-radius: 4px; padding: 0 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.cmdk-overlay { position: fixed; inset: 0; background: rgba(5,5,7,0.55); backdrop-filter: blur(6px); z-index: 200; display: flex; justify-content: center; align-items: flex-start; padding-top: 12vh; opacity: 0; pointer-events: none; transition: opacity 0.2s var(--spring); }
+.cmdk-overlay.active { opacity: 1; pointer-events: auto; }
+.cmdk-panel { width: 92%; max-width: 560px; background: rgba(18, 19, 23, 0.92); backdrop-filter: var(--blur-lg); -webkit-backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); box-shadow: var(--shadow-float); overflow: hidden; transform: translateY(-12px) scale(0.98); opacity: 0; transition: transform 0.25s var(--spring), opacity 0.2s var(--spring); max-height: 70vh; display: flex; flex-direction: column; }
+.cmdk-overlay.active .cmdk-panel { transform: translateY(0) scale(1); opacity: 1; }
+.cmdk-input-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--sys-outline); flex-shrink: 0; }
+.cmdk-input-row .material-symbols-rounded { color: var(--sys-primary); flex-shrink: 0; }
+.cmdk-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.15rem; min-width: 0; }
+.cmdk-input::placeholder { color: var(--sys-on-surface-variant); }
+.cmdk-input-row kbd { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 6px; padding: 3px 8px; font-family: inherit; font-size: 0.75rem; color: var(--sys-on-surface-variant); flex-shrink: 0; }
+.cmdk-list { overflow-y: auto; padding: var(--space-2); display: flex; flex-direction: column; gap: 2px; }
+.cmdk-group-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-3) var(--space-1); }
+.cmdk-item { display: flex; align-items: center; gap: var(--space-3); padding: 11px var(--space-3); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.12s; }
+.cmdk-item .material-symbols-rounded { color: var(--sys-on-surface-variant); font-size: 20px; flex-shrink: 0; }
+.cmdk-item-title { font-size: 0.98rem; color: var(--sys-on-bg); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmdk-item-sub { font-size: 0.8rem; color: var(--sys-on-surface-variant); flex-shrink: 0; }
+.cmdk-item.active { background: var(--sys-primary-container); }
+.cmdk-item.active .material-symbols-rounded, .cmdk-item.active .cmdk-item-title { color: var(--sys-primary); }
+.cmdk-empty { text-align: center; padding: 32px 16px; color: var(--sys-on-surface-variant); font-size: 0.9rem; }
 @media (prefers-reduced-motion: reduce) {
 *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }
@@ -251,24 +271,16 @@ LX Search
 <div class="omni-divider"></div>
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
-<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press / for commands..." autocomplete="off" aria-label="Search medicines or type a command">
-<button class="omni-side-btn" id="cmdToggleBtn" onclick="toggleCommandMode()" title="Command palette" aria-label="Toggle command palette">
-<span class="material-symbols-rounded" style="font-size: 20px;">terminal</span>
-</button>
+<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines..." autocomplete="off" aria-label="Search medicines">
 <button class="omni-side-btn" id="omniClear" onclick="clearInput()" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
+</button>
+<button class="cmdk-badge" onclick="openCmdk()" title="Open command palette" aria-label="Open command palette">
+<span class="material-symbols-rounded" style="font-size:15px;">bolt</span>⌘K
 </button>
 </div>
 </div>
 <div class="view-section active" id="viewSearch">
-<div class="hint-row" id="hintRow">
-<span class="material-symbols-rounded" style="font-size:16px;">keyboard</span>
-<span><kbd>Tab</kbd> move between items</span>
-<span><kbd>Enter</kbd> open</span>
-<span><kbd>Ctrl</kbd>+<kbd>K</kbd> focus search</span>
-<span>·</span>
-<button class="hint-cmd" onclick="toggleCommandMode()">/ commands</button>
-</div>
 <div class="filters">
 <div class="filter-wrapper">
 <select id="fUnit" class="chip" aria-label="Filter by unit"><option value="all">Any Unit</option></select>
@@ -319,6 +331,16 @@ LX Search
 <div class="engine-links" id="sheetLinks"></div>
 </div>
 <div id="sheetAddCalc"></div>
+</div>
+</div>
+<div class="cmdk-overlay" id="cmdkOverlay">
+<div class="cmdk-panel" role="dialog" aria-modal="true" aria-label="Command palette">
+<div class="cmdk-input-row">
+<span class="material-symbols-rounded">bolt</span>
+<input type="text" id="cmdkInput" class="cmdk-input" placeholder="Search medicines or run a command..." autocomplete="off" aria-label="Search medicines or run a command">
+<kbd>Esc</kbd>
+</div>
+<div class="cmdk-list" id="cmdkList" role="listbox" aria-label="Command palette results"></div>
 </div>
 </div>
 <div class="toast-container" id="toasts" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -457,10 +479,8 @@ const rawData = [
 {name: "Tentavier 160mcg", unit: "Spray", price: 27, company: "شراء موحد"},
 {name: "Toujeo قوي عاملة", unit: "Pen", price: 50, company: "شراء موحد"},
 {name: "Toujeo طلاب", unit: "Pen", price: 15, company: "شراء موحد"},
-{name: "Tresiba cartridge قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"},
-{name: "Tresiba cartridge طلاب", unit: "Pen", price: 25, company: "شراء موحد"},
-{name: "Tresiba قوي عاملة", unit: "Pen", price: 70, company: "شراء موحد"},
-{name: "Tresiba طلاب", unit: "Pen", price: 25, company: "شراء موحد"},
+{name: "Tresiba قوي عاملة", unit: "Penfill", price: 70, company: "شراء موحد"},
+{name: "Tresiba طلاب", unit: "Penfill", price: 25, company: "شراء موحد"},
 {name: "Trileptal 300", unit: "50 Tab", price: 116.25, company: "شراء موحد"},
 {name: "Tritace 2.5", unit: "14 Tab", price: 14.5, company: "شراء موحد"},
 {name: "Tritace 5", unit: "14 Tab", price: 19, company: "شراء موحد"},
@@ -534,8 +554,7 @@ dashActions: document.getElementById('dashActions'), badge: document.getElementB
 modal: document.getElementById('modalOverlay'), toasts: document.getElementById('toasts'),
 ordersBar: document.getElementById('ordersBar'), dashStatus: document.getElementById('dashStatus'),
 dashTitleText: document.getElementById('dashTitleText'), fileUp: document.getElementById('fileUpload'),
-engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta'),
-cmdBtn: document.getElementById('cmdToggleBtn')
+engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta')
 };
 
 [...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
@@ -642,14 +661,6 @@ window.clearInput = () => { els.in.value = ''; els.clear.style.display = 'none';
 window.clearSingleFilter = (id) => { document.getElementById(id).value = 'all'; renderSearch(); };
 window.clearFilters = () => { els.fU.value = 'all'; els.fS.value = 'all'; renderSearch(); };
 
-window.toggleCommandMode = () => {
-if(els.in.value.startsWith('/')) { els.in.value = ''; }
-else { els.in.value = '/'; }
-els.in.focus();
-if(activeView !== 'search') switchView('search');
-renderSearch();
-};
-
 const switchView = (view) => {
 if (activeView === view) return;
 activeView = view;
@@ -658,16 +669,6 @@ els.vSearch.classList.toggle('active', view === 'search'); els.vCalc.classList.t
 els.icon.textContent = view === 'calc' ? 'calculate' : 'data_usage';
 if(view === 'calc') renderDashboard();
 };
-
-const executeCommand = (cmd) => {
-els.in.value = ''; els.clear.style.display = 'none';
-if(cmd === '/calc') switchView('calc');
-else if(cmd === '/clear') { clearDashboard(); switchView('calc'); showToast("Calculator cleared");}
-else if(cmd === '/search') switchView('search');
-else if(cmd === '/export') { exportDashboardText(); switchView('calc'); }
-else if(cmd === '/orders') switchView('calc');
-};
-window.executeCommand = executeCommand;
 
 const disconnectObserver = () => { if(resultsObserver) { resultsObserver.disconnect(); resultsObserver = null; } };
 
@@ -696,18 +697,6 @@ ${i.isDynamic ? `
 ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
 </button>
 <button class="pill-add" onclick="inlineAdd('${escapeHTML(i.id)}', this)" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
-</div>
-</div>
-</div>
-`;
-
-const commandCardTemplate = (cmd) => `
-<div class="card" role="option" tabindex="0" onclick="executeCommand('${escapeHTML(cmd.c)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); executeCommand('${escapeHTML(cmd.c)}');}">
-<div class="card-main-info">
-<div class="card-icon"><span class="material-symbols-rounded">keyboard_command_key</span></div>
-<div class="card-content">
-<div class="card-title">${escapeHTML(cmd.c)}</div>
-<div class="card-subtitle">${escapeHTML(cmd.d)}</div>
 </div>
 </div>
 </div>
@@ -759,23 +748,10 @@ els.meta.textContent = renderedCount >= currentResults.length
 const renderSearch = () => {
 const rawQ = els.in.value;
 const qStr = rawQ.toLowerCase().trim();
-els.icon.textContent = rawQ.startsWith('/') ? 'terminal' : (activeView === 'calc' ? 'calculate' : 'data_usage');
+els.icon.textContent = activeView === 'calc' ? 'calculate' : 'data_usage';
 els.clear.style.display = rawQ.length > 0 ? 'flex' : 'none';
-els.cmdBtn.classList.toggle('cmd-active', rawQ.startsWith('/'));
-document.getElementById('hintRow').style.display = rawQ.length ? 'none' : 'flex';
 
 disconnectObserver();
-
-if (rawQ.startsWith('/')) {
-document.querySelector('.filters').style.display = 'none';
-els.meta.textContent = '';
-const cmds =[{c: '/calc', d: 'Open the calculator'}, {c: '/clear', d: 'Empty the calculator'}, {c: '/search', d: 'Go to search'}, {c: '/export', d: 'Export calculation to text'}, {c: '/orders', d: 'View saved orders'}].filter(cmd => cmd.c.includes(qStr));
-els.res.innerHTML = cmds.map(cmd => commandCardTemplate(cmd)).join('') || '<div style="text-align:center; padding:20px; color:var(--sys-on-surface-variant);">Unknown command</div>';
-currentResults = []; renderedCount = 0;
-focusedCardIndex = -1;
-return;
-}
-document.querySelector('.filters').style.display = 'flex';
 
 const qTokens = qStr.split(/\s+/).filter(Boolean);
 const u = els.fU.value, s = els.fS.value;
@@ -1174,8 +1150,8 @@ if(data.items) { dashboardMap = new Map(data.items); currentOrderIndex = -1; sav
 });
 
 els.in.addEventListener('input', () => {
-if(activeView === 'calc' && !els.in.value.startsWith('/')) switchView('search');
-if(activeView === 'search') renderSearch();
+if(activeView === 'calc') switchView('search');
+renderSearch();
 });
 
 els.fU.addEventListener('change', renderSearch); els.fS.addEventListener('change', renderSearch);
@@ -1198,6 +1174,76 @@ focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cards.length 
 updateFocus(cards);
 };
 
+const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList') };
+let cmdkActiveIndex = -1;
+let cmdkItems = [];
+let cmdkLastFocused = null;
+
+const baseCommands = () => [
+{ icon: 'calculate', title: 'Open Calculator', sub: 'View current calculation', action: () => { closeCmdk(); switchView('calc'); } },
+{ icon: 'delete_sweep', title: 'Clear Calculator', sub: 'Empty current calculation', action: () => { closeCmdk(); clearDashboard(); switchView('calc'); showToast('Calculator cleared'); } },
+{ icon: 'search', title: 'Go to Search', sub: 'Back to medicine search', action: () => { closeCmdk(); switchView('search'); } },
+{ icon: 'content_copy', title: 'Export Calculation', sub: 'Copy summary to clipboard', action: () => { closeCmdk(); exportDashboardText(); switchView('calc'); } },
+{ icon: 'bookmark', title: 'Saved Orders', sub: 'Open calculator orders', action: () => { closeCmdk(); switchView('calc'); } },
+{ icon: 'straighten', title: 'Toggle Add Mode', sub: globalAddMode === 'unit' ? 'Currently: Base Unit' : 'Currently: Packages', action: () => { closeCmdk(); toggleGlobalMode(); } },
+{ icon: 'travel_explore', title: 'Change Search Engine', sub: getEngineName(), action: () => { closeCmdk(); toggleEngineMenu(); } }
+];
+
+window.openCmdk = () => {
+cmdkLastFocused = document.activeElement;
+cmdkEls.overlay.classList.add('active');
+cmdkEls.input.value = '';
+renderCmdk('');
+setTimeout(() => cmdkEls.input.focus(), 50);
+};
+
+window.closeCmdk = () => {
+cmdkEls.overlay.classList.remove('active');
+if(cmdkLastFocused && document.contains(cmdkLastFocused)) cmdkLastFocused.focus();
+};
+
+const renderCmdk = (q) => {
+const qStr = q.toLowerCase().trim();
+cmdkItems = [];
+baseCommands().filter(c => !qStr || c.title.toLowerCase().includes(qStr)).forEach(c => cmdkItems.push({ type: 'command', ...c }));
+if(qStr) {
+const qTokens = qStr.split(/\s+/).filter(Boolean);
+db.filter(item => qTokens.every(tk => item.searchStr.includes(tk))).slice(0, 8).forEach(m => cmdkItems.push({
+type: 'medicine', icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
+sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
+action: () => { closeCmdk(); switchView('search'); openDetails(m.id); }
+}));
+}
+cmdkActiveIndex = cmdkItems.length ? 0 : -1;
+paintCmdk();
+};
+
+const paintCmdk = () => {
+if(!cmdkItems.length) { cmdkEls.list.innerHTML = '<div class="cmdk-empty">No matches found</div>'; return; }
+let html = '';
+const shown = { command: false, medicine: false };
+cmdkItems.forEach((item, i) => {
+if(!shown[item.type]) { html += `<div class="cmdk-group-label">${item.type === 'command' ? 'Commands' : 'Medicines'}</div>`; shown[item.type] = true; }
+html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" onclick="cmdkSelect(${i})">
+<span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
+<span class="cmdk-item-title">${escapeHTML(item.title)}</span>
+<span class="cmdk-item-sub">${escapeHTML(item.sub || '')}</span>
+</div>`;
+});
+cmdkEls.list.innerHTML = html;
+};
+
+window.cmdkHover = (i) => { cmdkActiveIndex = i; paintCmdk(); };
+window.cmdkSelect = (i) => { const item = cmdkItems[i]; if(item) item.action(); };
+
+cmdkEls.input.addEventListener('input', () => renderCmdk(cmdkEls.input.value));
+cmdkEls.overlay.addEventListener('click', e => { if(e.target === cmdkEls.overlay) closeCmdk(); });
+cmdkEls.input.addEventListener('keydown', e => {
+if(e.key === 'ArrowDown') { e.preventDefault(); if(cmdkItems.length) { cmdkActiveIndex = Math.min(cmdkActiveIndex + 1, cmdkItems.length - 1); paintCmdk(); } }
+else if(e.key === 'ArrowUp') { e.preventDefault(); if(cmdkItems.length) { cmdkActiveIndex = Math.max(cmdkActiveIndex - 1, 0); paintCmdk(); } }
+else if(e.key === 'Enter') { e.preventDefault(); if(cmdkActiveIndex >= 0) cmdkSelect(cmdkActiveIndex); }
+});
+
 window.cardKeydown = (e, id) => {
 if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetails(id); return; }
 if(e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1); }
@@ -1205,9 +1251,17 @@ else if(e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1); }
 };
 
 document.addEventListener('keydown', e => {
-if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') { e.preventDefault(); els.in.focus(); return; }
+if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') {
+e.preventDefault();
+if(cmdkEls.overlay.classList.contains('active')) closeCmdk(); else openCmdk();
+return;
+}
+if(cmdkEls.overlay.classList.contains('active')) {
+if(e.key === 'Escape') { e.preventDefault(); closeCmdk(); }
+return;
+}
 if (e.key === '/' && document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT') {
-e.preventDefault(); switchView('search'); els.in.focus(); return;
+e.preventDefault(); openCmdk(); return;
 }
 if(e.key === 'Escape') { closeModal(); return; }
 if(activeView === 'search' && document.activeElement === els.in) {
