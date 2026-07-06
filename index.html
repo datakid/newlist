@@ -204,11 +204,14 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 .cmdk-pane-header .material-symbols-rounded { font-size: 26px; color: var(--sys-primary); background: var(--sys-primary-container); width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; flex-shrink: 0; }
 .cmdk-pane-title { font-size: 1.15rem; font-weight: 600; }
 .cmdk-pane-sub { font-size: 0.85rem; color: var(--sys-on-surface-variant); margin-top: 2px; }
-.cmdk-pane-fields { display: flex; gap: var(--space-3); }
-.cmdk-pane-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.cmdk-pane-fields { display: flex; flex-direction: column; gap: var(--space-3); }
+.cmdk-pane-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .cmdk-pane-field label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sys-on-surface-variant); font-weight: 600; }
+.cmdk-pane-field.sp-field label { color: var(--sys-secondary); }
 .cmdk-pane-input { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.35); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); font-family: inherit; font-size: 1.15rem; font-weight: 600; padding: 10px 14px; border-radius: var(--radius-md); outline: none; transition: border-color 0.2s; }
 .cmdk-pane-input:focus { border-color: var(--sys-primary); }
+.cmdk-pane-input.sp-input:focus { border-color: var(--sys-secondary); }
+.cmdk-pane-input.sp-input { color: var(--sys-secondary); }
 .cmdk-pane-preview { font-size: 0.9rem; color: var(--sys-primary); font-weight: 500; }
 .cmdk-pane-actions { display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: var(--space-3); border-top: 1px solid var(--sys-outline); }
 .cmdk-pane-action { display: flex; align-items: center; gap: var(--space-3); padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.12s; }
@@ -1481,7 +1484,7 @@ const qtyVal = cmdkParsedQty || defaultQuickQty || 1;
 extraFields = `
 <div class="cmdk-pane-fields">
 <div class="cmdk-pane-field"><label>Quantity (${escapeHTML(med.bType)})</label><input type="number" id="paneQty" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(String(qtyVal))}" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>
- ${med.isDynamic ? `<div class="cmdk-pane-field"><label>Supply Price</label><input type="number" id="paneSp" class="cmdk-pane-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
+ ${med.isDynamic ? `<div class="cmdk-pane-field sp-field"><label>Supply Price</label><input type="number" id="paneSp" class="cmdk-pane-input sp-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
 </div>
 <div class="cmdk-pane-preview" id="panePreview"></div>
 `;
