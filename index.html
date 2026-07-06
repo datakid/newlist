@@ -60,7 +60,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .omni-input:focus-visible { box-shadow: none; }
 .action-pill:focus-within { border-color: var(--sys-primary); box-shadow: 0 0 0 3px var(--sys-primary-container); }
 .glass-input:focus-visible { box-shadow: none; }
-.ambient-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: radial-gradient(circle at 15% 20%, rgba(40, 55, 100, 0.4) 0%, transparent 40%), radial-gradient(circle at 85% 80%, rgba(80, 40, 80, 0.3) 0%, transparent 40%); filter: var(--blur-lg); animation: breathe 15s infinite alternate ease-in-out; }
+.ambient-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: radial-gradient(circle at 15% 20%, rgba(40, 55, 100, 0.4) 0%, transparent 40%), radial-gradient(circle at 85% 80%, rgba(80, 40, 80, 0.3) 0%, transparent 40%); filter: var(--blur-lg); animation: breathe 15s infinite alternate ease-in-out; will-change: transform; }
 @keyframes breathe { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.1); opacity: 1; } }
 .header { padding: var(--space-5); display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.5px; z-index: 10; flex-shrink: 0; }
 .brand { display: flex; align-items: center; gap: var(--space-3); }
@@ -112,8 +112,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
 .results-meta { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-1) 0; flex-shrink: 0; }
 .results-list { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-5); }
-.card { background: var(--sys-surface); border: 1px solid var(--sys-outline); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: all 0.2s var(--spring); cursor: pointer; box-shadow: var(--shadow-card); }
-.card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px); background: var(--sys-surface-high); }
+.card { background: var(--sys-surface); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: transform 0.2s var(--spring), border-color 0.2s, background-color 0.2s; cursor: pointer; box-shadow: var(--shadow-card); transform: translateZ(0); }
+.card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px) translateZ(0); background: var(--sys-surface-high); }
 .card-main-info { display: flex; align-items: center; gap: var(--space-4); flex: 1; min-width: 0; }
 .card-icon { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--sys-primary-container); color: var(--sys-primary); display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
 .card-icon.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
@@ -791,7 +791,10 @@ setTimeout(() => {
 let guard = 0;
 while(!document.getElementById(`quick-in-${id}`) && renderedCount < currentResults.length && guard < 30) { appendNextChunk(); guard++; }
 const qtyInput = document.getElementById(`quick-in-${id}`);
-if(qtyInput) { qtyInput.focus(); qtyInput.closest('.card').scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+if(qtyInput) { 
+qtyInput.focus({ preventScroll: true }); 
+qtyInput.closest('.card').scrollIntoView({ block: 'nearest', behavior: 'auto' }); 
+}
 }, 30);
 };
 
@@ -882,7 +885,7 @@ const spInput = document.getElementById(`quick-sp-${id}`);
 sp = parseFloat(spInput.value);
 if(isNaN(sp) || sp < 0) {
 showToast("Please enter Supply Price", "warning");
-spInput.focus();
+spInput.focus({ preventScroll: true });
 return;
 }
 }
@@ -913,8 +916,8 @@ cards.forEach((c, i) => { c.classList.toggle('focused', i === idx); c.setAttribu
 const targetId = card.id.replace('card-', '');
 let input = field === 'sp' ? document.getElementById(`quick-sp-${targetId}`) : document.getElementById(`quick-in-${targetId}`);
 if (!input) input = document.getElementById(`quick-in-${targetId}`);
-if (input) { input.focus(); input.select(); }
-card.scrollIntoView({ block: 'center', behavior: instant ? 'auto' : 'smooth' });
+if (input) { input.focus({ preventScroll: true }); input.select(); }
+card.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
 focusedCardIndex = idx;
 };
 
@@ -926,7 +929,7 @@ const nextIdx = idx + delta;
 if (nextIdx < 0) {
 cards.forEach(c => { c.classList.remove('focused'); c.setAttribute('aria-selected', 'false'); });
 focusedCardIndex = -1;
-els.in.focus(); els.in.select();
+els.in.focus({ preventScroll: true }); els.in.select();
 return;
 }
 if (nextIdx >= cards.length) {
@@ -941,7 +944,7 @@ if (e.key === 'Enter') {
 e.preventDefault();
 if (field === 'sp') {
 const qtyInput = document.getElementById(`quick-in-${id}`);
-if (qtyInput) { qtyInput.focus(); qtyInput.select(); }
+if (qtyInput) { qtyInput.focus({ preventScroll: true }); qtyInput.select(); }
 return;
 }
 const qtyInput = document.getElementById(`quick-in-${id}`);
@@ -976,7 +979,7 @@ const spInput = document.getElementById('modal-calc-sp');
 sp = parseFloat(spInput.value);
 if (isNaN(sp) || sp < 0) {
 showToast("Please enter Supply Price", "warning");
-spInput.focus();
+spInput.focus({ preventScroll: true });
 return;
 }
 }
@@ -1099,13 +1102,13 @@ document.getElementById('sheetAddCalc').innerHTML = `
 `;
 window.currentModalAddMode = 'unit';
 els.modal.classList.add('active');
-setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus(); }, 100);
+setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus({ preventScroll: true }); }, 100);
 };
 window.openDetails = openDetails;
 
 const closeModal = () => {
 els.modal.classList.remove('active');
-if(lastFocusedBeforeModal && document.contains(lastFocusedBeforeModal)) lastFocusedBeforeModal.focus();
+if(lastFocusedBeforeModal && document.contains(lastFocusedBeforeModal)) lastFocusedBeforeModal.focus({ preventScroll: true });
 };
 
 const updateDashTotal = () => {
@@ -1296,7 +1299,10 @@ cards.forEach((c, i) => {
 const isFocused = i === focusedCardIndex;
 c.classList.toggle('focused', isFocused);
 c.setAttribute('aria-selected', String(isFocused));
-if(isFocused) { c.focus(); c.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' }); }
+if(isFocused) { 
+c.focus({ preventScroll: true }); 
+c.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' }); 
+}
 });
 };
 
@@ -1305,7 +1311,7 @@ if(delta < 0 && focusedCardIndex <= 0) {
 const cards = Array.from(els.res.querySelectorAll('.card'));
 cards.forEach(c => { c.classList.remove('focused'); c.setAttribute('aria-selected', 'false'); });
 focusedCardIndex = -1;
-els.in.focus(); els.in.select();
+els.in.focus({ preventScroll: true }); els.in.select();
 return;
 }
 if(focusedCardIndex + delta >= renderedCount - 5 && renderedCount < currentResults.length) appendNextChunk();
@@ -1375,17 +1381,17 @@ run: () => {
 const qtyEl = document.getElementById('paneQty');
 const spEl = document.getElementById('paneSp');
 const qty = qtyEl ? parseFloat(qtyEl.value) : (defaultQuickQty || 1);
-if(isNaN(qty) || qty <= 0) { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus(); return; }
+if(isNaN(qty) || qty <= 0) { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus({ preventScroll: true }); return; }
 let sp = 0;
 if(m.isDynamic) {
 sp = spEl ? parseFloat(spEl.value) : NaN;
-if(isNaN(sp) || sp < 0) { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus(); return; }
+if(isNaN(sp) || sp < 0) { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus({ preventScroll: true }); return; }
 }
 const req = globalAddMode === 'pack' ? qty * m.bQty : qty;
 const result = commitToCalc(m.id, req, sp);
 if(!result) return;
 showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${m.n}`, 'bolt');
-cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus();
+cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus({ preventScroll: true });
 }
 });
 actions.push({ icon: 'open_in_new', label: 'Open Full Details', shortcut: '⌘1', run: () => { closeCmdkSilently(); openDetails(m.id); } });
@@ -1405,13 +1411,15 @@ closeQuickLinks();
 cmdkEls.overlay.classList.add('active');
 cmdkEls.input.value = cmdkLastQuery;
 renderCmdk(cmdkLastQuery);
-setTimeout(() => { cmdkEls.input.focus(); cmdkEls.input.select(); }, 50);
+cmdkEls.input.focus({ preventScroll: true });
+setTimeout(() => { cmdkEls.input.focus({ preventScroll: true }); cmdkEls.input.select(); }, 50);
+setTimeout(() => { cmdkEls.input.focus({ preventScroll: true }); }, 250);
 };
 
 window.closeCmdk = () => {
 cmdkEls.overlay.classList.remove('active');
 cmdkEls.input.blur();
-if(cmdkLastFocused && document.contains(cmdkLastFocused)) cmdkLastFocused.focus();
+if(cmdkLastFocused && document.contains(cmdkLastFocused)) cmdkLastFocused.focus({ preventScroll: true });
 };
 
 const closeCmdkSilently = () => { cmdkEls.overlay.classList.remove('active'); cmdkEls.input.blur(); };
@@ -1510,7 +1518,7 @@ if(item.type === 'medicine') updatePanePreview(item.id);
 if(cmdkPaneFocused) {
 const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
 const target = navEls[Math.min(cmdkPaneIndex, navEls.length - 1)];
-if(target) target.focus();
+if(target) target.focus({ preventScroll: true });
 }
 };
 
@@ -1555,7 +1563,7 @@ const exitPaneToList = () => {
 cmdkPaneFocused = false;
 cmdkPaneIndex = 0;
 paintCmdk();
-cmdkEls.input.focus();
+cmdkEls.input.focus({ preventScroll: true });
 };
 
 const runShortcutForActiveItem = (e) => {
@@ -1572,7 +1580,7 @@ e.preventDefault();
 const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
 cmdkPaneIndex = Math.min(idx + 1, navEls.length - 1);
 const next = navEls[cmdkPaneIndex];
-if(next) next.focus();
+if(next) next.focus({ preventScroll: true });
 return;
 }
 if(e.key === 'ArrowUp') {
@@ -1580,7 +1588,7 @@ e.preventDefault();
 const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
 cmdkPaneIndex = Math.max(idx - 1, 0);
 const prev = navEls[cmdkPaneIndex];
-if(prev) prev.focus();
+if(prev) prev.focus({ preventScroll: true });
 return;
 }
 if(e.key === 'ArrowLeft') { e.preventDefault(); exitPaneToList(); return; }
@@ -1644,7 +1652,7 @@ if(e.key === 'Escape') { e.preventDefault(); if(cmdkPaneFocused) { cmdkPaneFocus
 return;
 }
 if (e.code === 'Slash' && document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'SELECT') {
-e.preventDefault(); switchView('search'); els.in.focus(); return;
+e.preventDefault(); switchView('search'); els.in.focus({ preventScroll: true }); return;
 }
 if(e.key === 'Escape') {
 if(quickLinksOpenId) { closeQuickLinks(); return; }
@@ -1660,7 +1668,7 @@ else if(e.key === 'ArrowUp') { e.preventDefault(); focusedCardIndex = cards.leng
 else if(e.key === 'Enter') {
 e.preventDefault();
 if(focusedCardIndex >= 0 && cards[focusedCardIndex]) { cards[focusedCardIndex].click(); }
-else { focusCardFieldByIndex(0, 'qty'); }
+else { focusCardFieldByIndex(0, 'qty', e.repeat); }
 }
 }
 if(activeView === 'search' && e.key === 'End' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
