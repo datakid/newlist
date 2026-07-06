@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>LX Search 4.0</title>
+<title>LX Search 4.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@ body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color
 :focus { outline: none; }
 :focus-visible { box-shadow: var(--focus-ring); }
 input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: none; }
-.card:focus-visible, .order-chip:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible { box-shadow: var(--focus-ring); }
+.card:focus-visible, .order-chip:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .pill-toggle:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
 .omni-input:focus-visible { box-shadow: none; }
 .action-pill:focus-within { border-color: var(--sys-primary); box-shadow: 0 0 0 3px var(--sys-primary-container); }
 .glass-input:focus-visible { box-shadow: none; }
@@ -97,7 +97,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .badge.pop { transform: scale(1.2); }
 .view-section { width: 100%; flex: 1; overflow-y: auto; overflow-x: hidden; display: none; flex-direction: column; padding-bottom: 40px; padding-left: 8px; padding-right: 16px; min-height: 0; position: relative; overscroll-behavior: contain; }
 .view-section.active { display: flex; }
-.cmdk-badge { display: flex; align-items: center; gap: 3px; color: var(--sys-on-surface-variant); background: rgba(255,255,255,0.04); border: 1px solid var(--sys-outline); border-radius: var(--radius-sm); padding: 5px 8px; font-family: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--spring); flex-shrink: 0; }
+.cmdk-badge { display: flex; align-items: center; gap: 4px; color: var(--sys-on-surface-variant); background: rgba(255,255,255,0.04); border: 1px solid var(--sys-outline); border-radius: var(--radius-sm); padding: 5px 8px; font-family: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.2s var(--spring); flex-shrink: 0; }
 .cmdk-badge:hover { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); }
 .filters { display: flex; gap: 12px; margin-top: 0; overflow-x: auto; padding-bottom: 8px; flex-shrink: 0; align-items: center; }
 .filter-wrapper { position: relative; display: flex; align-items: center; flex-shrink: 0; }
@@ -187,25 +187,50 @@ input[type="number"] { -moz-appearance: textfield; }
 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
 mark { background: var(--sys-primary-container); color: var(--sys-primary); border-radius: 4px; padding: 0 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-.cmdk-overlay { position: fixed; inset: 0; background: rgba(5,5,7,0.55); backdrop-filter: blur(6px); z-index: 200; display: flex; justify-content: center; align-items: flex-start; padding-top: 12vh; opacity: 0; pointer-events: none; transition: opacity 0.2s var(--spring); }
+.cmdk-overlay { position: fixed; inset: 0; background: rgba(5,5,7,0.55); backdrop-filter: blur(6px); z-index: 200; display: flex; justify-content: center; align-items: flex-start; padding-top: 10vh; opacity: 0; pointer-events: none; transition: opacity 0.2s var(--spring); }
 .cmdk-overlay.active { opacity: 1; pointer-events: auto; }
-.cmdk-panel { width: 92%; max-width: 560px; background: rgba(18, 19, 23, 0.92); backdrop-filter: var(--blur-lg); -webkit-backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); box-shadow: var(--shadow-float); overflow: hidden; transform: translateY(-12px) scale(0.98); opacity: 0; transition: transform 0.25s var(--spring), opacity 0.2s var(--spring); max-height: 70vh; display: flex; flex-direction: column; }
+.cmdk-panel { width: 94%; max-width: 760px; background: rgba(18, 19, 23, 0.92); backdrop-filter: var(--blur-lg); -webkit-backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); box-shadow: var(--shadow-float); overflow: hidden; transform: translateY(-12px) scale(0.98); opacity: 0; transition: transform 0.25s var(--spring), opacity 0.2s var(--spring); max-height: 72vh; display: flex; flex-direction: column; }
 .cmdk-overlay.active .cmdk-panel { transform: translateY(0) scale(1); opacity: 1; }
 .cmdk-input-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-bottom: 1px solid var(--sys-outline); flex-shrink: 0; }
 .cmdk-input-row .material-symbols-rounded { color: var(--sys-primary); flex-shrink: 0; }
 .cmdk-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.15rem; min-width: 0; }
 .cmdk-input::placeholder { color: var(--sys-on-surface-variant); }
 .cmdk-input-row kbd { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 6px; padding: 3px 8px; font-family: inherit; font-size: 0.75rem; color: var(--sys-on-surface-variant); flex-shrink: 0; }
-.cmdk-list { overflow-y: auto; padding: var(--space-2); display: flex; flex-direction: column; gap: 2px; }
+.cmdk-body { display: flex; flex: 1; min-height: 0; }
+.cmdk-list { overflow-y: auto; padding: var(--space-2); display: flex; flex-direction: column; gap: 2px; width: 270px; flex: 0 0 270px; border-right: 1px solid var(--sys-outline); min-height: 0; }
+.cmdk-pane { flex: 1; min-width: 0; overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+.cmdk-pane-empty { color: var(--sys-on-surface-variant); font-size: 0.9rem; margin: auto; text-align: center; }
+.cmdk-pane-header { display: flex; align-items: flex-start; gap: var(--space-3); }
+.cmdk-pane-header .material-symbols-rounded { font-size: 26px; color: var(--sys-primary); background: var(--sys-primary-container); width: 48px; height: 48px; border-radius: var(--radius-md); display: grid; place-items: center; flex-shrink: 0; }
+.cmdk-pane-title { font-size: 1.15rem; font-weight: 600; }
+.cmdk-pane-sub { font-size: 0.85rem; color: var(--sys-on-surface-variant); margin-top: 2px; }
+.cmdk-pane-fields { display: flex; gap: var(--space-3); }
+.cmdk-pane-field { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.cmdk-pane-field label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--sys-on-surface-variant); font-weight: 600; }
+.cmdk-pane-input { background: rgba(0,0,0,0.35); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); font-family: inherit; font-size: 1.15rem; font-weight: 600; padding: 10px 14px; border-radius: var(--radius-md); outline: none; transition: border-color 0.2s; }
+.cmdk-pane-input:focus { border-color: var(--sys-primary); }
+.cmdk-pane-preview { font-size: 0.9rem; color: var(--sys-primary); font-weight: 500; }
+.cmdk-pane-actions { display: flex; flex-direction: column; gap: 2px; margin-top: auto; padding-top: var(--space-3); border-top: 1px solid var(--sys-outline); }
+.cmdk-pane-action { display: flex; align-items: center; gap: var(--space-3); padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.12s; }
+.cmdk-pane-action .material-symbols-rounded { font-size: 19px; color: var(--sys-on-surface-variant); flex-shrink: 0; }
+.cmdk-pane-action-label { flex: 1; font-size: 0.92rem; color: var(--sys-on-bg); }
+.cmdk-pane-action kbd { background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 6px; padding: 2px 7px; font-family: inherit; font-size: 0.72rem; color: var(--sys-on-surface-variant); flex-shrink: 0; }
+.cmdk-pane-check { color: var(--sys-success) !important; font-size: 18px !important; }
+.cmdk-pane-action.default-action { background: rgba(255,255,255,0.03); }
+.cmdk-pane-action:focus, .cmdk-pane-action:focus-visible { background: var(--sys-primary-container); outline: none; }
+.cmdk-pane-action:focus .material-symbols-rounded:first-child, .cmdk-pane-action:focus .cmdk-pane-action-label { color: var(--sys-primary); }
+@media (max-width: 640px) {
+.cmdk-pane { display: none; }
+.cmdk-list { width: 100%; flex: 1 1 auto; border-right: none; }
+}
 .cmdk-group-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-3) var(--space-1); }
 .cmdk-item { display: flex; align-items: center; gap: var(--space-3); padding: 11px var(--space-3); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.12s; }
 .cmdk-item .material-symbols-rounded { color: var(--sys-on-surface-variant); font-size: 20px; flex-shrink: 0; }
 .cmdk-item-title { font-size: 0.98rem; color: var(--sys-on-bg); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cmdk-item-sub { font-size: 0.8rem; color: var(--sys-on-surface-variant); flex-shrink: 0; }
-.cmdk-quick-link-btn { background: transparent; border: none; color: var(--sys-on-surface-variant); width: 28px; height: 28px; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; flex-shrink: 0; transition: all 0.15s; }
-.cmdk-quick-link-btn:hover { background: var(--sys-surface-highest); color: var(--sys-primary); }
+.cmdk-item-sub { font-size: 0.8rem; color: var(--sys-on-surface-variant); flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmdk-item-chevron { color: var(--sys-on-surface-variant); font-size: 18px; flex-shrink: 0; }
 .cmdk-item.active { background: var(--sys-primary-container); }
-.cmdk-item.active .material-symbols-rounded, .cmdk-item.active .cmdk-item-title { color: var(--sys-primary); }
+.cmdk-item.active .material-symbols-rounded, .cmdk-item.active .cmdk-item-title, .cmdk-item.active .cmdk-item-chevron { color: var(--sys-primary); }
 .cmdk-empty { text-align: center; padding: 32px 16px; color: var(--sys-on-surface-variant); font-size: 0.9rem; }
 @media (prefers-reduced-motion: reduce) {
 *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
@@ -235,7 +260,7 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 <span class="material-symbols-rounded">stream</span>
 <div>
 LX Search
-<div class="brand-sub">v4.0</div>
+<div class="brand-sub">v4.1</div>
 </div>
 </div>
 <div class="dock">
@@ -275,12 +300,12 @@ LX Search
 <div class="omni-divider"></div>
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
-<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" aria-label="Search medicines">
+<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines">
 <button class="omni-side-btn" id="omniClear" onclick="clearInput()" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
 <button class="cmdk-badge" onclick="openCmdk()" title="Open command palette" aria-label="Open command palette">
-<span class="material-symbols-rounded" style="font-size:15px;">bolt</span>⌘K
+<span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size:13px; font-weight:500; margin-right:1px;">⌘</span>K
 </button>
 </div>
 </div>
@@ -341,16 +366,20 @@ LX Search
 <div class="cmdk-panel" role="dialog" aria-modal="true" aria-label="Command palette">
 <div class="cmdk-input-row">
 <span class="material-symbols-rounded">bolt</span>
-<input type="text" id="cmdkInput" class="cmdk-input" placeholder="Search medicines or run a command..." autocomplete="off" aria-label="Search medicines or run a command">
+<input type="text" id="cmdkInput" class="cmdk-input" placeholder="Search medicines, or try 'concor 5 x30'..." autocomplete="off" spellcheck="false" aria-label="Search medicines or run a command">
 <kbd>Esc</kbd>
 </div>
+<div class="cmdk-body">
 <div class="cmdk-list" id="cmdkList" role="listbox" aria-label="Command palette results"></div>
+<div class="cmdk-pane" id="cmdkPane"></div>
+</div>
 </div>
 </div>
 <div class="quick-links-popover" id="quickLinksPopover" role="menu" aria-label="Quick web search links"></div>
 <div class="toast-container" id="toasts" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
 const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const escapeAttr = (s) => escapeHTML(JSON.stringify(String(s)));
 
 const rawData = [
 {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"},
@@ -544,6 +573,7 @@ let lastDeletedOrder = null;
 let lastDeletedIndex = -1;
 let undoTimeoutId = null;
 let globalAddMode = 'unit';
+let defaultQuickQty = 1;
 let currentResults = [];
 let renderedCount = 0;
 let resultsObserver = null;
@@ -572,6 +602,7 @@ savedOrders = JSON.parse(localStorage.getItem('lx_calc_orders') || '[]');
 if (!Array.isArray(savedOrders)) savedOrders = [];
 preferredEngine = localStorage.getItem('lx_engine') || 'brave';
 globalAddMode = localStorage.getItem('lx_add_mode') || 'unit';
+defaultQuickQty = parseFloat(localStorage.getItem('lx_default_qty')) || 1;
 updateEngineMenuUI();
 updateDockUI();
 } catch(e) {}
@@ -681,8 +712,8 @@ const disconnectObserver = () => { if(resultsObserver) { resultsObserver.disconn
 const cardTemplate = (i, qTokens, isPack) => `
 <div class="card" id="card-${escapeHTML(i.id)}" role="option" tabindex="0" aria-selected="false"
 aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}"
-onclick="openDetails('${escapeHTML(i.id)}')"
-onkeydown="cardKeydown(event, '${escapeHTML(i.id)}')">
+onclick="openDetails(${escapeAttr(i.id)})"
+onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <div class="card-main-info">
 <div class="card-icon${i.isDynamic ? ' dynamic' : ''}" aria-hidden="true"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
 <div class="card-content">
@@ -691,19 +722,19 @@ onkeydown="cardKeydown(event, '${escapeHTML(i.id)}')">
 </div>
 </div>
 <div class="card-actions" onclick="event.stopPropagation()">
-<button class="copy-btn" onclick="toggleQuickLinks(event, '${escapeHTML(i.id)}')" title="Search the web" aria-label="Search the web for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span></button>
-<button class="copy-btn" onclick="copyItemInfo('${escapeHTML(i.id)}')" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
+<button class="copy-btn" onclick="toggleQuickLinks(event, ${escapeAttr(i.id)})" title="Search the web" aria-label="Search the web for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span></button>
+<button class="copy-btn" onclick="copyItemInfo(${escapeAttr(i.id)})" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
 <div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
-${i.isDynamic ? `
+ ${i.isDynamic ? `
 <input type="number" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)">
 <span class="pill-suffix">EGP</span>
 <span class="pill-sep"></span>
 ` : ''}
-<input type="number" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter'){event.preventDefault(); inlineAdd('${escapeHTML(i.id)}', this.parentElement.querySelector('.pill-add'));}">
-<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" onclick="toggleQuickMode(event, '${escapeHTML(i.id)}', '${escapeHTML(i.bType)}')">
-${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
+<input type="number" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter'){event.preventDefault(); inlineAdd(${escapeAttr(i.id)}, this.parentElement.querySelector('.pill-add'));}">
+<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" onclick="toggleQuickMode(event, ${escapeAttr(i.id)}, ${escapeAttr(i.bType)})">
+ ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
 </button>
-<button class="pill-add" onclick="inlineAdd('${escapeHTML(i.id)}', this)" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
+<button class="pill-add" onclick="inlineAdd(${escapeAttr(i.id)}, this)" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
 </div>
 </div>
 </div>
@@ -822,6 +853,19 @@ btn.setAttribute('data-mode', newMode);
 btn.innerHTML = `${newMode === 'pack' ? 'Packs' : escapeHTML(bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>`;
 };
 
+const commitToCalc = (id, req, sp = 0) => {
+const item = db.find(i => i.id === id);
+if (!item) return null;
+const packs = Math.round(req / item.bQty);
+const cost = item.isDynamic ? packs * (sp * 0.5) : packs * item.p;
+dashboardMap.set(id, { item, req, packs, cost, supplyPrice: sp });
+syncCurrentOrder();
+els.badge.classList.add('pop'); els.badge.style.display = 'block'; els.badge.textContent = dashboardMap.size;
+setTimeout(() => els.badge.classList.remove('pop'), 200);
+if(activeView === 'calc') renderDashboard();
+return { item, packs, cost };
+};
+
 window.inlineAdd = (id, btnEl) => {
 const input = document.getElementById(`quick-in-${id}`);
 const rawReq = parseFloat(input.value);
@@ -842,13 +886,9 @@ return;
 
 const toggleBtn = document.getElementById(`quick-toggle-${id}`);
 const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
-
 const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
-const packs = Math.round(req / item.bQty);
-const cost = item.isDynamic ? packs * (sp * 0.5) : packs * item.p;
-
-dashboardMap.set(id, { item, req, packs, cost, supplyPrice: sp });
-syncCurrentOrder();
+const result = commitToCalc(id, req, sp);
+if(!result) return;
 
 input.value = ''; input.blur();
 if(item.isDynamic) document.getElementById(`quick-sp-${id}`).value = '';
@@ -859,11 +899,7 @@ const origIcon = icon.textContent;
 btnEl.style.background = 'var(--sys-success)'; btnEl.style.color = '#000'; icon.textContent = 'check';
 setTimeout(() => { btnEl.style.background = ''; btnEl.style.color = ''; icon.textContent = origIcon; }, 800);
 }
-
-els.badge.classList.add('pop'); els.badge.style.display = 'block'; els.badge.textContent = dashboardMap.size;
-setTimeout(() => els.badge.classList.remove('pop'), 200);
-showToast(`Added ${packs} packs of ${item.n}`);
-if(activeView === 'calc') renderDashboard();
+showToast(`Added ${result.packs} packs of ${item.n}`);
 };
 
 window.currentModalAddMode = 'unit';
@@ -880,6 +916,7 @@ window.modalAdd = (id) => {
 const qty = parseFloat(document.getElementById('modal-calc-qty').value);
 if(isNaN(qty) || qty <= 0 || qty > 999999) return;
 const item = db.find(i => i.id === id);
+if (!item) return;
 
 let sp = 0;
 if (item.isDynamic) {
@@ -892,17 +929,10 @@ return;
 }
 }
 
-let req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
-const packs = Math.round(req / item.bQty);
-const cost = item.isDynamic ? packs * (sp * 0.5) : packs * item.p;
-
-dashboardMap.set(id, { item, req, packs, cost, supplyPrice: sp });
-syncCurrentOrder();
-
-els.badge.classList.add('pop'); els.badge.style.display = 'block'; els.badge.textContent = dashboardMap.size;
-setTimeout(() => els.badge.classList.remove('pop'), 200);
-showToast(`Added ${packs} packs of ${item.n}`);
-if(activeView === 'calc') renderDashboard();
+const req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
+const result = commitToCalc(id, req, sp);
+if(!result) return;
+showToast(`Added ${result.packs} packs of ${item.n}`);
 closeModal();
 };
 
@@ -917,10 +947,10 @@ if(!item) return;
 quickLinksOpenId = id;
 const qStr = encodeURIComponent(item.n);
 qlPop.innerHTML = `
-<a href="${generateSearchURL(qStr)}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">travel_explore</span> ${escapeHTML(getEngineName())}</a>
-<a href="${generateImageURL(qStr)}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">image</span> Images</a>
-<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">medical_services</span> Drugs.com</a>
-<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">psychology</span> Perplexity</a>
+<a href="${generateSearchURL(qStr)}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">travel_explore</span> ${escapeHTML(getEngineName())}</a>
+<a href="${generateImageURL(qStr)}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">image</span> Images</a>
+<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">medical_services</span> Drugs.com</a>
+<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">psychology</span> Perplexity</a>
 `;
 const rect = e.currentTarget.getBoundingClientRect();
 const popWidth = 210;
@@ -969,7 +999,7 @@ document.getElementById('sheetMeta').innerHTML = `<span>${escapeHTML(item.u)}</s
 
 document.getElementById('sheetPriceData').innerHTML = `
 <div style="background: var(--sys-surface-low); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--sys-outline); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;">
-${item.isDynamic ? `
+ ${item.isDynamic ? `
 <span style="font-size: 1.2rem; font-weight: 600; color: var(--sys-secondary);">Price: 50% of Supply Price</span>
 ` : `
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 120px;">
@@ -987,10 +1017,10 @@ ${item.isDynamic ? `
 
 const qStr = encodeURIComponent(item.n);
 document.getElementById('sheetLinks').innerHTML = `
-<a href="${generateSearchURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span> ${escapeHTML(getEngineName())}</a>
-<a href="${generateImageURL(qStr)}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">image</span> Images</a>
-<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
-<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
+<a href="${generateSearchURL(qStr)}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span> ${escapeHTML(getEngineName())}</a>
+<a href="${generateImageURL(qStr)}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">image</span> Images</a>
+<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
+<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
 `;
 document.getElementById('sheetAddCalc').innerHTML = `
 <div style="background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
@@ -998,20 +1028,20 @@ document.getElementById('sheetAddCalc').innerHTML = `
 <div style="font-weight: 600; color: var(--sys-on-bg);">Quick Add to Calculator</div>
 <span class="tag" style="background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant);">1 Pack = ${item.bQty} ${escapeHTML(item.bType)}</span>
 </div>
-${item.isDynamic ? `
+ ${item.isDynamic ? `
 <div style="display: flex; gap: 12px; align-items: center;">
 <input type="number" id="modal-calc-sp" class="glass-input" placeholder="Enter Supply Price..." aria-label="Supply price" min="0" oninput="checkMax(this)" style="padding:10px; font-size:1.1rem; text-align:left; border-color: var(--sys-secondary);">
 <span style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">EGP</span>
 </div>
 ` : ''}
 <div style="display: flex; background: rgba(0,0,0,0.5); border-radius: var(--radius-full); padding: 4px; border: 1px solid var(--sys-outline);">
-<button class="omni-tab active" id="mtg-unit" onclick="setModalAddMode('unit', '${escapeHTML(id)}')" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
-<button class="omni-tab" id="mtg-pack" onclick="setModalAddMode('pack', '${escapeHTML(id)}')" style="flex:1; justify-content:center; height:32px;">By Packages</button>
+<button class="omni-tab active" id="mtg-unit" onclick="setModalAddMode('unit', ${escapeAttr(id)})" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
+<button class="omni-tab" id="mtg-pack" onclick="setModalAddMode('pack', ${escapeAttr(id)})" style="flex:1; justify-content:center; height:32px;">By Packages</button>
 </div>
 <div style="display: flex; gap: 12px; align-items: center;">
-<input type="number" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd('${escapeHTML(id)}')" style="padding:10px; font-size:1.1rem; text-align:left;">
+<input type="number" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd(${escapeAttr(id)})" style="padding:10px; font-size:1.1rem; text-align:left;">
 <span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
-<button onclick="modalAdd('${escapeHTML(id)}')" style="background:var(--sys-primary); color:#000; border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
+<button onclick="modalAdd(${escapeAttr(id)})" style="background:var(--sys-primary); color:#000; border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
 </div>
 </div>
 `;
@@ -1084,7 +1114,7 @@ els.dashActions.style.display = items.length ? 'grid' : 'none';
 els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
 els.ordersBar.innerHTML = savedOrders.map((o, idx) => `
 <button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">
-${escapeHTML(o.name)}
+ ${escapeHTML(o.name)}
 <span class="material-symbols-rounded chip-del" onclick="deleteOrder(event, ${idx})" role="button" tabindex="0" aria-label="Delete order ${escapeHTML(o.name)}">close</span>
 </button>
 `).join('') + `<button class="order-chip" onclick="createNewOrder()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
@@ -1102,15 +1132,15 @@ els.dashGrid.innerHTML = items.map(c => `
 <div class="dash-item-top">
 <div>
 <div class="card-title">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div>
-<div class="card-subtitle">Base: ${c.item.bQty} ${escapeHTML(c.item.bType)} / Pack</div>
+<div class="card-subtitle">Base: ${escapeHTML(String(c.item.bQty))} ${escapeHTML(c.item.bType)} / Pack</div>
 </div>
-<button class="trash-btn" onclick="removeDashboardItem('${escapeHTML(c.item.id)}')" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
+<button class="trash-btn" onclick="removeDashboardItem(${escapeAttr(c.item.id)})" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
 </div>
 <div class="dash-controls">
-<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(c.req)}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
-<div class="control-group"><span class="control-label">Packs</span><input type="number" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(c.packs)}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'pack')" aria-label="Packs"></div>
-${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${c.supplyPrice}" min="0" max="999999" oninput="updateDashItem('${escapeHTML(c.item.id)}', this.value, 'sp')" aria-label="Supply price"></div>` : ''}
-<div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${c.cost.toFixed(2)}</div></div>
+<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.req))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
+<div class="control-group"><span class="control-label">Packs</span><input type="number" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.packs))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'pack')" aria-label="Packs"></div>
+ ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'sp')" aria-label="Supply price"></div>` : ''}
+<div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${(Number(c.cost) || 0).toFixed(2)}</div></div>
 </div>
 </div>
 `).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">calculate</span><p style="margin-top:16px">Calculator is empty. Search and quickly add items.</p></div>';
@@ -1193,7 +1223,10 @@ const reader = new FileReader();
 reader.onload = (ev) => {
 try {
 const data = JSON.parse(ev.target.result);
-if(data.items) { dashboardMap = new Map(data.items); currentOrderIndex = -1; saveState(); renderDashboard(); showToast("Calculation loaded from file", "file_download_done"); }
+if(data.items && Array.isArray(data.items)) {
+const validItems = data.items.filter(entry => Array.isArray(entry) && entry.length === 2 && entry[0] && entry[1] && entry[1].item);
+dashboardMap = new Map(validItems); currentOrderIndex = -1; saveState(); renderDashboard(); showToast("Calculation loaded from file", "file_download_done");
+} else { alert("Invalid file format"); }
 } catch(err) { alert("Invalid file format"); }
 }; reader.readAsText(file); els.fileUp.value = '';
 });
@@ -1223,75 +1256,315 @@ focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cards.length 
 updateFocus(cards);
 };
 
-const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList') };
+const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList'), pane: document.getElementById('cmdkPane') };
 let cmdkActiveIndex = -1;
 let cmdkItems = [];
 let cmdkLastFocused = null;
+let cmdkParsedQty = null;
+let cmdkPaneFocused = false;
+let cmdkPaneIndex = 0;
+const sizePresets = [1, 10, 20, 30, 50, 100];
+const enginePresets = ['brave', 'ddg', 'startpage', 'google', 'bing'];
+const engineMeta = {
+brave: { label: 'Brave Search', icon: 'explore' },
+ddg: { label: 'DuckDuckGo', icon: 'cruelty_free' },
+startpage: { label: 'Startpage', icon: 'lock' },
+google: { label: 'Google', icon: 'travel_explore' },
+bing: { label: 'Bing', icon: 'search' }
+};
+
+const applyGlobalUnit = (mode) => {
+globalAddMode = mode; localStorage.setItem('lx_add_mode', mode); updateDockUI();
+if(activeView === 'search') renderSearch();
+showToast(`Global unit set to ${mode === 'pack' ? 'Packages' : 'Base Unit'}`, 'straighten');
+refreshCmdkKeepFocus();
+};
+const applyEngine = (engine) => { setEngine(engine); refreshCmdkKeepFocus(); };
+const applyDefaultSize = (n) => {
+defaultQuickQty = n; localStorage.setItem('lx_default_qty', n);
+showToast(`Default quick-add size set to ${n}`, 'bolt');
+refreshCmdkKeepFocus();
+};
 
 const baseCommands = () => [
-{ icon: 'calculate', title: 'Open Calculator', sub: 'View current calculation', action: () => { closeCmdk(); switchView('calc'); } },
-{ icon: 'delete_sweep', title: 'Clear Calculator', sub: 'Empty current calculation', action: () => { closeCmdk(); clearDashboard(); switchView('calc'); showToast('Calculator cleared'); } },
-{ icon: 'search', title: 'Go to Search', sub: 'Back to medicine search', action: () => { closeCmdk(); switchView('search'); } },
-{ icon: 'content_copy', title: 'Export Calculation', sub: 'Copy summary to clipboard', action: () => { closeCmdk(); exportDashboardText(); switchView('calc'); } },
-{ icon: 'bookmark', title: 'Saved Orders', sub: 'Open calculator orders', action: () => { closeCmdk(); switchView('calc'); } },
-{ icon: 'straighten', title: 'Toggle Add Mode', sub: globalAddMode === 'unit' ? 'Currently: Base Unit' : 'Currently: Packages', action: () => { closeCmdk(); toggleGlobalMode(); } },
-{ icon: 'travel_explore', title: 'Change Search Engine', sub: getEngineName(), action: () => { closeCmdk(); toggleEngineMenu(); } }
+{ icon: 'calculate', title: 'Open Calculator', sub: 'View current calculation',
+actions: [{ icon: 'calculate', label: 'Open Calculator', shortcut: 'Enter', run: () => { closeCmdk(); switchView('calc'); } }] },
+{ icon: 'delete_sweep', title: 'Clear Calculator', sub: 'Empty current calculation',
+actions: [{ icon: 'delete_sweep', label: 'Clear Calculator', shortcut: 'Enter', run: () => { closeCmdk(); clearDashboard(); switchView('calc'); showToast('Calculator cleared'); } }] },
+{ icon: 'search', title: 'Go to Search', sub: 'Back to medicine search',
+actions: [{ icon: 'search', label: 'Go to Search', shortcut: 'Enter', run: () => { closeCmdk(); switchView('search'); } }] },
+{ icon: 'content_copy', title: 'Export Calculation', sub: 'Copy summary to clipboard',
+actions: [{ icon: 'content_copy', label: 'Export Calculation', shortcut: 'Enter', run: () => { closeCmdk(); exportDashboardText(); switchView('calc'); } }] },
+{ icon: 'bookmark', title: 'Saved Orders', sub: 'Open calculator orders',
+actions: [{ icon: 'bookmark', label: 'Open Saved Orders', shortcut: 'Enter', run: () => { closeCmdk(); switchView('calc'); } }] },
+{ icon: 'straighten', title: 'Global Unit', sub: `Currently: ${globalAddMode === 'pack' ? 'Packages' : 'Base Unit'}`,
+actions: [
+{ icon: 'straighten', label: 'Base Unit', active: globalAddMode === 'unit', run: () => applyGlobalUnit('unit') },
+{ icon: 'inventory_2', label: 'Packages', active: globalAddMode === 'pack', run: () => applyGlobalUnit('pack') }
+] },
+{ icon: 'travel_explore', title: 'Search Engine', sub: `Currently: ${getEngineName()}`,
+actions: enginePresets.map(e => ({ icon: engineMeta[e].icon, label: engineMeta[e].label, active: preferredEngine === e, run: () => applyEngine(e) })) },
+{ icon: 'bolt', title: 'Default Quick Size', sub: `Currently: ${defaultQuickQty}`,
+actions: sizePresets.map(n => ({ icon: 'bolt', label: `${n}`, active: defaultQuickQty === n, run: () => applyDefaultSize(n) })) }
 ];
+
+const buildMedicineActions = (m) => {
+const actions = [];
+actions.push({
+icon: 'bolt', label: 'Add to Calculator', shortcut: 'Enter',
+run: () => {
+const qtyEl = document.getElementById('paneQty');
+const spEl = document.getElementById('paneSp');
+const qty = qtyEl ? parseFloat(qtyEl.value) : (defaultQuickQty || 1);
+if(isNaN(qty) || qty <= 0) { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus(); return; }
+let sp = 0;
+if(m.isDynamic) {
+sp = spEl ? parseFloat(spEl.value) : NaN;
+if(isNaN(sp) || sp < 0) { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus(); return; }
+}
+const req = globalAddMode === 'pack' ? qty * m.bQty : qty;
+const result = commitToCalc(m.id, req, sp);
+if(!result) return;
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${m.n}`, 'bolt');
+cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus();
+}
+});
+actions.push({ icon: 'open_in_new', label: 'Open Full Details', shortcut: '⌘1', run: () => { closeCmdkSilently(); openDetails(m.id); } });
+const qStr = encodeURIComponent(m.n);
+actions.push({ icon: engineMeta[preferredEngine].icon, label: getEngineName(), shortcut: '⌘2', run: () => window.open(generateSearchURL(qStr), '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'image', label: 'View Images', shortcut: '⌘3', run: () => window.open(generateImageURL(qStr), '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'medical_services', label: 'Drugs.com', shortcut: '⌘4', run: () => window.open(`https://www.drugs.com/search.php?searchterm=${qStr}`, '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'psychology', label: 'Perplexity', shortcut: '⌘5', run: () => window.open(`https://www.perplexity.ai/search?q=${qStr}`, '_blank', 'noopener,noreferrer') });
+return actions;
+};
+
+let cmdkLastQuery = '';
 
 window.openCmdk = () => {
 cmdkLastFocused = document.activeElement;
+closeQuickLinks();
 cmdkEls.overlay.classList.add('active');
-cmdkEls.input.value = '';
-renderCmdk('');
-setTimeout(() => cmdkEls.input.focus(), 50);
+cmdkEls.input.value = cmdkLastQuery;
+renderCmdk(cmdkLastQuery);
+setTimeout(() => { cmdkEls.input.focus(); cmdkEls.input.select(); }, 50);
 };
 
 window.closeCmdk = () => {
 cmdkEls.overlay.classList.remove('active');
+cmdkEls.input.blur();
 if(cmdkLastFocused && document.contains(cmdkLastFocused)) cmdkLastFocused.focus();
 };
 
+const closeCmdkSilently = () => { cmdkEls.overlay.classList.remove('active'); cmdkEls.input.blur(); };
+
 const renderCmdk = (q) => {
-const qStr = q.toLowerCase().trim();
+const raw = q.trim();
+cmdkParsedQty = null;
+cmdkPaneFocused = false;
+cmdkPaneIndex = 0;
+
+let searchStr = raw;
+const qtyMatch = raw.match(/^(.*?)\s*[x×]\s*(\d+(?:\.\d+)?)$/i);
+if(qtyMatch && qtyMatch[1].trim()) { searchStr = qtyMatch[1].trim(); cmdkParsedQty = parseFloat(qtyMatch[2]); }
+
+const qStr = searchStr.toLowerCase();
 cmdkItems = [];
 baseCommands().filter(c => !qStr || c.title.toLowerCase().includes(qStr)).forEach(c => cmdkItems.push({ type: 'command', ...c }));
 if(qStr) {
 const qTokens = qStr.split(/\s+/).filter(Boolean);
-db.filter(item => qTokens.every(tk => item.searchStr.includes(tk))).slice(0, 8).forEach(m => cmdkItems.push({
+db.filter(item => qTokens.every(tk => item.searchStr.includes(tk))).slice(0, 8).forEach(m => {
+cmdkItems.push({
 type: 'medicine', id: m.id, icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
 sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
-action: () => { closeCmdk(); switchView('search'); els.in.value = m.n; els.in.dispatchEvent(new Event('input')); focusCardById(m.id); }
-}));
+dynamic: m.isDynamic, actions: buildMedicineActions(m)
+});
+});
 }
 cmdkActiveIndex = cmdkItems.length ? 0 : -1;
 paintCmdk();
 };
 
+const refreshCmdkKeepFocus = () => {
+const wasPane = cmdkPaneFocused, wasIdx = cmdkPaneIndex, wasActive = cmdkActiveIndex;
+renderCmdk(cmdkEls.input.value);
+cmdkActiveIndex = Math.min(wasActive, cmdkItems.length - 1);
+cmdkPaneFocused = wasPane; cmdkPaneIndex = wasIdx;
+paintCmdk();
+};
+
 const paintCmdk = () => {
-if(!cmdkItems.length) { cmdkEls.list.innerHTML = '<div class="cmdk-empty">No matches found</div>'; return; }
+if(!cmdkItems.length) {
+cmdkEls.list.innerHTML = '<div class="cmdk-empty">No matches found</div>';
+cmdkEls.pane.innerHTML = '<div class="cmdk-pane-empty">Select an item to see actions</div>';
+return;
+}
 let html = '';
-const shown = { command: false, medicine: false };
+const shown = {};
+const typeLabel = { command: 'Commands', medicine: 'Medicines' };
 cmdkItems.forEach((item, i) => {
-if(!shown[item.type]) { html += `<div class="cmdk-group-label">${item.type === 'command' ? 'Commands' : 'Medicines'}</div>`; shown[item.type] = true; }
-html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" onclick="cmdkSelect(${i})">
+if(!shown[item.type]) { html += `<div class="cmdk-group-label">${escapeHTML(typeLabel[item.type] || '')}</div>`; shown[item.type] = true; }
+html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" onclick="cmdkClickItem(${i})">
 <span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
 <span class="cmdk-item-title">${escapeHTML(item.title)}</span>
 <span class="cmdk-item-sub">${escapeHTML(item.sub || '')}</span>
-${item.type === 'medicine' ? `<button class="cmdk-quick-link-btn" onclick="event.stopPropagation(); toggleQuickLinks(event, '${escapeHTML(item.id)}')" title="Search the web" aria-label="Search the web for ${escapeHTML(item.title)}"><span class="material-symbols-rounded" style="font-size:16px">travel_explore</span></button>` : ''}
+ ${item.actions && item.actions.length > 1 ? '<span class="material-symbols-rounded cmdk-item-chevron">chevron_right</span>' : ''}
 </div>`;
 });
 cmdkEls.list.innerHTML = html;
+paintPane();
 };
 
-window.cmdkHover = (i) => { cmdkActiveIndex = i; paintCmdk(); };
-window.cmdkSelect = (i) => { const item = cmdkItems[i]; if(item) item.action(); };
+const paintPane = () => {
+const item = cmdkItems[cmdkActiveIndex];
+if(!item) { cmdkEls.pane.innerHTML = '<div class="cmdk-pane-empty">Select an item to see actions</div>'; return; }
+let extraFields = '';
+let navIdx = 0;
+if(item.type === 'medicine') {
+const med = db.find(d => d.id === item.id);
+const qtyVal = cmdkParsedQty || defaultQuickQty || 1;
+extraFields = `
+<div class="cmdk-pane-fields">
+<div class="cmdk-pane-field"><label>Quantity (${escapeHTML(med.bType)})</label><input type="number" id="paneQty" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(String(qtyVal))}" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>
+ ${med.isDynamic ? `<div class="cmdk-pane-field"><label>Supply Price</label><input type="number" id="paneSp" class="cmdk-pane-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
+</div>
+<div class="cmdk-pane-preview" id="panePreview"></div>
+`;
+}
+cmdkEls.pane.innerHTML = `
+<div class="cmdk-pane-header">
+<span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
+<div><div class="cmdk-pane-title">${escapeHTML(item.title)}</div><div class="cmdk-pane-sub">${escapeHTML(item.sub || '')}</div></div>
+</div>
+ ${extraFields}
+<div class="cmdk-pane-actions">
+ ${item.actions.map((a, i) => `
+<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" onkeydown="paneKeydown(event, ${navIdx + i})" onclick="cmdkPaneFocused = true; cmdkItems[cmdkActiveIndex].actions[${i}].run();">
+<span class="material-symbols-rounded">${escapeHTML(a.icon)}</span>
+<span class="cmdk-pane-action-label">${escapeHTML(a.label)}</span>
+ ${a.active ? '<span class="material-symbols-rounded cmdk-pane-check">check</span>' : ''}
+ ${a.shortcut ? `<kbd>${escapeHTML(a.shortcut)}</kbd>` : ''}
+</div>
+`).join('')}
+</div>
+`;
+if(item.type === 'medicine') updatePanePreview(item.id);
+if(cmdkPaneFocused) {
+const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
+const target = navEls[Math.min(cmdkPaneIndex, navEls.length - 1)];
+if(target) target.focus();
+}
+};
 
-cmdkEls.input.addEventListener('input', () => renderCmdk(cmdkEls.input.value));
+window.updatePanePreview = (id) => {
+const med = db.find(d => d.id === id);
+const preview = document.getElementById('panePreview');
+if(!med || !preview) return;
+const qtyEl = document.getElementById('paneQty');
+const qty = qtyEl ? parseFloat(qtyEl.value) : NaN;
+if(isNaN(qty) || qty <= 0) { preview.textContent = 'Enter a quantity to preview cost'; return; }
+const req = globalAddMode === 'pack' ? qty * med.bQty : qty;
+const packs = Math.round(req / med.bQty);
+if(med.isDynamic) {
+const spEl = document.getElementById('paneSp');
+const sp = spEl ? parseFloat(spEl.value) : NaN;
+if(isNaN(sp) || sp < 0) { preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType}) — enter supply price`; return; }
+preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType}) → ${(packs * sp * 0.5).toFixed(2)} EGP`;
+} else {
+preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType}) → ${(packs * med.p).toFixed(2)} EGP`;
+}
+};
+
+window.cmdkHover = (i) => { cmdkActiveIndex = i; cmdkPaneFocused = false; cmdkPaneIndex = 0; paintCmdk(); };
+window.cmdkClickItem = (i) => { cmdkActiveIndex = i; cmdkPaneFocused = false; cmdkPaneIndex = 0; const item = cmdkItems[i]; if(item && item.actions && item.actions[0]) item.actions[0].run(); else paintCmdk(); };
+
+const codeToLabel = (code) => {
+if(code.startsWith('Key')) return code.slice(3);
+if(code.startsWith('Digit')) return code.slice(5);
+if(code === 'Space') return 'Space';
+return code;
+};
+const comboFromEvent = (e) => {
+const parts = [];
+if(e.ctrlKey || e.metaKey) parts.push('⌘');
+if(e.altKey) parts.push('⌥');
+if(e.shiftKey) parts.push('⇧');
+parts.push(codeToLabel(e.code));
+return parts.join('');
+};
+
+const exitPaneToList = () => {
+cmdkPaneFocused = false;
+cmdkPaneIndex = 0;
+paintCmdk();
+cmdkEls.input.focus();
+};
+
+const runShortcutForActiveItem = (e) => {
+const combo = comboFromEvent(e);
+const item = cmdkItems[cmdkActiveIndex];
+const match = item && item.actions && item.actions.find(a => a.shortcut === combo);
+if(match) { e.preventDefault(); match.run(); return true; }
+return false;
+};
+
+window.paneKeydown = (e, idx) => {
+if(e.key === 'ArrowDown') {
+e.preventDefault();
+const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
+cmdkPaneIndex = Math.min(idx + 1, navEls.length - 1);
+const next = navEls[cmdkPaneIndex];
+if(next) next.focus();
+return;
+}
+if(e.key === 'ArrowUp') {
+e.preventDefault();
+const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
+cmdkPaneIndex = Math.max(idx - 1, 0);
+const prev = navEls[cmdkPaneIndex];
+if(prev) prev.focus();
+return;
+}
+if(e.key === 'ArrowLeft') { e.preventDefault(); exitPaneToList(); return; }
+if(e.key === 'Escape') { e.preventDefault(); exitPaneToList(); return; }
+if(e.key === 'Enter') {
+const target = e.currentTarget;
+if(target.tagName === 'INPUT') {
+e.preventDefault();
+const item = cmdkItems[cmdkActiveIndex];
+if(item && item.actions && item.actions[0]) item.actions[0].run();
+return;
+}
+if(target.getAttribute('role') === 'button') { e.preventDefault(); target.click(); return; }
+return;
+}
+runShortcutForActiveItem(e);
+};
+
+cmdkEls.input.addEventListener('input', () => { cmdkLastQuery = cmdkEls.input.value; renderCmdk(cmdkLastQuery); });
 cmdkEls.overlay.addEventListener('click', e => { if(e.target === cmdkEls.overlay) closeCmdk(); });
 cmdkEls.input.addEventListener('keydown', e => {
-if(e.key === 'ArrowDown') { e.preventDefault(); if(cmdkItems.length) { cmdkActiveIndex = Math.min(cmdkActiveIndex + 1, cmdkItems.length - 1); paintCmdk(); } }
-else if(e.key === 'ArrowUp') { e.preventDefault(); if(cmdkItems.length) { cmdkActiveIndex = Math.max(cmdkActiveIndex - 1, 0); paintCmdk(); } }
-else if(e.key === 'Enter') { e.preventDefault(); if(cmdkActiveIndex >= 0) cmdkSelect(cmdkActiveIndex); }
+if(e.key === 'ArrowDown') {
+e.preventDefault();
+if(cmdkItems.length) { cmdkActiveIndex = Math.min(cmdkActiveIndex + 1, cmdkItems.length - 1); cmdkPaneFocused = false; cmdkPaneIndex = 0; paintCmdk(); }
+return;
+}
+if(e.key === 'ArrowUp') {
+e.preventDefault();
+if(cmdkItems.length) { cmdkActiveIndex = Math.max(cmdkActiveIndex - 1, 0); cmdkPaneFocused = false; cmdkPaneIndex = 0; paintCmdk(); }
+return;
+}
+if(e.key === 'ArrowRight') {
+const item = cmdkItems[cmdkActiveIndex];
+if(item && item.actions && item.actions.length) { e.preventDefault(); cmdkPaneFocused = true; cmdkPaneIndex = 0; paintCmdk(); }
+return;
+}
+if(e.key === 'Enter') {
+e.preventDefault();
+const item = cmdkItems[cmdkActiveIndex];
+if(item && item.actions && item.actions.length) item.actions[0].run();
+return;
+}
+runShortcutForActiveItem(e);
 });
 
 window.cardKeydown = (e, id) => {
@@ -1307,15 +1580,17 @@ if(cmdkEls.overlay.classList.contains('active')) closeCmdk(); else openCmdk();
 return;
 }
 if(cmdkEls.overlay.classList.contains('active')) {
-if(e.key === 'Escape') { e.preventDefault(); closeCmdk(); }
+if(e.key === 'Escape') { e.preventDefault(); if(cmdkPaneFocused) { cmdkPaneFocused = false; paintCmdk(); } else closeCmdk(); }
 return;
 }
-if (e.key === '/' && document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT') {
-e.preventDefault(); openCmdk(); return;
+if (e.code === 'Slash' && document.activeElement !== els.in && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'SELECT') {
+e.preventDefault(); switchView('search'); els.in.focus(); return;
 }
 if(e.key === 'Escape') {
 if(quickLinksOpenId) { closeQuickLinks(); return; }
-closeModal(); return;
+if(els.modal.classList.contains('active')) { closeModal(); return; }
+if(document.activeElement === els.in) { els.in.blur(); return; }
+return;
 }
 if(activeView === 'search' && document.activeElement === els.in) {
 const cards = els.res.querySelectorAll('.card');
