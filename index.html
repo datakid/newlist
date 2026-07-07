@@ -581,6 +581,9 @@ let currentResults = [];
 let renderedCount = 0;
 let resultsObserver = null;
 let lastFocusedBeforeModal = null;
+let cardEls = [];
+let cardIndexById = new Map();
+let lastFocusedCard = null;
 
 const els = {
 in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'), clear: document.getElementById('omniClear'),
@@ -743,6 +746,18 @@ onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 </div>
 `;
 
+const cacheNewCards = (chunk) => {
+const startIdx = cardEls.length;
+for(let k=0; k<chunk.length; k++) {
+const el = document.getElementById(`card-${chunk[k].id}`);
+if(!el) continue;
+cardIndexById.set(chunk[k].id, startIdx + k);
+cardEls.push(el);
+}
+};
+
+const resetCardCache = () => { cardEls = []; cardIndexById = new Map(); lastFocusedCard = null; };
+
 const appendNextChunk = () => {
 if(renderedCount >= currentResults.length) return;
 const sentinel = document.getElementById('loadSentinel');
@@ -753,6 +768,7 @@ const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
 const html = chunk.map(i => cardTemplate(i, qTokens, isPack)).join('');
 els.res.insertAdjacentHTML('beforeend', html);
 renderedCount += chunk.length;
+cacheNewCards(chunk);
 updateResultsMeta();
 if(renderedCount < currentResults.length) {
 els.res.insertAdjacentHTML('beforeend', '<div class="load-sentinel" id="loadSentinel"></div>');
@@ -775,6 +791,7 @@ if(sentinel) sentinel.remove();
 const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
 els.res.insertAdjacentHTML('beforeend', chunk.map(i => cardTemplate(i, qTokens, isPack)).join(''));
 renderedCount += chunk.length;
+cacheNewCards(chunk);
 }
 updateResultsMeta();
 };
@@ -835,6 +852,7 @@ if(qTokens.length > 0) filtered.sort((a,b) => b.score - a.score);
 
 currentResults = filtered;
 renderedCount = 0;
+resetCardCache();
 els.res.innerHTML = filtered.length ? '' : '<div style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
 if(filtered.length) appendNextChunk();
 else updateResultsMeta();
@@ -909,30 +927,27 @@ showToast(`Added ${result.packs} packs of ${item.n}`);
 };
 
 const focusCardFieldByIndex = (idx, field, instant) => {
-const cards = Array.from(els.res.querySelectorAll('.card'));
-const card = cards[idx];
+const card = cardEls[idx];
 if (!card) return;
-cards.forEach((c, i) => { c.classList.toggle('focused', i === idx); c.setAttribute('aria-selected', String(i === idx)); });
-const targetId = card.id.replace('card-', '');
+setCardFocus(card, instant);
+const targetId = card.id.slice(5);
 let input = field === 'sp' ? document.getElementById(`quick-sp-${targetId}`) : document.getElementById(`quick-in-${targetId}`);
 if (!input) input = document.getElementById(`quick-in-${targetId}`);
 if (input) { input.focus({ preventScroll: true }); input.select(); }
-card.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
 focusedCardIndex = idx;
 };
 
 const focusAdjacentRow = (id, delta, field, instant) => {
-const cards = Array.from(els.res.querySelectorAll('.card'));
-const idx = cards.findIndex(c => c.id === `card-${id}`);
-if (idx === -1) return;
+const idx = cardIndexById.has(id) ? cardIndexById.get(id) : cardEls.findIndex(c => c.id === `card-${id}`);
+if (idx === -1 || idx === undefined) return;
 const nextIdx = idx + delta;
 if (nextIdx < 0) {
-cards.forEach(c => { c.classList.remove('focused'); c.setAttribute('aria-selected', 'false'); });
+clearCardFocus();
 focusedCardIndex = -1;
 els.in.focus({ preventScroll: true }); els.in.select();
 return;
 }
-if (nextIdx >= cards.length) {
+if (nextIdx >= cardEls.length) {
 if (renderedCount < currentResults.length) { appendNextChunk(); focusCardFieldByIndex(nextIdx, field, instant); }
 return;
 }
@@ -1294,31 +1309,44 @@ renderSearch();
 els.fU.addEventListener('change', renderSearch); els.fS.addEventListener('change', renderSearch);
 els.modal.addEventListener('click', e => { if(e.target === els.modal) closeModal(); });
 
-const updateFocus = (cards, instant) => {
-cards.forEach((c, i) => {
-const isFocused = i === focusedCardIndex;
-c.classList.toggle('focused', isFocused);
-c.setAttribute('aria-selected', String(isFocused));
-if(isFocused) { 
-c.focus({ preventScroll: true }); 
-c.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' }); 
+const setCardFocus = (card, instant) => {
+if(lastFocusedCard && lastFocusedCard !== card) {
+lastFocusedCard.classList.remove('focused');
+lastFocusedCard.setAttribute('aria-selected', 'false');
+lastFocusedCard.style.transitionDuration = '';
 }
-});
+if(card) {
+card.style.transitionDuration = instant ? '0s' : '';
+card.classList.add('focused');
+card.setAttribute('aria-selected', 'true');
+card.focus({ preventScroll: true });
+card.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
+}
+lastFocusedCard = card || null;
 };
+
+const clearCardFocus = () => {
+if(lastFocusedCard) {
+lastFocusedCard.classList.remove('focused');
+lastFocusedCard.setAttribute('aria-selected', 'false');
+lastFocusedCard.style.transitionDuration = '';
+lastFocusedCard = null;
+}
+};
+
+const updateFocus = (cards, instant) => { setCardFocus((cards || cardEls)[focusedCardIndex] || null, instant); };
 
 const moveFocus = (delta, instant) => {
 if(delta < 0 && focusedCardIndex <= 0) {
-const cards = Array.from(els.res.querySelectorAll('.card'));
-cards.forEach(c => { c.classList.remove('focused'); c.setAttribute('aria-selected', 'false'); });
+clearCardFocus();
 focusedCardIndex = -1;
 els.in.focus({ preventScroll: true }); els.in.select();
 return;
 }
 if(focusedCardIndex + delta >= renderedCount - 5 && renderedCount < currentResults.length) appendNextChunk();
-const cards = Array.from(els.res.querySelectorAll('.card'));
-if(!cards.length) return;
-focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cards.length - 1);
-updateFocus(cards, instant);
+if(!cardEls.length) return;
+focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cardEls.length - 1);
+setCardFocus(cardEls[focusedCardIndex], instant);
 };
 
 const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList'), pane: document.getElementById('cmdkPane') };
@@ -1661,25 +1689,22 @@ if(document.activeElement === els.in) { els.in.blur(); return; }
 return;
 }
 if(activeView === 'search' && document.activeElement === els.in) {
-const cards = els.res.querySelectorAll('.card');
-if(!cards.length) return;
+if(!cardEls.length) return;
 if(e.key === 'ArrowDown') { e.preventDefault(); focusedCardIndex = 0; moveFocus(0, e.repeat); }
-else if(e.key === 'ArrowUp') { e.preventDefault(); focusedCardIndex = cards.length - 1; moveFocus(0, e.repeat); }
+else if(e.key === 'ArrowUp') { e.preventDefault(); focusedCardIndex = cardEls.length - 1; moveFocus(0, e.repeat); }
 else if(e.key === 'Enter') {
 e.preventDefault();
-if(focusedCardIndex >= 0 && cards[focusedCardIndex]) { cards[focusedCardIndex].click(); }
+if(focusedCardIndex >= 0 && cardEls[focusedCardIndex]) { cardEls[focusedCardIndex].click(); }
 else { focusCardFieldByIndex(0, 'qty', e.repeat); }
 }
 }
 if(activeView === 'search' && e.key === 'End' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
 e.preventDefault(); loadAllRemaining();
-const cards = Array.from(els.res.querySelectorAll('.card'));
-focusedCardIndex = cards.length - 1; updateFocus(cards, true);
+focusedCardIndex = cardEls.length - 1; updateFocus(null, true);
 }
 if(activeView === 'search' && e.key === 'Home' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
 e.preventDefault();
-const cards = Array.from(els.res.querySelectorAll('.card'));
-focusedCardIndex = 0; updateFocus(cards, true);
+focusedCardIndex = 0; updateFocus(null, true);
 }
 });
 
