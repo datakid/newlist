@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="fonts-loading">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -254,9 +254,34 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 .dash-actions { position: relative; box-shadow: none; border-top: none; padding-bottom: 24px; }
 .hint-row { display: none; }
 }
+html.fonts-loading body > *:not(#lxPreloader) { visibility: hidden; }
+#lxPreloader { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: var(--sys-bg); transition: opacity 0.6s var(--spring); }
+#lxPreloader.lx-hide { opacity: 0; pointer-events: none; }
+html:not(.fonts-loading) #lxPreloader { opacity: 0; pointer-events: none; }
+#lxPreloader svg { width: 96px; height: 96px; overflow: visible; }
+#lxRing { transform-origin: 60px 60px; animation: lxSpin 1.5s linear infinite; }
+#lxCore { transform-origin: 60px 60px; animation: lxPulse 1.8s ease-in-out infinite; }
+@keyframes lxSpin { to { transform: rotate(360deg); } }
+@keyframes lxPulse { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.06); opacity: 1; } }
 </style>
 </head>
 <body>
+<div id="lxPreloader" aria-hidden="true">
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="lxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" stop-color="#a8c7fa"/>
+<stop offset="100%" stop-color="#ffb4a9"/>
+</linearGradient>
+</defs>
+<circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+<circle id="lxRing" cx="60" cy="60" r="46" fill="none" stroke="url(#lxGrad)" stroke-width="2" stroke-linecap="round" stroke-dasharray="66 224"/>
+<g id="lxCore">
+<circle cx="60" cy="60" r="18" fill="url(#lxGrad)" opacity="0.14"/>
+<path d="M60 44c-5 7-16 11-16 21a16 16 0 0 0 32 0c0-10-11-14-16-21z" fill="url(#lxGrad)"/>
+</g>
+</svg>
+</div>
 <div class="ambient-layer"></div>
 <header class="header">
 <div class="brand">
@@ -381,6 +406,27 @@ LX Search
 <div class="quick-links-popover" id="quickLinksPopover" role="menu" aria-label="Quick web search links"></div>
 <div class="toast-container" id="toasts" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
+(function(){
+const reveal = () => {
+document.documentElement.classList.remove('fonts-loading');
+const pl = document.getElementById('lxPreloader');
+if(pl){ pl.classList.add('lx-hide'); setTimeout(() => pl.remove(), 650); }
+};
+if(document.fonts && document.fonts.ready){
+Promise.race([
+Promise.all([
+document.fonts.load('400 1rem Outfit'),
+document.fonts.load('500 1rem Outfit'),
+document.fonts.load('600 1rem Outfit'),
+document.fonts.load('700 1rem Outfit'),
+document.fonts.load('24px "Material Symbols Rounded"')
+]).then(() => document.fonts.ready),
+new Promise(res => setTimeout(res, 3000))
+]).then(reveal);
+} else {
+setTimeout(reveal, 300);
+}
+})();
 const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const escapeAttr = (s) => escapeHTML(JSON.stringify(String(s)));
 
