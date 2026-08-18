@@ -13,7 +13,7 @@ document.documentElement.setAttribute('data-theme-mode', mode);
 })();
 </script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <title>LX Search 4.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,7 +113,8 @@ document.documentElement.setAttribute('data-theme-mode', mode);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { height: 100%; }
-body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color: var(--sys-on-bg); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+html { color-scheme: var(--scheme); }
+body { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--sys-bg); color: var(--sys-on-bg); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--sys-surface-highest); border-radius: var(--radius-full); border: 2px solid var(--sys-bg); }
@@ -122,7 +123,7 @@ body { font-family: 'Outfit', sans-serif; background-color: var(--sys-bg); color
 :focus { outline: none; }
 :focus-visible { box-shadow: var(--focus-ring); }
 input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: none; }
-.card:focus-visible, .order-chip:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .pill-toggle:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
+.card:focus-visible, .order-chip-main:focus-visible, .chip-del:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .pill-toggle:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
 .omni-input:focus-visible { box-shadow: none; }
 .action-pill:focus-within { border-color: var(--sys-primary); box-shadow: 0 0 0 3px var(--sys-primary-container); }
 .glass-input:focus-visible { box-shadow: none; }
@@ -209,11 +210,13 @@ input[type="number"] { -moz-appearance: textfield; }
 .tag.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
 .load-sentinel { height: 1px; width: 100%; flex-shrink: 0; }
 .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: var(--space-5); flex-shrink: 0; }
-.order-chip { position: relative; overflow: hidden; padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center; background: var(--sys-surface-low); color: var(--sys-on-surface-variant); cursor: pointer; white-space: nowrap; font-size: 0.95rem; font-family: inherit; box-shadow: var(--shadow-chip); transition: background 0.2s, box-shadow 0.2s, transform 0.2s var(--spring), color 0.2s, border-color 0.2s; }
+.order-chip { position: relative; overflow: hidden; padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center; background: var(--sys-surface-low); color: var(--sys-on-surface-variant); white-space: nowrap; font-size: 0.95rem; font-family: inherit; box-shadow: var(--shadow-chip); transition: background 0.2s, box-shadow 0.2s, transform 0.2s var(--spring), color 0.2s, border-color 0.2s; }
 .order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); box-shadow: var(--shadow-chip-active); }
 .order-chip:hover:not(.active) { background: var(--sys-surface-high); color: var(--sys-on-bg); box-shadow: var(--shadow-chip-hover); transform: translateY(-1px); }
 .order-chip:active { transform: translateY(0); box-shadow: var(--shadow-chip); }
-.chip-del { font-size: 16px; margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--sys-outline); opacity: 0.6; transition: all 0.2s; }
+.order-chip-main { background: transparent; border: none; padding: 0; margin: 0; color: inherit; font: inherit; cursor: pointer; border-radius: var(--radius-sm); max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.chip-del { display: flex; align-items: center; background: transparent; border: none; border-left: 1px solid var(--sys-outline); color: inherit; cursor: pointer; margin-left: 8px; padding-left: 8px; opacity: 0.6; transition: all 0.2s; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.chip-del .material-symbols-rounded { font-size: 16px; }
 .chip-del:hover { opacity: 1; color: var(--sys-secondary); transform: scale(1.1); }
 .dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-5); flex-wrap: wrap; gap: var(--space-4); flex-shrink: 0; }
 .dash-title { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.5px; display: flex; align-items: center; gap: var(--space-3); }
@@ -329,6 +332,19 @@ html:not(.fonts-loading) #lxPreloader { opacity: 0; pointer-events: none; }
 #lxCore { transform-origin: 60px 60px; animation: lxPulse 1.8s ease-in-out infinite; }
 @keyframes lxSpin { to { transform: rotate(360deg); } }
 @keyframes lxPulse { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.06); opacity: 1; } }
+
+@media print {
+.ambient-layer, .header, #lxPreloader, .toast-container, .modal-overlay, .cmdk-overlay, .dash-actions, .saved-orders-bar, .filters, .omnibar, #viewSearch { display: none !important; }
+html, body { overflow: visible !important; height: auto !important; background: #fff !important; color: #000 !important; }
+main, .view-section { overflow: visible !important; height: auto !important; padding: 0 !important; }
+#viewCalc { display: block !important; }
+.dash-grid { gap: 10px !important; }
+.dash-item { break-inside: avoid; border: 1px solid #999 !important; background: #fff !important; box-shadow: none !important; backdrop-filter: none !important; animation: none !important; color: #000 !important; }
+.dash-item * { color: #000 !important; }
+.trash-btn { display: none !important; }
+.glass-input, .calc-output { border: 1px solid #ccc !important; background: #fff !important; box-shadow: none !important; }
+.tag { border: 1px solid #999 !important; background: #fff !important; }
+}
 </style>
 </head>
 <body>
@@ -403,7 +419,7 @@ LX Search
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
 <button class="cmdk-badge" onclick="openCmdk()" title="Open command palette" aria-label="Open command palette">
-<span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size:13px; font-weight:500; margin-right:1px;">⌘</span>K
+<span id="cmdkModSymbol" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size:13px; font-weight:500; margin-right:1px;">⌘</span>K
 </button>
 </div>
 </div>
@@ -426,7 +442,7 @@ LX Search
 </button>
 </div>
 <div class="results-meta" id="resultsMeta" aria-live="polite"></div>
-<div class="results-list" id="resultsList" role="listbox" aria-label="Search results"></div>
+<div class="results-list" id="resultsList" role="list" aria-label="Search results"></div>
 </div>
 
 <div class="view-section" id="viewCalc">
@@ -444,16 +460,17 @@ LX Search
 <button class="btn-action btn-secondary" onclick="clearDashboard()"><span class="material-symbols-rounded">delete_sweep</span> Clear</button>
 <button class="btn-action btn-secondary" onclick="exportDashboardText()"><span class="material-symbols-rounded">content_copy</span> Copy</button>
 <button class="btn-action btn-secondary" onclick="downloadDashboard()"><span class="material-symbols-rounded">download</span> DL</button>
+<button class="btn-action btn-secondary" onclick="downloadDashboardCSV()"><span class="material-symbols-rounded">grid_on</span> CSV</button>
 <button class="btn-action btn-primary" id="btnSaveOrder" onclick="saveAsOrder()"><span class="material-symbols-rounded">save</span> Save Order</button>
 </div>
 </div>
 </main>
-<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-<div class="bottom-sheet">
+<div class="modal-overlay" id="modalOverlay">
+<div class="bottom-sheet" id="bottomSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
 <div class="handle"></div>
 <div>
-<h2 id="sheetTitle" style="font-size: 2rem; margin-bottom: 8px;"></h2>
-<div class="card-subtitle" id="sheetMeta"></div>
+<h2 id="sheetTitle" dir="auto" style="font-size: 2rem; margin-bottom: 8px;"></h2>
+<div class="card-subtitle" id="sheetMeta" dir="auto"></div>
 <div id="sheetPriceData" style="margin-top: 20px; margin-bottom: 12px;"></div>
 <div class="engine-links" id="sheetLinks"></div>
 </div>
@@ -461,7 +478,7 @@ LX Search
 </div>
 </div>
 <div class="cmdk-overlay" id="cmdkOverlay">
-<div class="cmdk-panel" role="dialog" aria-modal="true" aria-label="Command palette">
+<div class="cmdk-panel" id="cmdkPanel" role="dialog" aria-modal="true" aria-label="Command palette">
 <div class="cmdk-input-row">
 <span class="material-symbols-rounded">bolt</span>
 <input type="text" id="cmdkInput" class="cmdk-input" placeholder="Search medicines, or try 'concor 5 x30'..." autocomplete="off" spellcheck="false" aria-label="Search medicines or run a command">
@@ -491,7 +508,7 @@ document.fonts.load('600 1rem Outfit'),
 document.fonts.load('700 1rem Outfit'),
 document.fonts.load('24px "Material Symbols Rounded"')
 ]).then(() => document.fonts.ready),
-new Promise(res => setTimeout(res, 3000))
+new Promise(res => setTimeout(res, 1200))
 ]).then(reveal);
 } else {
 setTimeout(reveal, 300);
@@ -528,6 +545,15 @@ if((document.documentElement.getAttribute('data-theme-mode') || 'system') === 's
 
 const escapeHTML = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const escapeAttr = (s) => escapeHTML(JSON.stringify(String(s)));
+
+const toPiastres = (egp) => Math.round((Number(egp) || 0) * 100);
+const formatPiastres = (piastres) => (piastres / 100).toFixed(2);
+const packInfo = (req, bQty) => {
+const safeQty = bQty || 1;
+const packs = Math.ceil((req || 0) / safeQty);
+const spare = Math.max(0, packs * safeQty - (req || 0));
+return { packs, spare };
+};
 
 const rawData = [
 {name: "Amaryl 1", unit: "30 Tab", price: 11.5, company: "شراء موحد"},
@@ -686,6 +712,28 @@ const rawData = [
 const insulins = ["apidra", "humalog", "lantus", "novomix", "novorapid", "ryzodec", "toujeo", "tresiba", "soliqua"];
 const cm = {"شراء موحد": "Unified Purchase", "ايرادات هيئة": "Authority Revenue"};
 
+const ARABIC_INDIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
+const normalizeDigits = (s) => s.replace(/[٠-٩]/g, d => String(ARABIC_INDIC_DIGITS.indexOf(d)));
+const normalizeSearchText = (s) => normalizeDigits(String(s)).toLowerCase().replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ').trim();
+
+const genericAliases = {
+bisoprolol: 'concor', dapagliflozin: 'forxiga', atorvastatin: 'lipitor', rosuvastatin: 'crestor',
+amlodipine: 'norvasc', losartan: 'cozaar', metformin: 'glucophage', sitagliptin: 'januvia',
+vildagliptin: 'galvus', clopidogrel: 'plavix', apixaban: 'eliquis', rivaroxaban: 'xarelto',
+sacubitril: 'entresto', esomeprazole: 'nexium', atenolol: 'tenormin', ramipril: 'tritace',
+perindopril: 'coversyl', gliclazide: 'diamicron', glimepiride: 'amaryl', sertraline: 'lustral',
+ticagrelor: 'brilique', tamoxifen: 'nolvadex', candesartan: 'atacand', montelukast: 'singulair',
+cilostazol: 'pletaal', felodipine: 'plendil', carbamazepine: 'tegretol', valproate: 'depakine',
+tiotropium: 'spiriva', simvastatin: 'zocor', lisinopril: 'zestril', furosemide: 'lasix',
+cabergoline: 'dostinex', celecoxib: 'celebrex', oxcarbazepine: 'trileptal', doxazosin: 'cardura',
+irbesartan: 'aprovel', verapamil: 'isoptin', indapamide: 'natrilix'
+};
+const resolveAliasToken = (tk) => genericAliases[tk] || tk;
+
+const slugify = (s) => String(s).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+const hashStr = (s) => { let h = 5381; for(let k = 0; k < s.length; k++) { h = ((h << 5) + h) + s.charCodeAt(k); h |= 0; } return (h >>> 0).toString(36); };
+const makeStableId = (name, unit, company) => `${slugify(name) || 'item'}-${hashStr(`${name}|${unit}|${company}`)}`;
+
 const getIconForUnit = (unitStr) => {
 const u = unitStr.toLowerCase();
 if (u.includes('tab') || u.includes('cap')) return 'pill';
@@ -705,13 +753,15 @@ let bQty = 1, bType = i.unit;
 if(isInsulin) { bQty = nLower.includes('toujeo') ? 450 : 300; bType = 'IU'; }
 else { let match = i.unit.match(/(\d+)/); if(match) { bQty = parseInt(match[1]); bType = i.unit.replace(/\d+/g, '').trim() || 'Unit'; } }
 const sName = cm[i.company] || i.company;
-const searchStr = `${n} ${t} ${i.unit} ${sName}`.toLowerCase();
+const searchStr = normalizeSearchText(`${n} ${t} ${i.unit} ${sName}`);
 const icon = getIconForUnit(i.unit);
-return { id: Math.random().toString(36).substr(2, 9), n, nLower, t, u: i.unit, p: i.price, s: sName, bQty, bType, isInsulin, searchStr, icon, isDynamic: !!i.dp };
+return { id: makeStableId(i.name, i.unit, i.company), n, nLower, t, u: i.unit, p: i.price, pP: Math.round(i.price * 100), s: sName, bQty, bType, isInsulin, searchStr, icon, isDynamic: !!i.dp };
 });
 
 const CHUNK_SIZE = 40;
 let activeView = 'search';
+const isMacPlatform = /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent || '');
+const MOD_KEY = isMacPlatform ? '⌘' : 'Ctrl';
 let dashboardMap = new Map();
 let savedOrders = [];
 let currentOrderIndex = -1;
@@ -719,6 +769,7 @@ let preferredEngine = 'brave';
 let focusedCardIndex = -1;
 let lastDeletedOrder = null;
 let lastDeletedIndex = -1;
+let lastDeletedItem = null;
 let undoTimeoutId = null;
 let globalAddMode = 'unit';
 let defaultQuickQty = 1;
@@ -746,11 +797,46 @@ engineMenu: document.getElementById('engineMenu'), meta: document.getElementById
 [...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
 [...new Set(db.map(i=>i.s))].sort().forEach(s => els.fS.add(new Option(s,s)));
 
+const SCHEMA_VERSION = 2;
+
+const migrateEntries = (entries) => {
+if (!Array.isArray(entries)) return [];
+const migrated = [];
+entries.forEach(entry => {
+if (!Array.isArray(entry) || entry.length !== 2 || !entry[1] || !entry[1].item) return;
+const val = entry[1];
+const match = db.find(d => d.n === val.item.n && d.u === val.item.u && d.s === val.item.s && d.t === val.item.t);
+if (!match) return;
+migrated.push([match.id, { ...val, item: match }]);
+});
+return migrated;
+};
+
+let saveTimeoutId = null;
+const persistNow = () => {
+try {
+localStorage.setItem('lx_schema_version', String(SCHEMA_VERSION));
+localStorage.setItem('lx_current_calc', JSON.stringify(Array.from(dashboardMap.entries())));
+localStorage.setItem('lx_calc_orders', JSON.stringify(savedOrders));
+} catch(e) { showToast('Could not save — storage full', 'warning'); }
+};
+const saveState = (immediate) => {
+clearTimeout(saveTimeoutId);
+if (immediate) { persistNow(); return; }
+saveTimeoutId = setTimeout(persistNow, 300);
+};
+
 const loadState = () => {
 try {
+const storedVersion = parseInt(localStorage.getItem('lx_schema_version') || '1', 10);
 dashboardMap = new Map(JSON.parse(localStorage.getItem('lx_current_calc') || '[]'));
 savedOrders = JSON.parse(localStorage.getItem('lx_calc_orders') || '[]');
 if (!Array.isArray(savedOrders)) savedOrders = [];
+if (storedVersion < SCHEMA_VERSION) {
+dashboardMap = new Map(migrateEntries(Array.from(dashboardMap.entries())));
+savedOrders = savedOrders.map(o => ({ ...o, items: migrateEntries(o.items || []) }));
+saveState(true);
+}
 preferredEngine = localStorage.getItem('lx_engine') || 'brave';
 globalAddMode = localStorage.getItem('lx_add_mode') || 'unit';
 defaultQuickQty = parseFloat(localStorage.getItem('lx_default_qty')) || 1;
@@ -760,20 +846,23 @@ applyEffectiveTheme();
 } catch(e) {}
 };
 
-const saveState = () => {
-localStorage.setItem('lx_current_calc', JSON.stringify(Array.from(dashboardMap.entries())));
-localStorage.setItem('lx_calc_orders', JSON.stringify(savedOrders));
-};
-
 const syncCurrentOrder = () => {
 if (currentOrderIndex >= 0 && savedOrders[currentOrderIndex]) {
 savedOrders[currentOrderIndex].items = Array.from(dashboardMap.entries());
-let total = 0;
-dashboardMap.forEach(c => total += c.cost);
-savedOrders[currentOrderIndex].total = `${total.toFixed(2)} EGP`;
+let totalP = 0;
+dashboardMap.forEach(c => totalP += toPiastres(c.cost));
+savedOrders[currentOrderIndex].total = `${formatPiastres(totalP)} EGP`;
 }
 saveState();
 };
+
+window.addEventListener('storage', (e) => {
+if (e.key === 'lx_current_calc' || e.key === 'lx_calc_orders') {
+loadState();
+if (activeView === 'calc') renderDashboard();
+else updateDashTotal();
+}
+});
 
 window.toggleEngineMenu = () => {
 const active = els.engineMenu.classList.toggle('active');
@@ -809,6 +898,33 @@ document.addEventListener('click', (e) => {
 if(!e.target.closest('.dock')) { els.engineMenu.classList.remove('active'); document.getElementById('engineToggleBtn').setAttribute('aria-expanded', 'false'); }
 });
 
+document.addEventListener('wheel', (e) => {
+const active = document.activeElement;
+if(active && active.tagName === 'INPUT' && active.type === 'number') active.blur();
+}, { passive: true });
+
+const getFocusable = (container) => Array.from(container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter(el => el.getClientRects().length > 0);
+let focusTrapContainer = null;
+let focusTrapHandler = null;
+const trapFocus = (container) => {
+releaseFocusTrap();
+if (!container) return;
+focusTrapContainer = container;
+focusTrapHandler = (e) => {
+if (e.key !== 'Tab') return;
+const focusable = getFocusable(container);
+if (!focusable.length) return;
+const first = focusable[0], last = focusable[focusable.length - 1];
+if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+};
+container.addEventListener('keydown', focusTrapHandler);
+};
+const releaseFocusTrap = () => {
+if (focusTrapContainer && focusTrapHandler) focusTrapContainer.removeEventListener('keydown', focusTrapHandler);
+focusTrapContainer = null; focusTrapHandler = null;
+};
+
 const showToast = (msg, icon="check_circle") => {
 Array.from(els.toasts.children).forEach(t => {
 if(t.getAttribute('data-msg') === msg) { clearTimeout(t.to); t.remove(); }
@@ -826,9 +942,32 @@ t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-sec
 <button onclick="undoDelete()" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
 els.toasts.appendChild(t);
 clearTimeout(undoTimeoutId);
-undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; }, 30000);
+undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; lastDeletedItem = null; }, 30000);
 setTimeout(() => t.remove(), 30000);
 };
+
+const legacyCopy = (text) => {
+try {
+const ta = document.createElement('textarea');
+ta.value = text;
+ta.setAttribute('readonly', '');
+ta.style.position = 'fixed';
+ta.style.opacity = '0';
+ta.style.left = '-9999px';
+document.body.appendChild(ta);
+ta.focus(); ta.select();
+const ok = document.execCommand('copy');
+document.body.removeChild(ta);
+return ok;
+} catch(e) { return false; }
+};
+const copyTextToClipboard = (text) => new Promise((resolve) => {
+if (navigator.clipboard && navigator.clipboard.writeText) {
+navigator.clipboard.writeText(text).then(() => resolve(true)).catch(() => resolve(legacyCopy(text)));
+} else {
+resolve(legacyCopy(text));
+}
+});
 
 window.checkMax = (el) => {
 if (el.value.length > 7) el.value = el.value.slice(0, 7);
@@ -861,16 +1000,19 @@ if(view === 'calc') renderDashboard();
 
 const disconnectObserver = () => { if(resultsObserver) { resultsObserver.disconnect(); resultsObserver = null; } };
 
-const cardTemplate = (i, qTokens, isPack) => `
-<div class="card" id="card-${escapeHTML(i.id)}" role="option" tabindex="0" aria-selected="false"
-aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}"
+const cardTemplate = (i, qTokens, isPack) => {
+const inCalc = dashboardMap.get(i.id);
+const inCalcBadge = inCalc ? ` • <span class="tag" style="background: var(--sys-surface-highest); color: var(--sys-success);">In calc · ${escapeHTML(String(inCalc.packs))} pack${inCalc.packs === 1 ? '' : 's'}</span>` : '';
+return `
+<div class="card" id="card-${escapeHTML(i.id)}" role="listitem" tabindex="0"
+aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}${inCalc ? ', already in calculator' : ''}"
 onclick="openDetails(${escapeAttr(i.id)})"
 onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <div class="card-main-info">
 <div class="card-icon${i.isDynamic ? ' dynamic' : ''}" aria-hidden="true"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
 <div class="card-content">
-<div class="card-title">${highlight(i.n, qTokens)} ${i.t ? `<span class="tag">${escapeHTML(i.t)}</span>` : ''}</div>
-<div class="card-subtitle"><span>${highlight(i.u, qTokens)}</span> • <span class="price-tag${i.isDynamic ? ' dynamic' : ''}">${i.isDynamic ? '50% Supply Price' : i.p.toFixed(2) + ' EGP'}</span></div>
+<div class="card-title" dir="auto">${highlight(i.n, qTokens)} ${i.t ? `<span class="tag">${escapeHTML(i.t)}</span>` : ''}</div>
+<div class="card-subtitle" dir="auto"><span>${highlight(i.u, qTokens)}</span> • <span class="price-tag${i.isDynamic ? ' dynamic' : ''}">${i.isDynamic ? '50% Supply Price' : i.p.toFixed(2) + ' EGP'}</span>${inCalcBadge}</div>
 </div>
 </div>
 <div class="card-actions" onclick="event.stopPropagation()">
@@ -878,11 +1020,11 @@ onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <button class="copy-btn" onclick="copyItemInfo(${escapeAttr(i.id)})" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
 <div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
  ${i.isDynamic ? `
-<input type="number" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'sp')">
+<input type="number" inputmode="decimal" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'sp')">
 <span class="pill-suffix">EGP</span>
 <span class="pill-sep"></span>
 ` : ''}
-<input type="number" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'qty')">
+<input type="number" inputmode="decimal" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty · ${escapeHTML(String(defaultQuickQty || 1))}" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'qty')">
 <button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" onclick="toggleQuickMode(event, ${escapeAttr(i.id)}, ${escapeAttr(i.bType)})">
  ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
 </button>
@@ -891,6 +1033,7 @@ onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 </div>
 </div>
 `;
+};
 
 const cacheNewCards = (chunk) => {
 const startIdx = cardEls.length;
@@ -903,6 +1046,22 @@ cardEls.push(el);
 };
 
 const resetCardCache = () => { cardEls = []; cardIndexById = new Map(); lastFocusedCard = null; };
+
+const refreshCardInPlace = (id) => {
+const el = document.getElementById(`card-${id}`);
+if(!el) return;
+const item = db.find(d => d.id === id);
+if(!item) return;
+const isPack = globalAddMode === 'pack';
+const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+const wrapper = document.createElement('div');
+wrapper.innerHTML = cardTemplate(item, qTokens, isPack).trim();
+const newEl = wrapper.firstElementChild;
+el.replaceWith(newEl);
+const idx = cardIndexById.get(id);
+if(idx !== undefined) cardEls[idx] = newEl;
+if(lastFocusedCard && lastFocusedCard.id === `card-${id}`) lastFocusedCard = newEl;
+};
 
 const appendNextChunk = () => {
 if(renderedCount >= currentResults.length) return;
@@ -922,7 +1081,7 @@ const newSentinel = document.getElementById('loadSentinel');
 disconnectObserver();
 resultsObserver = new IntersectionObserver((entries) => {
 if(entries[0].isIntersecting) appendNextChunk();
-}, { root: els.res, rootMargin: '600px' });
+}, { root: els.vSearch, rootMargin: '600px' });
 resultsObserver.observe(newSentinel);
 }
 };
@@ -964,7 +1123,7 @@ qtyInput.closest('.card').scrollIntoView({ block: 'nearest', behavior: 'auto' })
 const renderSearch = () => {
 closeQuickLinks();
 const rawQ = els.in.value;
-const qStr = rawQ.toLowerCase().trim();
+const qStr = normalizeSearchText(rawQ);
 els.icon.textContent = activeView === 'calc' ? 'calculate' : 'data_usage';
 els.clear.style.display = rawQ.length > 0 ? 'flex' : 'none';
 
@@ -987,7 +1146,9 @@ if(qTokens.length > 0) {
 let matchedAll = true;
 for(let j=0; j<qTokens.length; j++) {
 const tk = qTokens[j];
-if(!item.searchStr.includes(tk)) { matchedAll = false; break; }
+const aliasTk = resolveAliasToken(tk);
+const hit = item.searchStr.includes(tk) || (aliasTk !== tk && item.searchStr.includes(aliasTk));
+if(!hit) { matchedAll = false; break; }
 if(item.nLower.startsWith(tk)) score += 20; else score += 10;
 }
 if(!matchedAll) continue;
@@ -1010,7 +1171,7 @@ window.copyItemInfo = (id) => {
 const item = db.find(i => i.id === id);
 if (!item) return;
 const pStr = item.isDynamic ? '50% Supply Price' : `${item.p.toFixed(2)} EGP`;
-navigator.clipboard.writeText(`${item.n} ${item.t} | ${item.u} | ${pStr}`).then(() => showToast(`Copied ${item.n}`, "content_copy"));
+copyTextToClipboard(`${item.n} ${item.t} | ${item.u} | ${pStr}`).then(ok => showToast(ok ? `Copied ${item.n}` : 'Copy failed — select text manually', ok ? 'content_copy' : 'warning'));
 };
 
 window.toggleQuickMode = (e, id, bType) => {
@@ -1023,17 +1184,20 @@ btn.setAttribute('data-mode', newMode);
 btn.innerHTML = `${newMode === 'pack' ? 'Packs' : escapeHTML(bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>`;
 };
 
-const commitToCalc = (id, req, sp = 0) => {
+const commitToCalc = (id, req, sp = 0, additive = false) => {
 const item = db.find(i => i.id === id);
 if (!item) return null;
-const packs = Math.round(req / item.bQty);
-const cost = item.isDynamic ? packs * (sp * 0.5) : packs * item.p;
-dashboardMap.set(id, { item, req, packs, cost, supplyPrice: sp });
+const existing = dashboardMap.get(id);
+const totalReq = additive && existing ? existing.req + req : req;
+const { packs, spare } = packInfo(totalReq, item.bQty);
+const costP = item.isDynamic ? packs * Math.round(toPiastres(sp) / 2) : packs * item.pP;
+const cost = costP / 100;
+dashboardMap.set(id, { item, req: totalReq, packs, cost, supplyPrice: sp });
 syncCurrentOrder();
 els.badge.classList.add('pop'); els.badge.style.display = 'block'; els.badge.textContent = dashboardMap.size;
 setTimeout(() => els.badge.classList.remove('pop'), 200);
 if(activeView === 'calc') renderDashboard();
-return { item, packs, cost };
+return { item, packs, cost, spare };
 };
 
 window.inlineAdd = (id, btnEl) => {
@@ -1057,7 +1221,7 @@ return;
 const toggleBtn = document.getElementById(`quick-toggle-${id}`);
 const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
 const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
-const result = commitToCalc(id, req, sp);
+const result = commitToCalc(id, req, sp, true);
 if(!result) return;
 
 input.value = ''; input.blur();
@@ -1069,7 +1233,9 @@ const origIcon = icon.textContent;
 btnEl.style.background = 'var(--sys-success)'; btnEl.style.color = 'var(--sys-on-success)'; icon.textContent = 'check';
 setTimeout(() => { btnEl.style.background = ''; btnEl.style.color = ''; icon.textContent = origIcon; }, 800);
 }
-showToast(`Added ${result.packs} packs of ${item.n}`);
+const spareMsg = result.spare > 0 ? ` (${result.spare} ${item.bType} spare)` : '';
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+refreshCardInPlace(id);
 };
 
 const focusCardFieldByIndex = (idx, field, instant) => {
@@ -1109,6 +1275,7 @@ if (qtyInput) { qtyInput.focus({ preventScroll: true }); qtyInput.select(); }
 return;
 }
 const qtyInput = document.getElementById(`quick-in-${id}`);
+if (qtyInput.value.trim() === '') qtyInput.value = String(defaultQuickQty || 1);
 const addBtn = qtyInput.closest('.action-pill').querySelector('.pill-add');
 inlineAdd(id, addBtn);
 if (qtyInput.value === '') focusAdjacentRow(id, 1, 'qty', e.repeat);
@@ -1146,9 +1313,11 @@ return;
 }
 
 const req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
-const result = commitToCalc(id, req, sp);
+const result = commitToCalc(id, req, sp, true);
 if(!result) return;
-showToast(`Added ${result.packs} packs of ${item.n}`);
+const spareMsg = result.spare > 0 ? ` (${result.spare} ${item.bType} spare)` : '';
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+refreshCardInPlace(id);
 closeModal();
 };
 
@@ -1181,7 +1350,8 @@ window.closeQuickLinks = () => { quickLinksOpenId = null; qlPop.classList.remove
 document.addEventListener('click', (e) => {
 if(quickLinksOpenId && !e.target.closest('.quick-links-popover') && !e.target.closest('[onclick*="toggleQuickLinks"]')) closeQuickLinks();
 });
-els.res.addEventListener('scroll', closeQuickLinks);
+els.vSearch.addEventListener('scroll', closeQuickLinks, { passive: true });
+window.addEventListener('resize', closeQuickLinks);
 
 const generateSearchURL = (qStr) => {
 if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}`;
@@ -1246,7 +1416,7 @@ document.getElementById('sheetAddCalc').innerHTML = `
 </div>
  ${item.isDynamic ? `
 <div style="display: flex; gap: 12px; align-items: center;">
-<input type="number" id="modal-calc-sp" class="glass-input" placeholder="Enter Supply Price..." aria-label="Supply price" min="0" oninput="checkMax(this)" style="padding:10px; font-size:1.1rem; text-align:left; border-color: var(--sys-secondary);">
+<input type="number" inputmode="decimal" id="modal-calc-sp" class="glass-input" placeholder="Enter Supply Price..." aria-label="Supply price" min="0" oninput="checkMax(this)" style="padding:10px; font-size:1.1rem; text-align:left; border-color: var(--sys-secondary);">
 <span style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">EGP</span>
 </div>
 ` : ''}
@@ -1255,7 +1425,7 @@ document.getElementById('sheetAddCalc').innerHTML = `
 <button class="omni-tab" id="mtg-pack" onclick="setModalAddMode('pack', ${escapeAttr(id)})" style="flex:1; justify-content:center; height:32px;">By Packages</button>
 </div>
 <div style="display: flex; gap: 12px; align-items: center;">
-<input type="number" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd(${escapeAttr(id)})" style="padding:10px; font-size:1.1rem; text-align:left;">
+<input type="number" inputmode="decimal" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd(${escapeAttr(id)})" style="padding:10px; font-size:1.1rem; text-align:left;">
 <span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
 <button onclick="modalAdd(${escapeAttr(id)})" style="background:var(--sys-primary); color:var(--sys-on-primary); border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
 </div>
@@ -1263,19 +1433,20 @@ document.getElementById('sheetAddCalc').innerHTML = `
 `;
 window.currentModalAddMode = 'unit';
 els.modal.classList.add('active');
-setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus({ preventScroll: true }); }, 100);
+setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus({ preventScroll: true }); trapFocus(document.getElementById('bottomSheet')); }, 100);
 };
 window.openDetails = openDetails;
 
 const closeModal = () => {
 els.modal.classList.remove('active');
+releaseFocusTrap();
 if(lastFocusedBeforeModal && document.contains(lastFocusedBeforeModal)) lastFocusedBeforeModal.focus({ preventScroll: true });
 };
 
 const updateDashTotal = () => {
-let total = 0;
-dashboardMap.forEach(c => total += c.cost);
-els.dashTotal.textContent = `${total.toFixed(2)} EGP`;
+let totalP = 0;
+dashboardMap.forEach(c => totalP += toPiastres(c.cost));
+els.dashTotal.textContent = `${formatPiastres(totalP)} EGP`;
 els.badge.textContent = dashboardMap.size;
 els.badge.style.display = dashboardMap.size ? 'block' : 'none';
 };
@@ -1288,17 +1459,20 @@ if(rawVal > 999999) { rawVal = 999999; showToast("Maximum amount is 999,999", "w
 const entry = dashboardMap.get(id);
 if(!entry) return;
 
-let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0;
+let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0, spare = 0;
 
 if (mode === 'pack') {
-packs = rawVal; req = packs * entry.item.bQty;
+packs = rawVal;
 } else if (mode === 'req') {
-req = rawVal; packs = Math.round(req / entry.item.bQty);
+req = rawVal;
+({ packs, spare } = packInfo(req, entry.item.bQty));
 } else if (mode === 'sp') {
 sp = rawVal;
 }
+if (mode !== 'req') spare = Math.max(0, packs * entry.item.bQty - req);
 
-let cost = entry.item.isDynamic ? packs * (sp * 0.5) : packs * entry.item.p;
+const costP = entry.item.isDynamic ? packs * Math.round(toPiastres(sp) / 2) : packs * entry.item.pP;
+const cost = costP / 100;
 
 entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
 dashboardMap.set(id, entry);
@@ -1307,12 +1481,14 @@ syncCurrentOrder();
 const reqEl = document.getElementById(`dash-in-${id}`);
 const packEl = document.getElementById(`dash-packs-${id}`);
 const cEl = document.getElementById(`out-cost-${id}`);
+const spareEl = document.getElementById(`dash-spare-${id}`);
 
 if(mode !== 'req' && reqEl) reqEl.value = req;
 if(mode !== 'pack' && packEl) packEl.value = packs;
 if(mode !== 'req' && reqEl && parseFloat(reqEl.value) > 999999) reqEl.value = 999999;
 if(mode !== 'pack' && packEl && parseFloat(packEl.value) > 999999) packEl.value = 999999;
-if(cEl) cEl.textContent = cost.toFixed(2);
+if(cEl) cEl.textContent = formatPiastres(costP);
+if(spareEl) spareEl.textContent = spare > 0 ? `${spare} ${entry.item.bType} spare` : '';
 
 updateDashTotal();
 
@@ -1329,10 +1505,10 @@ updateDashTotal();
 els.dashActions.style.display = items.length ? 'grid' : 'none';
 els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
 els.ordersBar.innerHTML = savedOrders.map((o, idx) => `
-<button class="order-chip ${idx === currentOrderIndex ? 'active' : ''}" onclick="loadOrder(${idx})">
- ${escapeHTML(o.name)}
-<span class="material-symbols-rounded chip-del" onclick="deleteOrder(event, ${idx})" role="button" tabindex="0" aria-label="Delete order ${escapeHTML(o.name)}">close</span>
-</button>
+<div class="order-chip ${idx === currentOrderIndex ? 'active' : ''}">
+<button class="order-chip-main" onclick="loadOrder(${idx})" title="${escapeHTML(o.name)}">${escapeHTML(o.name)}</button>
+<button class="chip-del" onclick="deleteOrder(event, ${idx})" aria-label="Delete order ${escapeHTML(o.name)}"><span class="material-symbols-rounded">close</span></button>
+</div>
 `).join('') + `<button class="order-chip" onclick="createNewOrder()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
 
 els.dashTitleText.textContent = currentOrderIndex >= 0 ? savedOrders[currentOrderIndex].name : "Current Calculation";
@@ -1343,58 +1519,85 @@ els.dashStatus.style.color = currentOrderIndex >= 0 ? "var(--sys-on-success)" : 
 const saveBtn = document.getElementById('btnSaveOrder');
 if(saveBtn) saveBtn.innerHTML = `<span class="material-symbols-rounded">save</span> ${currentOrderIndex >= 0 ? 'Save Updates' : 'Save Order'}`;
 
-els.dashGrid.innerHTML = items.map(c => `
+els.dashGrid.innerHTML = items.map(c => {
+const spare = Math.max(0, c.packs * c.item.bQty - c.req);
+return `
 <div class="dash-item" id="dash-item-${escapeHTML(c.item.id)}">
 <div class="dash-item-top">
 <div>
-<div class="card-title">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div>
-<div class="card-subtitle">Base: ${escapeHTML(String(c.item.bQty))} ${escapeHTML(c.item.bType)} / Pack</div>
+<div class="card-title" dir="auto">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div>
+<div class="card-subtitle" dir="auto">Base: ${escapeHTML(String(c.item.bQty))} ${escapeHTML(c.item.bType)} / Pack</div>
 </div>
 <button class="trash-btn" onclick="removeDashboardItem(${escapeAttr(c.item.id)})" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
 </div>
 <div class="dash-controls">
-<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.req))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
-<div class="control-group"><span class="control-label">Packs</span><input type="number" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.packs))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'pack')" aria-label="Packs"></div>
- ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'sp')" aria-label="Supply price"></div>` : ''}
-<div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${(Number(c.cost) || 0).toFixed(2)}</div></div>
+<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" inputmode="decimal" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.req))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
+<div class="control-group"><span class="control-label">Packs <span id="dash-spare-${escapeHTML(c.item.id)}" style="text-transform:none; font-weight:400; color: var(--sys-on-surface-variant);">${spare > 0 ? `· ${escapeHTML(String(spare))} ${escapeHTML(c.item.bType)} spare` : ''}</span></span><input type="number" inputmode="decimal" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.packs))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'pack')" aria-label="Packs"></div>
+ ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" inputmode="decimal" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'sp')" aria-label="Supply price"></div>` : ''}
+<div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${formatPiastres(toPiastres(c.cost))}</div></div>
 </div>
 </div>
-`).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">calculate</span><p style="margin-top:16px">Calculator is empty. Search and quickly add items.</p></div>';
+`;
+}).join('') || '<div style="text-align:center; padding:60px 20px; color:var(--sys-on-surface-variant);"><span class="material-symbols-rounded" style="font-size:48px; opacity:0.5">calculate</span><p style="margin-top:16px">Calculator is empty. Search and quickly add items.</p></div>';
 };
 
 const autoSaveUnfinished = () => {
 const orderName = `Unfinished ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-let total = 0; dashboardMap.forEach(c => total += c.cost);
-savedOrders.push({ id: Date.now().toString(), name: orderName, total: `${total.toFixed(2)} EGP`, items: Array.from(dashboardMap.entries()) });
+let totalP = 0; dashboardMap.forEach(c => totalP += toPiastres(c.cost));
+savedOrders.push({ id: Date.now().toString(), name: orderName, total: `${formatPiastres(totalP)} EGP`, items: Array.from(dashboardMap.entries()) });
 showToast("Unsaved work moved to Unfinished", "save");
 };
 
 window.createNewOrder = () => {
 if (currentOrderIndex === -1 && dashboardMap.size > 0) {
-if (savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed. Please delete some first."); return; }
+if (savedOrders.length >= 10) { showToast("Maximum 10 saved orders allowed — delete some first", "warning"); return; }
 autoSaveUnfinished();
 }
 dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard();
 };
 
-window.removeDashboardItem = (id) => { dashboardMap.delete(id); syncCurrentOrder(); renderDashboard(); };
+window.removeDashboardItem = (id) => {
+const entry = dashboardMap.get(id);
+if (!entry) return;
+lastDeletedOrder = null;
+lastDeletedItem = { id, entry, wasCurrentOrder: currentOrderIndex };
+dashboardMap.delete(id);
+syncCurrentOrder();
+renderDashboard();
+showUndoToast(`Removed ${entry.item.n}`, "delete");
+};
 window.clearDashboard = () => { dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard(); };
 
 window.saveAsOrder = () => {
 if(dashboardMap.size === 0) return;
-const dateStr = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
 if (currentOrderIndex >= 0) {
-savedOrders[currentOrderIndex].name = `Order ${dateStr}`; syncCurrentOrder(); renderDashboard(); showToast("Order saved and updated", "bookmark_added");
+syncCurrentOrder(); renderDashboard(); showToast("Order updated", "bookmark_added");
 } else {
-if(savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed."); return; }
+if(savedOrders.length >= 10) { showToast("Maximum 10 saved orders allowed", "warning"); return; }
+const dateStr = `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
 savedOrders.push({ id: Date.now().toString(), name: `Order ${dateStr}`, total: els.dashTotal.textContent, items: Array.from(dashboardMap.entries()) });
 currentOrderIndex = savedOrders.length - 1; saveState(); renderDashboard(); showToast("Order saved", "bookmark_added");
 }
 };
 
+window.renameOrder = (idx, name) => {
+const order = savedOrders[idx]; if(!order) return;
+const clean = String(name || '').trim();
+if(!clean) return;
+order.name = clean.slice(0, 60);
+saveState(); renderDashboard(); showToast("Order renamed", "edit");
+};
+
+window.duplicateOrder = (idx) => {
+const order = savedOrders[idx]; if(!order) return;
+if(savedOrders.length >= 10) { showToast("Maximum 10 saved orders allowed", "warning"); return; }
+savedOrders.splice(idx + 1, 0, { id: Date.now().toString(), name: `${order.name} (Copy)`.slice(0, 60), total: order.total, items: order.items.map(([k, v]) => [k, { ...v }]) });
+saveState(); renderDashboard(); showToast("Order duplicated", "content_copy");
+};
+
 window.loadOrder = (idx) => {
 if (currentOrderIndex === -1 && dashboardMap.size > 0) {
-if (savedOrders.length >= 10) { alert("Maximum 10 saved orders allowed. Please delete some first."); return; }
+if (savedOrders.length >= 10) { showToast("Maximum 10 saved orders allowed — delete some first", "warning"); return; }
 autoSaveUnfinished();
 }
 const order = savedOrders[idx]; if(!order) return;
@@ -1402,17 +1605,24 @@ dashboardMap = new Map(order.items); currentOrderIndex = idx; saveState(); rende
 };
 
 window.deleteOrder = (e, idx) => {
-e.stopPropagation(); lastDeletedOrder = savedOrders[idx]; lastDeletedIndex = idx; savedOrders.splice(idx, 1);
+e.stopPropagation();
+lastDeletedItem = null;
+lastDeletedOrder = savedOrders[idx]; lastDeletedIndex = idx; savedOrders.splice(idx, 1);
 if(currentOrderIndex === idx) { currentOrderIndex = -1; dashboardMap.clear(); }
 else if (currentOrderIndex > idx) { currentOrderIndex--; }
 saveState(); renderDashboard(); showUndoToast(`Order deleted`, "delete");
 };
 
 window.undoDelete = () => {
-if(!lastDeletedOrder) return;
+if(lastDeletedItem) {
+const { id, entry, wasCurrentOrder } = lastDeletedItem;
+if (wasCurrentOrder === currentOrderIndex) { dashboardMap.set(id, entry); syncCurrentOrder(); renderDashboard(); showToast("Item restored", "restore"); }
+lastDeletedItem = null;
+} else if(lastDeletedOrder) {
 savedOrders.splice(lastDeletedIndex, 0, lastDeletedOrder);
 if (currentOrderIndex !== -1 && currentOrderIndex >= lastDeletedIndex) { currentOrderIndex++; }
 lastDeletedOrder = null; saveState(); renderDashboard(); showToast("Order restored", "restore");
+} else { return; }
 const toastBtn = document.querySelector('.undo-toast button'); if(toastBtn && toastBtn.parentElement) toastBtn.parentElement.remove();
 };
 
@@ -1421,16 +1631,42 @@ const items = Array.from(dashboardMap.values()); if(!items.length) return;
 let txt = `${els.dashTitleText.textContent}:\n\n`;
 items.forEach(c => {
 const dpInfo = c.item.isDynamic ? ` [Supply Price: ${c.supplyPrice}]` : '';
-txt += `- ${c.item.n}: Req ${c.req} ${c.item.bType} -> ${c.packs} Packs${dpInfo} = ${c.cost.toFixed(2)} EGP\n`;
+txt += `- ${c.item.n}: Req ${c.req} ${c.item.bType} -> ${c.packs} Packs${dpInfo} = ${formatPiastres(toPiastres(c.cost))} EGP\n`;
 });
-txt += `\nTotal: ${els.dashTotal.textContent}`; navigator.clipboard.writeText(txt).then(() => showToast("Copied to clipboard", "content_copy"));
+txt += `\nTotal: ${els.dashTotal.textContent}`;
+copyTextToClipboard(txt).then(ok => showToast(ok ? "Copied to clipboard" : "Copy failed — select text manually", ok ? "content_copy" : "warning"));
+};
+
+const triggerDownload = (blob, filename) => {
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url; a.download = filename; a.style.display = 'none';
+document.body.appendChild(a);
+a.click();
+setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1000);
 };
 
 window.downloadDashboard = () => {
 if(dashboardMap.size === 0) return;
 const blob = new Blob([JSON.stringify({ title: els.dashTitleText.textContent, items: Array.from(dashboardMap.entries()) }, null, 2)], { type: "application/json" });
-const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `LX_Calc_${Date.now()}.json`;
-a.click(); URL.revokeObjectURL(url); showToast("Download started", "download_done");
+triggerDownload(blob, `LX_Calc_${Date.now()}.json`);
+showToast("Download started", "download_done");
+};
+
+const csvEscape = (v) => { const s = String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+window.downloadDashboardCSV = () => {
+const items = Array.from(dashboardMap.values()); if(!items.length) return;
+const header = ['Name','Tag','Source','Unit','Requested','Base Unit','Packs','Price per Pack (EGP)','Supply Price (EGP)','Cost (EGP)'];
+const rows = items.map(c => [
+c.item.n, c.item.t, c.item.s, c.item.u, c.req, c.item.bType, c.packs,
+c.item.isDynamic ? '' : c.item.p.toFixed(2),
+c.item.isDynamic ? c.supplyPrice.toFixed(2) : '',
+formatPiastres(toPiastres(c.cost))
+]);
+const csv = [header, ...rows].map(r => r.map(csvEscape).join(',')).join('\r\n');
+const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+triggerDownload(blob, `LX_Calc_${Date.now()}.csv`);
+showToast("CSV download started", "download_done");
 };
 
 els.fileUp.addEventListener('change', (e) => {
@@ -1441,9 +1677,9 @@ try {
 const data = JSON.parse(ev.target.result);
 if(data.items && Array.isArray(data.items)) {
 const validItems = data.items.filter(entry => Array.isArray(entry) && entry.length === 2 && entry[0] && entry[1] && entry[1].item);
-dashboardMap = new Map(validItems); currentOrderIndex = -1; saveState(); renderDashboard(); showToast("Calculation loaded from file", "file_download_done");
-} else { alert("Invalid file format"); }
-} catch(err) { alert("Invalid file format"); }
+dashboardMap = new Map(migrateEntries(validItems)); currentOrderIndex = -1; saveState(); renderDashboard(); showToast("Calculation loaded from file", "file_download_done");
+} else { showToast("Invalid file format", "warning"); }
+} catch(err) { showToast("Invalid file format", "warning"); }
 }; reader.readAsText(file); els.fileUp.value = '';
 });
 
@@ -1458,13 +1694,13 @@ els.modal.addEventListener('click', e => { if(e.target === els.modal) closeModal
 const setCardFocus = (card, instant) => {
 if(lastFocusedCard && lastFocusedCard !== card) {
 lastFocusedCard.classList.remove('focused');
-lastFocusedCard.setAttribute('aria-selected', 'false');
+lastFocusedCard.removeAttribute('aria-current');
 lastFocusedCard.style.transitionDuration = '';
 }
 if(card) {
 card.style.transitionDuration = instant ? '0s' : '';
 card.classList.add('focused');
-card.setAttribute('aria-selected', 'true');
+card.setAttribute('aria-current', 'true');
 card.focus({ preventScroll: true });
 card.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
 }
@@ -1474,7 +1710,7 @@ lastFocusedCard = card || null;
 const clearCardFocus = () => {
 if(lastFocusedCard) {
 lastFocusedCard.classList.remove('focused');
-lastFocusedCard.setAttribute('aria-selected', 'false');
+lastFocusedCard.removeAttribute('aria-current');
 lastFocusedCard.style.transitionDuration = '';
 lastFocusedCard = null;
 }
@@ -1495,7 +1731,7 @@ focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cardEls.lengt
 setCardFocus(cardEls[focusedCardIndex], instant);
 };
 
-const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList'), pane: document.getElementById('cmdkPane') };
+const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), panel: document.getElementById('cmdkPanel'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList'), pane: document.getElementById('cmdkPane') };
 let cmdkActiveIndex = -1;
 let cmdkItems = [];
 let cmdkLastFocused = null;
@@ -1550,6 +1786,13 @@ actions: ['system', 'light', 'dark'].map(m => ({ icon: themeIcons[m], label: the
 run: () => { document.documentElement.setAttribute('data-theme-mode', m); try { localStorage.setItem('lx_theme_mode', m); } catch(e) {} applyEffectiveTheme(); showToast(`Theme: ${themeLabels[m]}`, themeIcons[m]); refreshCmdkKeepFocus(); } })) }
 ];
 
+const buildOrderActions = (idx) => [
+{ icon: 'restore', label: 'Load Order', shortcut: 'Enter', run: () => { closeCmdk(); loadOrder(idx); switchView('calc'); } },
+{ icon: 'edit', label: 'Rename', run: () => { const nameEl = document.getElementById('paneOrderName'); renameOrder(idx, nameEl ? nameEl.value : ''); refreshCmdkKeepFocus(); } },
+{ icon: 'content_copy', label: 'Duplicate', run: () => { duplicateOrder(idx); refreshCmdkKeepFocus(); } },
+{ icon: 'delete', label: 'Delete Order', run: () => { closeCmdk(); deleteOrder({ stopPropagation(){} }, idx); } }
+];
+
 const buildMedicineActions = (m) => {
 const actions = [];
 actions.push({
@@ -1565,18 +1808,19 @@ sp = spEl ? parseFloat(spEl.value) : NaN;
 if(isNaN(sp) || sp < 0) { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus({ preventScroll: true }); return; }
 }
 const req = globalAddMode === 'pack' ? qty * m.bQty : qty;
-const result = commitToCalc(m.id, req, sp);
+const result = commitToCalc(m.id, req, sp, true);
 if(!result) return;
-showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${m.n}`, 'bolt');
+const spareMsg = result.spare > 0 ? ` (${result.spare} ${m.bType} spare)` : '';
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${m.n}${spareMsg}`, 'bolt');
 cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus({ preventScroll: true });
 }
 });
-actions.push({ icon: 'open_in_new', label: 'Open Full Details', shortcut: '⌘1', run: () => { closeCmdkSilently(); openDetails(m.id); } });
+actions.push({ icon: 'open_in_new', label: 'Open Full Details', shortcut: `${MOD_KEY}1`, run: () => { closeCmdkSilently(); openDetails(m.id); } });
 const qStr = encodeURIComponent(m.n);
-actions.push({ icon: engineMeta[preferredEngine].icon, label: getEngineName(), shortcut: '⌘2', run: () => window.open(generateSearchURL(qStr), '_blank', 'noopener,noreferrer') });
-actions.push({ icon: 'image', label: 'View Images', shortcut: '⌘3', run: () => window.open(generateImageURL(qStr), '_blank', 'noopener,noreferrer') });
-actions.push({ icon: 'medical_services', label: 'Drugs.com', shortcut: '⌘4', run: () => window.open(`https://www.drugs.com/search.php?searchterm=${qStr}`, '_blank', 'noopener,noreferrer') });
-actions.push({ icon: 'psychology', label: 'Perplexity', shortcut: '⌘5', run: () => window.open(`https://www.perplexity.ai/search?q=${qStr}`, '_blank', 'noopener,noreferrer') });
+actions.push({ icon: engineMeta[preferredEngine].icon, label: getEngineName(), shortcut: `${MOD_KEY}2`, run: () => window.open(generateSearchURL(qStr), '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'image', label: 'View Images', shortcut: `${MOD_KEY}3`, run: () => window.open(generateImageURL(qStr), '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'medical_services', label: 'Drugs.com', shortcut: `${MOD_KEY}4`, run: () => window.open(`https://www.drugs.com/search.php?searchterm=${qStr}`, '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'psychology', label: 'Perplexity', shortcut: `${MOD_KEY}5`, run: () => window.open(`https://www.perplexity.ai/search?q=${qStr}`, '_blank', 'noopener,noreferrer') });
 return actions;
 };
 
@@ -1589,6 +1833,7 @@ cmdkEls.overlay.classList.add('active');
 cmdkEls.input.value = cmdkLastQuery;
 renderCmdk(cmdkLastQuery);
 cmdkEls.input.focus({ preventScroll: true });
+trapFocus(cmdkEls.panel);
 setTimeout(() => { cmdkEls.input.focus({ preventScroll: true }); cmdkEls.input.select(); }, 50);
 setTimeout(() => { cmdkEls.input.focus({ preventScroll: true }); }, 250);
 };
@@ -1596,10 +1841,11 @@ setTimeout(() => { cmdkEls.input.focus({ preventScroll: true }); }, 250);
 window.closeCmdk = () => {
 cmdkEls.overlay.classList.remove('active');
 cmdkEls.input.blur();
+releaseFocusTrap();
 if(cmdkLastFocused && document.contains(cmdkLastFocused)) cmdkLastFocused.focus({ preventScroll: true });
 };
 
-const closeCmdkSilently = () => { cmdkEls.overlay.classList.remove('active'); cmdkEls.input.blur(); };
+const closeCmdkSilently = () => { cmdkEls.overlay.classList.remove('active'); cmdkEls.input.blur(); releaseFocusTrap(); };
 
 const renderCmdk = (q) => {
 const raw = q.trim();
@@ -1608,15 +1854,20 @@ cmdkPaneFocused = false;
 cmdkPaneIndex = 0;
 
 let searchStr = raw;
-const qtyMatch = raw.match(/^(.*?)\s*[x×]\s*(\d+(?:\.\d+)?)$/i);
+const qtyMatch = raw.match(/^(.+?)\s+[x*×]\s*(\d+(?:\.\d+)?)$/i);
 if(qtyMatch && qtyMatch[1].trim()) { searchStr = qtyMatch[1].trim(); cmdkParsedQty = parseFloat(qtyMatch[2]); }
 
-const qStr = searchStr.toLowerCase();
+const qStr = normalizeSearchText(searchStr);
 cmdkItems = [];
 baseCommands().filter(c => !qStr || c.title.toLowerCase().includes(qStr)).forEach(c => cmdkItems.push({ type: 'command', ...c }));
+savedOrders.forEach((o, idx) => {
+if(!qStr || o.name.toLowerCase().includes(qStr)) {
+cmdkItems.push({ type: 'order', idx, icon: 'bookmark', title: o.name, sub: o.total, actions: buildOrderActions(idx) });
+}
+});
 if(qStr) {
 const qTokens = qStr.split(/\s+/).filter(Boolean);
-db.filter(item => qTokens.every(tk => item.searchStr.includes(tk))).slice(0, 8).forEach(m => {
+db.filter(item => qTokens.every(tk => { const aliasTk = resolveAliasToken(tk); return item.searchStr.includes(tk) || (aliasTk !== tk && item.searchStr.includes(aliasTk)); })).slice(0, 8).forEach(m => {
 cmdkItems.push({
 type: 'medicine', id: m.id, icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
 sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
@@ -1644,7 +1895,7 @@ return;
 }
 let html = '';
 const shown = {};
-const typeLabel = { command: 'Commands', medicine: 'Medicines' };
+const typeLabel = { command: 'Commands', order: 'Saved Orders', medicine: 'Medicines' };
 cmdkItems.forEach((item, i) => {
 if(!shown[item.type]) { html += `<div class="cmdk-group-label">${escapeHTML(typeLabel[item.type] || '')}</div>`; shown[item.type] = true; }
 html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" onclick="cmdkClickItem(${i})">
@@ -1668,10 +1919,17 @@ const med = db.find(d => d.id === item.id);
 const qtyVal = cmdkParsedQty || defaultQuickQty || 1;
 extraFields = `
 <div class="cmdk-pane-fields">
-<div class="cmdk-pane-field"><label>Quantity (${escapeHTML(med.bType)})</label><input type="number" id="paneQty" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(String(qtyVal))}" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>
- ${med.isDynamic ? `<div class="cmdk-pane-field sp-field"><label>Supply Price</label><input type="number" id="paneSp" class="cmdk-pane-input sp-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
+<div class="cmdk-pane-field"><label>Quantity (${escapeHTML(med.bType)})</label><input type="number" inputmode="decimal" id="paneQty" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(String(qtyVal))}" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>
+ ${med.isDynamic ? `<div class="cmdk-pane-field sp-field"><label>Supply Price</label><input type="number" inputmode="decimal" id="paneSp" class="cmdk-pane-input sp-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
 </div>
 <div class="cmdk-pane-preview" id="panePreview"></div>
+`;
+} else if(item.type === 'order') {
+const o = savedOrders[item.idx];
+extraFields = `
+<div class="cmdk-pane-fields">
+<div class="cmdk-pane-field"><label>Order Name</label><input type="text" id="paneOrderName" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(o ? o.name : '')}" maxlength="60" onkeydown="paneKeydown(event, ${navIdx++})"></div>
+</div>
 `;
 }
 cmdkEls.pane.innerHTML = `
@@ -1707,14 +1965,17 @@ const qtyEl = document.getElementById('paneQty');
 const qty = qtyEl ? parseFloat(qtyEl.value) : NaN;
 if(isNaN(qty) || qty <= 0) { preview.textContent = 'Enter a quantity to preview cost'; return; }
 const req = globalAddMode === 'pack' ? qty * med.bQty : qty;
-const packs = Math.round(req / med.bQty);
+const { packs, spare } = packInfo(req, med.bQty);
+const spareMsg = spare > 0 ? ` (${spare} ${med.bType} spare)` : '';
 if(med.isDynamic) {
 const spEl = document.getElementById('paneSp');
 const sp = spEl ? parseFloat(spEl.value) : NaN;
-if(isNaN(sp) || sp < 0) { preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType}) — enter supply price`; return; }
-preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType}) → ${(packs * sp * 0.5).toFixed(2)} EGP`;
+if(isNaN(sp) || sp < 0) { preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} — enter supply price`; return; }
+const costP = packs * Math.round(toPiastres(sp) / 2);
+preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} → ${formatPiastres(costP)} EGP`;
 } else {
-preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType}) → ${(packs * med.p).toFixed(2)} EGP`;
+const costP = packs * med.pP;
+preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} → ${formatPiastres(costP)} EGP`;
 }
 };
 
@@ -1729,7 +1990,7 @@ return code;
 };
 const comboFromEvent = (e) => {
 const parts = [];
-if(e.ctrlKey || e.metaKey) parts.push('⌘');
+if(e.ctrlKey || e.metaKey) parts.push(MOD_KEY);
 if(e.altKey) parts.push('⌥');
 if(e.shiftKey) parts.push('⇧');
 parts.push(codeToLabel(e.code));
@@ -1798,6 +2059,8 @@ if(cmdkItems.length) { cmdkActiveIndex = Math.max(cmdkActiveIndex - 1, 0); cmdkP
 return;
 }
 if(e.key === 'ArrowRight') {
+const atEnd = cmdkEls.input.selectionStart === cmdkEls.input.value.length && cmdkEls.input.selectionEnd === cmdkEls.input.value.length;
+if(!atEnd) return;
 const item = cmdkItems[cmdkActiveIndex];
 if(item && item.actions && item.actions.length) { e.preventDefault(); cmdkPaneFocused = true; cmdkPaneIndex = 0; paintCmdk(); }
 return;
@@ -1856,6 +2119,55 @@ e.preventDefault();
 focusedCardIndex = 0; updateFocus(null, true);
 }
 });
+
+if (!isMacPlatform) {
+const modSymbolEl = document.getElementById('cmdkModSymbol');
+if (modSymbolEl) modSymbolEl.textContent = MOD_KEY;
+if (els.in) els.in.placeholder = els.in.placeholder.replace('⌘K', `${MOD_KEY}K`);
+}
+
+const runSelfTest = () => {
+const results = [];
+const assert = (name, cond) => results.push({ name, pass: !!cond });
+
+const p1 = packInfo(310, 300);
+assert('pack math: 310/300 rounds up to 2 packs', p1.packs === 2);
+assert('pack math: 310/300 leaves 290 spare', p1.spare === 290);
+const p2 = packInfo(300, 300);
+assert('pack math: exact multiple has no spare', p2.packs === 1 && p2.spare === 0);
+const p3 = packInfo(0, 300);
+assert('pack math: zero request needs zero packs', p3.packs === 0 && p3.spare === 0);
+
+assert('piastres: 11.5 EGP -> 1150', toPiastres(11.5) === 1150);
+assert('piastres: rounds fractional cents', toPiastres(2.505) === 251 || toPiastres(2.505) === 250);
+assert('piastres: format back to 2dp string', formatPiastres(1150) === '11.50');
+let sumP = 0; [1150, 2700, 375].forEach(v => sumP += v);
+assert('piastres: integer sums have no float drift', formatPiastres(sumP) === '42.25');
+
+const qtyRe = /^(.+?)\s+[x*×]\s*(\d+(?:\.\d+)?)$/i;
+assert('qty parse: "novomix 30" does not mis-fire', !qtyRe.test('novomix 30'));
+assert('qty parse: "concor 5 x 3" parses to qty 3', (() => { const m = 'concor 5 x 3'.match(qtyRe); return m && m[2] === '3'; })());
+assert('qty parse: "amaryl * 2" (asterisk) parses', (() => { const m = 'amaryl * 2'.match(qtyRe); return m && m[2] === '2'; })());
+assert('qty parse: "amaryl x2" (no space before qty) parses', (() => { const m = 'amaryl x2'.match(qtyRe); return m && m[2] === '2'; })());
+
+assert('search normalize: tight slash matches spaced slash', normalizeSearchText('160/10') === normalizeSearchText('160 / 10'));
+assert('search normalize: Arabic-Indic digits map to ASCII', normalizeDigits('٣٠') === '30');
+
+assert('stable ids: deterministic across repeated calls', makeStableId('Concor', '5 mg Tab', 'شراء موحد') === makeStableId('Concor', '5 mg Tab', 'شراء موحد'));
+const idSet = new Set(db.map(d => d.id));
+assert(`stable ids: all ${db.length} db entries have unique ids`, idSet.size === db.length);
+
+const migrated = migrateEntries([['old-random-id', { req: 5, packs: 1, cost: 10, supplyPrice: 0, item: { n: db[0].n, u: db[0].u, s: db[0].s, t: db[0].t } }]]);
+assert('storage migration: old id remaps to current db id', migrated.length === 1 && migrated[0][0] === db[0].id);
+assert('storage migration: drops entries with no matching item', migrateEntries([['x', { item: { n: 'nonexistent-item-xyz', u: '?', s: '?', t: '' } }]]).length === 0);
+
+const passCount = results.filter(r => r.pass).length;
+console.group(`%cLX self-test: ${passCount}/${results.length} passed`, `color:${passCount === results.length ? '#3ddc84' : '#ff5c5c'}; font-weight:bold;`);
+results.forEach(r => console[r.pass ? 'log' : 'error'](`${r.pass ? '✓' : '✗'} ${r.name}`));
+console.groupEnd();
+return results;
+};
+if (new URLSearchParams(location.search).get('selftest') === '1') runSelfTest();
 
 loadState(); renderSearch(); renderDashboard();
 </script>
