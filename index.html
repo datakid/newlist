@@ -582,14 +582,14 @@ const rawData = [
 {name: "Anoro Ellipta", unit: "Inhaler", price: 0, dp: true, company: "شراء موحد"},
 {name: "Apidra قوي عاملة", unit: "Cartridge", price: 44, company: "شراء موحد"},
 {name: "Apidra طلاب", unit: "Cartridge", price: 20, company: "شراء موحد"},
-{name: "Approval 150", unit: "14 Tab", price: 47.5, company: "شراء موحد"},
-{name: "Approval 300", unit: "14 Tab", price: 42, company: "شراء موحد"},
+{name: "Aprovel 150", unit: "14 Tab", price: 47.5, company: "شراء موحد"},
+{name: "Aprovel 300", unit: "14 Tab", price: 42, company: "شراء موحد"},
 {name: "Atacand 16", unit: "14 Tab", price: 38.5, company: "شراء موحد"},
 {name: "Atacand 16 plus", unit: "14 Tab", price: 42, company: "شراء موحد"},
 {name: "Atacand 8", unit: "14 Tab", price: 27, company: "شراء موحد"},
 {name: "Atozet 10 / 10", unit: "10 Tab", price: 96, company: "شراء موحد"},
 {name: "Atozet 10 / 20", unit: "10 Tab", price: 110, company: "شراء موحد"},
-{name: "Brezetri", unit: "Inhaler", price: 0, dp: true, company: "شراء موحد"},
+{name: "Breztri", unit: "Inhaler", price: 0, dp: true, company: "شراء موحد"},
 {name: "Brilique 60", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
 {name: "Brilique 90", unit: "56 Tab", price: 100, company: "ايرادات هيئة"},
 {name: "Cardura 1", unit: "21 Tab", price: 23, company: "شراء موحد"},
@@ -713,7 +713,7 @@ const rawData = [
 {name: "Tritace Comp LS 2.5 / 12.5", unit: "14 Tab", price: 18, company: "شراء موحد"},
 {name: "Tritace comp 5 / 25", unit: "14 Tab", price: 27, company: "شراء موحد"},
 {name: "Tritace protect 10", unit: "20 Tab", price: 29, company: "شراء موحد"},
-{name: "Trivestal ret", unit: "30 Tab", price: 27.25, company: "شراء موحد"},
+{name: "Trivastal Retard", unit: "30 Tab", price: 27.25, company: "شراء موحد"},
 {name: "Vastarel Mr", unit: "30 Tab", price: 48.5, company: "شراء موحد"},
 {name: "Xarelto 10", unit: "10 Tab", price: 50, company: "ايرادات هيئة"},
 {name: "Xarelto 15", unit: "42 Tab", price: 210, company: "ايرادات هيئة"},
@@ -2312,6 +2312,39 @@ mutations.forEach(m => m.addedNodes.forEach(applyIconCodepoints));
 }).observe(document.body, { childList: true, subtree: true });
 
 loadState(); renderSearch(); renderDashboard();
+</script>
+<script>
+(function(){
+  if(window.parent === window) return;
+  function ready(){
+    window.parent.postMessage({ t:'lx:ready', title:document.title }, '*');
+    var last = document.title;
+    var titleEl = document.querySelector('title');
+    if(!titleEl) return;
+    new MutationObserver(function(){
+      if(document.title !== last){
+        last = document.title;
+        window.parent.postMessage({ t:'lx:title', title:last }, '*');
+      }
+    }).observe(titleEl, { childList:true });
+  }
+  if(document.readyState === 'complete') ready();
+  else window.addEventListener('load', ready);
+})();
+</script>
+<script>
+(function(){
+  if(window.parent === window) return;
+  window.addEventListener('message', function(e){
+    var d = e.data;
+    if(!d || d.t !== 'lx:theme') return;
+    var mode = d.mode;
+    if(mode !== 'light' && mode !== 'dark' && mode !== 'system') return;
+    document.documentElement.setAttribute('data-theme-mode', mode);
+    try { localStorage.setItem('lx_theme_mode', mode); } catch(err){}
+    applyEffectiveTheme();
+  });
+})();
 </script>
 </body>
 </html>
