@@ -2280,6 +2280,37 @@ return results;
 };
 if (new URLSearchParams(location.search).get('selftest') === '1') runSelfTest();
 
+const ICON_CODEPOINTS = {
+add: '\ue145', air: '\uefd8', bolt: '\uea0b', bookmark: '\ue8e7', bookmark_added: '\ue599',
+brightness_auto: '\ue1ab', calculate: '\uea5f', check: '\ue668', check_circle: '\uf0be',
+chevron_right: '\ue5cc', clear_all: '\ue0b8', close: '\ue5cd', content_copy: '\ue14d',
+contrast: '\ueb37', cruelty_free: '\ue799', dark_mode: '\ue51c', data_usage: '\ueff2',
+delete: '\ue92e', delete_sweep: '\ue16c', download: '\uf090', download_done: '\uf091',
+edit: '\uf097', expand_more: '\ue5cf', explore: '\ue87a', file_download_done: '\uf091',
+grid_on: '\ue3ec', image: '\ue3f4', inventory_2: '\ue1a1', light_mode: '\ue518', lock: '\ue899',
+medical_services: '\uf109', medication: '\uf033', open_in_new: '\ue89e', pill: '\ue11f',
+psychology: '\uea4a', restore: '\ue8b3', save: '\ue161', search: '\uef7a', settings: '\ue8b8',
+straighten: '\ue41c', stream: '\ue9e9', swap_vert: '\ue8d5', syringe: '\ue133',
+travel_explore: '\ue2db', upload: '\uf09b', vaccines: '\ue138', warning: '\uf083'
+};
+const LIGATURE_NAME_RE = /^[a-z][a-z_]*$/;
+const applyIconCodepoint = (el) => {
+if (!el || el.nodeType !== 1 || !el.classList || !el.classList.contains('material-symbols-rounded')) return;
+const text = el.textContent;
+if (LIGATURE_NAME_RE.test(text) && ICON_CODEPOINTS[text]) el.textContent = ICON_CODEPOINTS[text];
+};
+const applyIconCodepoints = (node) => {
+if (!node) return;
+if (node.nodeType === 3) { applyIconCodepoint(node.parentElement); return; }
+if (node.nodeType !== 1) return;
+applyIconCodepoint(node);
+if (node.querySelectorAll) node.querySelectorAll('.material-symbols-rounded').forEach(applyIconCodepoint);
+};
+applyIconCodepoints(document.body);
+new MutationObserver((mutations) => {
+mutations.forEach(m => m.addedNodes.forEach(applyIconCodepoints));
+}).observe(document.body, { childList: true, subtree: true });
+
 loadState(); renderSearch(); renderDashboard();
 </script>
 </body>
