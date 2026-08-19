@@ -172,6 +172,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .chip:hover { background-color: var(--sys-surface-high); }
 .chip.active-filter { background-image: none; border-color: var(--sys-primary); color: var(--sys-primary); background-color: var(--sys-primary-container); }
 .chip option { background: var(--sys-menu-bg); color: var(--sys-on-bg); }
+.filter-trigger { position: relative; display: inline-flex; align-items: center; background: var(--sys-surface); border: 1px solid var(--sys-outline); color: var(--sys-on-bg); padding: 8px 32px 8px 16px; border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.filter-trigger:hover { background-color: var(--sys-surface-high); }
+.filter-trigger .material-symbols-rounded { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 20px; color: var(--sys-on-surface-variant); transition: transform 0.2s var(--spring), color 0.2s; pointer-events: none; }
+.filter-trigger[aria-expanded="true"] .material-symbols-rounded { transform: translateY(-50%) rotate(180deg); }
+.filter-trigger.active-filter { border-color: var(--sys-primary); color: var(--sys-primary); background-color: var(--sys-primary-container); }
+.filter-trigger.active-filter .material-symbols-rounded { display: none; }
+.filter-menu { position: fixed; background: var(--sys-menu-bg); backdrop-filter: var(--blur-lg); -webkit-backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-md); padding: 8px; display: flex; flex-direction: column; gap: 4px; min-width: 190px; max-height: 320px; overflow-y: auto; box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translateY(-6px); transition: all 0.15s var(--spring); z-index: 250; }
+.filter-menu.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.filter-menu .dropdown-item { justify-content: space-between; }
 .filter-x { position: absolute; right: 4px; width: 24px; height: 24px; border-radius: 50%; background: transparent; border: none; color: var(--sys-primary); display: none; place-items: center; cursor: pointer; transition: all 0.2s; }
 .filter-x:hover { background: var(--sys-surface-high); transform: scale(1.1); }
 .filter-x .material-symbols-rounded { font-size: 16px; }
@@ -374,27 +383,27 @@ LX Search
 </div>
 </div>
 <div class="dock">
-<button class="icon-btn dock-btn" id="themeToggleBtn" onclick="cycleTheme()" title="Toggle theme" aria-label="Toggle theme">
+<button class="icon-btn dock-btn" id="themeToggleBtn" data-action="cycle-theme" title="Toggle theme" aria-label="Toggle theme">
 <span class="material-symbols-rounded" id="themeToggleIcon">brightness_auto</span>
 </button>
 <div class="dock-divider"></div>
-<button class="icon-btn dock-btn" id="modeToggleBtn" onclick="toggleGlobalMode()" title="Toggle default add mode" aria-label="Toggle default add mode">
+<button class="icon-btn dock-btn" id="modeToggleBtn" data-action="toggle-global-mode" title="Toggle default add mode" aria-label="Toggle default add mode">
 <span class="material-symbols-rounded">straighten</span>
 </button>
 <div class="dock-divider"></div>
-<button class="icon-btn dock-btn" onclick="document.getElementById('fileUpload').click()" title="Import order" aria-label="Import order">
+<button class="icon-btn dock-btn" data-action="open-file-upload" title="Import order" aria-label="Import order">
 <span class="material-symbols-rounded">upload</span>
 </button>
 <div style="position: relative;">
-<button class="icon-btn dock-btn" id="engineToggleBtn" onclick="toggleEngineMenu()" title="Search engine" aria-label="Search engine" aria-haspopup="true" aria-expanded="false">
+<button class="icon-btn dock-btn" id="engineToggleBtn" data-action="toggle-engine-menu" title="Search engine" aria-label="Search engine" aria-haspopup="true" aria-expanded="false">
 <span class="material-symbols-rounded">travel_explore</span>
 </button>
 <div class="dropdown-menu" id="engineMenu" role="menu">
-<button class="dropdown-item" onclick="setEngine('brave')" id="eng-brave" role="menuitem"><span class="material-symbols-rounded">explore</span> Brave</button>
-<button class="dropdown-item" onclick="setEngine('ddg')" id="eng-ddg" role="menuitem"><span class="material-symbols-rounded">cruelty_free</span> DuckDuckGo</button>
-<button class="dropdown-item" onclick="setEngine('startpage')" id="eng-startpage" role="menuitem"><span class="material-symbols-rounded">lock</span> Startpage</button>
-<button class="dropdown-item" onclick="setEngine('google')" id="eng-google" role="menuitem"><span class="material-symbols-rounded">travel_explore</span> Google</button>
-<button class="dropdown-item" onclick="setEngine('bing')" id="eng-bing" role="menuitem"><span class="material-symbols-rounded">search</span> Bing</button>
+<button class="dropdown-item" data-action="set-engine" data-id="brave" id="eng-brave" role="menuitem"><span class="material-symbols-rounded">explore</span> Brave</button>
+<button class="dropdown-item" data-action="set-engine" data-id="ddg" id="eng-ddg" role="menuitem"><span class="material-symbols-rounded">cruelty_free</span> DuckDuckGo</button>
+<button class="dropdown-item" data-action="set-engine" data-id="startpage" id="eng-startpage" role="menuitem"><span class="material-symbols-rounded">lock</span> Startpage</button>
+<button class="dropdown-item" data-action="set-engine" data-id="google" id="eng-google" role="menuitem"><span class="material-symbols-rounded">travel_explore</span> Google</button>
+<button class="dropdown-item" data-action="set-engine" data-id="bing" id="eng-bing" role="menuitem"><span class="material-symbols-rounded">search</span> Bing</button>
 </div>
 </div>
 <input type="file" id="fileUpload" accept=".json" style="display:none">
@@ -403,10 +412,10 @@ LX Search
 <main class="main-container">
 <div class="omnibar">
 <div class="omni-tabs">
-<button class="omni-tab active" id="tabSearch" onclick="switchView('search')">
+<button class="omni-tab active" id="tabSearch" data-action="switch-view" data-id="search">
 <span class="material-symbols-rounded" style="font-size: 20px;">search</span> Search
 </button>
-<button class="omni-tab" id="tabCalc" onclick="switchView('calc')">
+<button class="omni-tab" id="tabCalc" data-action="switch-view" data-id="calc">
 <span class="material-symbols-rounded" style="font-size: 20px;">calculate</span> Calculator
 <span class="badge" id="cartBadge" style="display: none;">0</span>
 </button>
@@ -415,10 +424,10 @@ LX Search
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
 <input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines">
-<button class="omni-side-btn" id="omniClear" onclick="clearInput()" title="Clear search" aria-label="Clear search" style="display:none;">
+<button class="omni-side-btn" id="omniClear" data-action="clear-input" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
-<button class="cmdk-badge" onclick="openCmdk()" title="Open command palette" aria-label="Open command palette">
+<button class="cmdk-badge" data-action="open-cmdk" title="Open command palette" aria-label="Open command palette">
 <span id="cmdkModSymbol" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size:13px; font-weight:500; margin-right:1px;">⌘</span>K
 </button>
 </div>
@@ -426,18 +435,26 @@ LX Search
 <div class="view-section active" id="viewSearch">
 <div class="filters">
 <div class="filter-wrapper">
-<select id="fUnit" class="chip" aria-label="Filter by unit"><option value="all">Any Unit</option></select>
-<button class="filter-x" id="fUnitX" onclick="clearSingleFilter('fUnit')" title="Clear unit filter" aria-label="Clear unit filter">
+<button class="chip filter-trigger" id="fUnitBtn" type="button" data-action="toggle-filter-menu" data-id="fUnit" aria-haspopup="true" aria-expanded="false" aria-controls="filterMenuPopover">
+<span class="filter-trigger-label" id="fUnitLabel">Any Unit</span>
+<span class="material-symbols-rounded" aria-hidden="true">expand_more</span>
+</button>
+<select id="fUnit" hidden aria-hidden="true" tabindex="-1"><option value="all">Any Unit</option></select>
+<button class="filter-x" id="fUnitX" data-action="clear-single-filter" data-id="fUnit" title="Clear unit filter" aria-label="Clear unit filter">
 <span class="material-symbols-rounded">close</span>
 </button>
 </div>
 <div class="filter-wrapper">
-<select id="fSource" class="chip" aria-label="Filter by source"><option value="all">Any Source</option></select>
-<button class="filter-x" id="fSourceX" onclick="clearSingleFilter('fSource')" title="Clear source filter" aria-label="Clear source filter">
+<button class="chip filter-trigger" id="fSourceBtn" type="button" data-action="toggle-filter-menu" data-id="fSource" aria-haspopup="true" aria-expanded="false" aria-controls="filterMenuPopover">
+<span class="filter-trigger-label" id="fSourceLabel">Any Source</span>
+<span class="material-symbols-rounded" aria-hidden="true">expand_more</span>
+</button>
+<select id="fSource" hidden aria-hidden="true" tabindex="-1"><option value="all">Any Source</option></select>
+<button class="filter-x" id="fSourceX" data-action="clear-single-filter" data-id="fSource" title="Clear source filter" aria-label="Clear source filter">
 <span class="material-symbols-rounded">close</span>
 </button>
 </div>
-<button id="fClearAll" class="chip-clear" onclick="clearFilters()" title="Clear all filters">
+<button id="fClearAll" class="chip-clear" data-action="clear-filters" title="Clear all filters">
 <span class="material-symbols-rounded" style="font-size: 18px;">clear_all</span> Clear All
 </button>
 </div>
@@ -457,11 +474,11 @@ LX Search
 </div>
 <div class="dash-grid" id="dashGrid"></div>
 <div class="dash-actions" id="dashActions" style="display: none;">
-<button class="btn-action btn-secondary" onclick="clearDashboard()"><span class="material-symbols-rounded">delete_sweep</span> Clear</button>
-<button class="btn-action btn-secondary" onclick="exportDashboardText()"><span class="material-symbols-rounded">content_copy</span> Copy</button>
-<button class="btn-action btn-secondary" onclick="downloadDashboard()"><span class="material-symbols-rounded">download</span> DL</button>
-<button class="btn-action btn-secondary" onclick="downloadDashboardCSV()"><span class="material-symbols-rounded">grid_on</span> CSV</button>
-<button class="btn-action btn-primary" id="btnSaveOrder" onclick="saveAsOrder()"><span class="material-symbols-rounded">save</span> Save Order</button>
+<button class="btn-action btn-secondary" data-action="clear-dashboard"><span class="material-symbols-rounded">delete_sweep</span> Clear</button>
+<button class="btn-action btn-secondary" data-action="export-dashboard-text"><span class="material-symbols-rounded">content_copy</span> Copy</button>
+<button class="btn-action btn-secondary" data-action="download-dashboard"><span class="material-symbols-rounded">download</span> DL</button>
+<button class="btn-action btn-secondary" data-action="download-dashboard-csv"><span class="material-symbols-rounded">grid_on</span> CSV</button>
+<button class="btn-action btn-primary" id="btnSaveOrder" data-action="save-as-order"><span class="material-symbols-rounded">save</span> Save Order</button>
 </div>
 </div>
 </main>
@@ -491,6 +508,7 @@ LX Search
 </div>
 </div>
 <div class="quick-links-popover" id="quickLinksPopover" role="menu" aria-label="Quick web search links"></div>
+<div class="filter-menu" id="filterMenuPopover" role="menu" aria-label="Filter options"></div>
 <div class="toast-container" id="toasts" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
 (function(){
@@ -786,6 +804,7 @@ in: document.getElementById('omniInput'), icon: document.getElementById('omniIco
 vSearch: document.getElementById('viewSearch'), vCalc: document.getElementById('viewCalc'),
 tSearch: document.getElementById('tabSearch'), tCalc: document.getElementById('tabCalc'),
 res: document.getElementById('resultsList'), fU: document.getElementById('fUnit'), fS: document.getElementById('fSource'),
+fUnitBtn: document.getElementById('fUnitBtn'), fSourceBtn: document.getElementById('fSourceBtn'), filterMenu: document.getElementById('filterMenuPopover'),
 dashGrid: document.getElementById('dashGrid'), dashTotal: document.getElementById('dashTotal'),
 dashActions: document.getElementById('dashActions'), badge: document.getElementById('cartBadge'),
 modal: document.getElementById('modalOverlay'), toasts: document.getElementById('toasts'),
@@ -898,6 +917,54 @@ document.addEventListener('click', (e) => {
 if(!e.target.closest('.dock')) { els.engineMenu.classList.remove('active'); document.getElementById('engineToggleBtn').setAttribute('aria-expanded', 'false'); }
 });
 
+document.addEventListener('click', (e) => {
+const target = e.target.closest('[data-action]');
+if(!target) return;
+const action = target.getAttribute('data-action');
+const id = target.getAttribute('data-id');
+
+switch(action) {
+case 'noop': break;
+case 'cycle-theme': cycleTheme(); break;
+case 'toggle-global-mode': toggleGlobalMode(); break;
+case 'open-file-upload': document.getElementById('fileUpload').click(); break;
+case 'toggle-engine-menu': toggleEngineMenu(); break;
+case 'set-engine': setEngine(id); break;
+case 'switch-view': switchView(id); break;
+case 'clear-input': clearInput(); break;
+case 'open-cmdk': openCmdk(); break;
+case 'clear-single-filter': clearSingleFilter(id); break;
+case 'clear-filters': clearFilters(); break;
+case 'clear-dashboard': clearDashboard(); break;
+case 'export-dashboard-text': exportDashboardText(); break;
+case 'download-dashboard': downloadDashboard(); break;
+case 'download-dashboard-csv': downloadDashboardCSV(); break;
+case 'save-as-order': saveAsOrder(); break;
+case 'create-new-order': createNewOrder(); break;
+case 'undo-delete': undoDelete(); break;
+case 'open-details': openDetails(id); break;
+case 'toggle-quick-links': toggleQuickLinks(e, id, target); break;
+case 'copy-item-info': copyItemInfo(id); break;
+case 'toggle-quick-mode': toggleQuickMode(e, id, target.getAttribute('data-btype')); break;
+case 'inline-add': inlineAdd(id, target); break;
+case 'close-quick-links': closeQuickLinks(); break;
+case 'set-modal-add-mode': setModalAddMode(target.getAttribute('data-mode'), id); break;
+case 'modal-add': modalAdd(id); break;
+case 'load-order': loadOrder(parseInt(target.getAttribute('data-idx'), 10)); break;
+case 'delete-order': deleteOrder(e, parseInt(target.getAttribute('data-idx'), 10)); break;
+case 'remove-dashboard-item': removeDashboardItem(id); break;
+case 'cmdk-click-item': cmdkClickItem(parseInt(target.getAttribute('data-idx'), 10)); break;
+case 'cmdk-pane-action': {
+const idx = parseInt(target.getAttribute('data-idx'), 10);
+cmdkPaneFocused = true;
+if(cmdkItems[cmdkActiveIndex] && cmdkItems[cmdkActiveIndex].actions[idx]) cmdkItems[cmdkActiveIndex].actions[idx].run();
+break;
+}
+case 'toggle-filter-menu': toggleFilterMenu(id, target); break;
+case 'set-filter': setFilter(target.getAttribute('data-filter-id'), target.getAttribute('data-value')); break;
+}
+});
+
 document.addEventListener('wheel', (e) => {
 const active = document.activeElement;
 if(active && active.tagName === 'INPUT' && active.type === 'number') active.blur();
@@ -939,7 +1006,7 @@ const showUndoToast = (msg, icon="delete") => {
 while(els.toasts.children.length >= 3) els.toasts.firstChild.remove();
 const t = document.createElement('div'); t.className = 'toast undo-toast';
 t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-secondary)">${escapeHTML(icon)}</span> <span style="flex:1; text-align:left;">${escapeHTML(msg)}</span>
-<button onclick="undoDelete()" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
+<button data-action="undo-delete" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
 els.toasts.appendChild(t);
 clearTimeout(undoTimeoutId);
 undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; lastDeletedItem = null; }, 30000);
@@ -985,8 +1052,8 @@ return res;
 };
 
 window.clearInput = () => { els.in.value = ''; els.clear.style.display = 'none'; els.in.focus(); renderSearch(); };
-window.clearSingleFilter = (id) => { document.getElementById(id).value = 'all'; renderSearch(); };
-window.clearFilters = () => { els.fU.value = 'all'; els.fS.value = 'all'; renderSearch(); };
+window.clearSingleFilter = (id) => { closeFilterMenu(); document.getElementById(id).value = 'all'; renderSearch(); };
+window.clearFilters = () => { closeFilterMenu(); els.fU.value = 'all'; els.fS.value = 'all'; renderSearch(); };
 
 const switchView = (view) => {
 if (activeView === view) return;
@@ -1006,7 +1073,7 @@ const inCalcBadge = inCalc ? ` • <span class="tag" style="background: var(--sy
 return `
 <div class="card" id="card-${escapeHTML(i.id)}" role="listitem" tabindex="0"
 aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}${inCalc ? ', already in calculator' : ''}"
-onclick="openDetails(${escapeAttr(i.id)})"
+data-action="open-details" data-id="${escapeHTML(i.id)}"
 onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <div class="card-main-info">
 <div class="card-icon${i.isDynamic ? ' dynamic' : ''}" aria-hidden="true"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
@@ -1015,9 +1082,9 @@ onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <div class="card-subtitle" dir="auto"><span>${highlight(i.u, qTokens)}</span> • <span class="price-tag${i.isDynamic ? ' dynamic' : ''}">${i.isDynamic ? '50% Supply Price' : i.p.toFixed(2) + ' EGP'}</span>${inCalcBadge}</div>
 </div>
 </div>
-<div class="card-actions" onclick="event.stopPropagation()">
-<button class="copy-btn" onclick="toggleQuickLinks(event, ${escapeAttr(i.id)})" title="Search the web" aria-label="Search the web for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span></button>
-<button class="copy-btn" onclick="copyItemInfo(${escapeAttr(i.id)})" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
+<div class="card-actions" data-action="noop">
+<button class="copy-btn quick-links-trigger" data-action="toggle-quick-links" data-id="${escapeHTML(i.id)}" title="Search the web" aria-label="Search the web for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">travel_explore</span></button>
+<button class="copy-btn" data-action="copy-item-info" data-id="${escapeHTML(i.id)}" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
 <div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
  ${i.isDynamic ? `
 <input type="number" inputmode="decimal" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'sp')">
@@ -1025,10 +1092,10 @@ onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <span class="pill-sep"></span>
 ` : ''}
 <input type="number" inputmode="decimal" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty · ${escapeHTML(String(defaultQuickQty || 1))}" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'qty')">
-<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" onclick="toggleQuickMode(event, ${escapeAttr(i.id)}, ${escapeAttr(i.bType)})">
+<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" data-action="toggle-quick-mode" data-id="${escapeHTML(i.id)}" data-btype="${escapeHTML(i.bType)}">
  ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
 </button>
-<button class="pill-add" onclick="inlineAdd(${escapeAttr(i.id)}, this)" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
+<button class="pill-add" data-action="inline-add" data-id="${escapeHTML(i.id)}" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
 </div>
 </div>
 </div>
@@ -1132,8 +1199,8 @@ disconnectObserver();
 const qTokens = qStr.split(/\s+/).filter(Boolean);
 const u = els.fU.value, s = els.fS.value;
 
-els.fU.classList.toggle('active-filter', u !== 'all'); document.getElementById('fUnitX').style.display = u !== 'all' ? 'grid' : 'none';
-els.fS.classList.toggle('active-filter', s !== 'all'); document.getElementById('fSourceX').style.display = s !== 'all' ? 'grid' : 'none';
+syncFilterTriggerUI('fUnit');
+syncFilterTriggerUI('fSource');
 
 let filtered = [];
 for(let i=0; i<db.length; i++) {
@@ -1324,7 +1391,7 @@ closeModal();
 const qlPop = document.getElementById('quickLinksPopover');
 let quickLinksOpenId = null;
 
-window.toggleQuickLinks = (e, id) => {
+window.toggleQuickLinks = (e, id, btnEl) => {
 e.stopPropagation();
 if(quickLinksOpenId === id) { closeQuickLinks(); return; }
 const item = db.find(i => i.id === id);
@@ -1332,12 +1399,12 @@ if(!item) return;
 quickLinksOpenId = id;
 const qStr = encodeURIComponent(item.n);
 qlPop.innerHTML = `
-<a href="${generateSearchURL(qStr)}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">travel_explore</span> ${escapeHTML(getEngineName())}</a>
-<a href="${generateImageURL(qStr)}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">image</span> Images</a>
-<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">medical_services</span> Drugs.com</a>
-<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener noreferrer" class="dropdown-item" onclick="closeQuickLinks()"><span class="material-symbols-rounded">psychology</span> Perplexity</a>
+<a href="${generateSearchURL(qStr)}" target="_blank" rel="noopener noreferrer" class="dropdown-item" data-action="close-quick-links"><span class="material-symbols-rounded">travel_explore</span> ${escapeHTML(getEngineName())}</a>
+<a href="${generateImageURL(qStr)}" target="_blank" rel="noopener noreferrer" class="dropdown-item" data-action="close-quick-links"><span class="material-symbols-rounded">image</span> Images</a>
+<a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener noreferrer" class="dropdown-item" data-action="close-quick-links"><span class="material-symbols-rounded">medical_services</span> Drugs.com</a>
+<a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener noreferrer" class="dropdown-item" data-action="close-quick-links"><span class="material-symbols-rounded">psychology</span> Perplexity</a>
 `;
-const rect = e.currentTarget.getBoundingClientRect();
+const rect = btnEl.getBoundingClientRect();
 const popWidth = 210;
 let left = Math.min(rect.left, window.innerWidth - popWidth - 8);
 qlPop.style.left = `${Math.max(8, left)}px`;
@@ -1347,11 +1414,56 @@ qlPop.classList.add('active');
 
 window.closeQuickLinks = () => { quickLinksOpenId = null; qlPop.classList.remove('active'); };
 
+let openFilterId = null;
+
+const syncFilterTriggerUI = (selectId) => {
+const selectEl = document.getElementById(selectId);
+const btn = selectId === 'fUnit' ? els.fUnitBtn : els.fSourceBtn;
+const xBtn = document.getElementById(selectId === 'fUnit' ? 'fUnitX' : 'fSourceX');
+const isActive = selectEl.value !== 'all';
+btn.querySelector('.filter-trigger-label').textContent = selectEl.options[selectEl.selectedIndex].text;
+btn.classList.toggle('active-filter', isActive);
+xBtn.style.display = isActive ? 'grid' : 'none';
+};
+
+const closeFilterMenu = () => {
+if (!openFilterId) return;
+(openFilterId === 'fUnit' ? els.fUnitBtn : els.fSourceBtn).setAttribute('aria-expanded', 'false');
+els.filterMenu.classList.remove('active');
+openFilterId = null;
+};
+
+window.toggleFilterMenu = (which, btnEl) => {
+if (openFilterId === which) { closeFilterMenu(); return; }
+if (openFilterId) closeFilterMenu();
+openFilterId = which;
+const selectEl = document.getElementById(which);
+const current = selectEl.value;
+els.filterMenu.innerHTML = Array.from(selectEl.options).map(o =>
+`<button class="dropdown-item${o.value === current ? ' active' : ''}" data-action="set-filter" data-filter-id="${which}" data-value="${escapeHTML(o.value)}" role="menuitemradio" aria-checked="${o.value === current}">${escapeHTML(o.text)}</button>`
+).join('');
+const rect = btnEl.getBoundingClientRect();
+const menuWidth = Math.max(190, rect.width);
+els.filterMenu.style.minWidth = `${menuWidth}px`;
+els.filterMenu.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - menuWidth - 8))}px`;
+els.filterMenu.style.top = `${Math.min(rect.bottom + 6, window.innerHeight - 60)}px`;
+els.filterMenu.classList.add('active');
+btnEl.setAttribute('aria-expanded', 'true');
+};
+
+window.setFilter = (which, value) => {
+document.getElementById(which).value = value;
+closeFilterMenu();
+renderSearch();
+(which === 'fUnit' ? els.fUnitBtn : els.fSourceBtn).focus({ preventScroll: true });
+};
+
 document.addEventListener('click', (e) => {
-if(quickLinksOpenId && !e.target.closest('.quick-links-popover') && !e.target.closest('[onclick*="toggleQuickLinks"]')) closeQuickLinks();
+if(quickLinksOpenId && !e.target.closest('.quick-links-popover') && !e.target.closest('.quick-links-trigger')) closeQuickLinks();
+if(openFilterId && !e.target.closest('.filter-menu') && !e.target.closest('.filter-trigger')) closeFilterMenu();
 });
-els.vSearch.addEventListener('scroll', closeQuickLinks, { passive: true });
-window.addEventListener('resize', closeQuickLinks);
+els.vSearch.addEventListener('scroll', () => { closeQuickLinks(); closeFilterMenu(); }, { passive: true });
+window.addEventListener('resize', () => { closeQuickLinks(); closeFilterMenu(); });
 
 const generateSearchURL = (qStr) => {
 if(preferredEngine === 'ddg') return `https://duckduckgo.com/?q=${qStr}`;
@@ -1421,13 +1533,13 @@ document.getElementById('sheetAddCalc').innerHTML = `
 </div>
 ` : ''}
 <div style="display: flex; background: var(--sys-well); border-radius: var(--radius-full); padding: 4px; border: 1px solid var(--sys-outline);">
-<button class="omni-tab active" id="mtg-unit" onclick="setModalAddMode('unit', ${escapeAttr(id)})" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
-<button class="omni-tab" id="mtg-pack" onclick="setModalAddMode('pack', ${escapeAttr(id)})" style="flex:1; justify-content:center; height:32px;">By Packages</button>
+<button class="omni-tab active" id="mtg-unit" data-action="set-modal-add-mode" data-mode="unit" data-id="${escapeHTML(id)}" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
+<button class="omni-tab" id="mtg-pack" data-action="set-modal-add-mode" data-mode="pack" data-id="${escapeHTML(id)}" style="flex:1; justify-content:center; height:32px;">By Packages</button>
 </div>
 <div style="display: flex; gap: 12px; align-items: center;">
 <input type="number" inputmode="decimal" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd(${escapeAttr(id)})" style="padding:10px; font-size:1.1rem; text-align:left;">
 <span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
-<button onclick="modalAdd(${escapeAttr(id)})" style="background:var(--sys-primary); color:var(--sys-on-primary); border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
+<button data-action="modal-add" data-id="${escapeHTML(id)}" style="background:var(--sys-primary); color:var(--sys-on-primary); border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
 </div>
 </div>
 `;
@@ -1506,10 +1618,10 @@ els.dashActions.style.display = items.length ? 'grid' : 'none';
 els.ordersBar.style.display = savedOrders.length > 0 ? 'flex' : 'none';
 els.ordersBar.innerHTML = savedOrders.map((o, idx) => `
 <div class="order-chip ${idx === currentOrderIndex ? 'active' : ''}">
-<button class="order-chip-main" onclick="loadOrder(${idx})" title="${escapeHTML(o.name)}">${escapeHTML(o.name)}</button>
-<button class="chip-del" onclick="deleteOrder(event, ${idx})" aria-label="Delete order ${escapeHTML(o.name)}"><span class="material-symbols-rounded">close</span></button>
+<button class="order-chip-main" data-action="load-order" data-idx="${idx}" title="${escapeHTML(o.name)}">${escapeHTML(o.name)}</button>
+<button class="chip-del" data-action="delete-order" data-idx="${idx}" aria-label="Delete order ${escapeHTML(o.name)}"><span class="material-symbols-rounded">close</span></button>
 </div>
-`).join('') + `<button class="order-chip" onclick="createNewOrder()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
+`).join('') + `<button class="order-chip" data-action="create-new-order"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">add</span> New</button>`;
 
 els.dashTitleText.textContent = currentOrderIndex >= 0 ? savedOrders[currentOrderIndex].name : "Current Calculation";
 els.dashStatus.textContent = currentOrderIndex >= 0 ? "Active Order" : "Unsaved";
@@ -1528,7 +1640,7 @@ return `
 <div class="card-title" dir="auto">${escapeHTML(c.item.n)} ${c.item.t ? `<span class="tag">${escapeHTML(c.item.t)}</span>` : ''}</div>
 <div class="card-subtitle" dir="auto">Base: ${escapeHTML(String(c.item.bQty))} ${escapeHTML(c.item.bType)} / Pack</div>
 </div>
-<button class="trash-btn" onclick="removeDashboardItem(${escapeAttr(c.item.id)})" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
+<button class="trash-btn" data-action="remove-dashboard-item" data-id="${escapeHTML(c.item.id)}" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
 </div>
 <div class="dash-controls">
 <div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" inputmode="decimal" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.req))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
@@ -1688,7 +1800,6 @@ if(activeView === 'calc') switchView('search');
 renderSearch();
 });
 
-els.fU.addEventListener('change', renderSearch); els.fS.addEventListener('change', renderSearch);
 els.modal.addEventListener('click', e => { if(e.target === els.modal) closeModal(); });
 
 const setCardFocus = (card, instant) => {
@@ -1898,7 +2009,7 @@ const shown = {};
 const typeLabel = { command: 'Commands', order: 'Saved Orders', medicine: 'Medicines' };
 cmdkItems.forEach((item, i) => {
 if(!shown[item.type]) { html += `<div class="cmdk-group-label">${escapeHTML(typeLabel[item.type] || '')}</div>`; shown[item.type] = true; }
-html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" onclick="cmdkClickItem(${i})">
+html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" data-action="cmdk-click-item" data-idx="${i}">
 <span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
 <span class="cmdk-item-title">${escapeHTML(item.title)}</span>
 <span class="cmdk-item-sub">${escapeHTML(item.sub || '')}</span>
@@ -1940,7 +2051,7 @@ cmdkEls.pane.innerHTML = `
  ${extraFields}
 <div class="cmdk-pane-actions">
  ${item.actions.map((a, i) => `
-<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" onkeydown="paneKeydown(event, ${navIdx + i})" onclick="cmdkPaneFocused = true; cmdkItems[cmdkActiveIndex].actions[${i}].run();">
+<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" onkeydown="paneKeydown(event, ${navIdx + i})" data-action="cmdk-pane-action" data-idx="${i}">
 <span class="material-symbols-rounded">${escapeHTML(a.icon)}</span>
 <span class="cmdk-pane-action-label">${escapeHTML(a.label)}</span>
  ${a.active ? '<span class="material-symbols-rounded cmdk-pane-check">check</span>' : ''}
