@@ -1298,29 +1298,99 @@ if(activeView === 'calc') renderDashboard();
 return { item, packs, cost, spare };
 };
 
+const resolveTarget = (intent) => {
+const qStr = normalizeSearchText(intent.query);
+if (!qStr) return null;
+const qTokens = qStr.split(/\s+/).filter(Boolean);
+let best = null, bestScore = -1;
+for (let i = 0; i < db.length; i++) {
+const item = db[i];
+let score = 0, matchedAll = true;
+for (let j = 0; j < qTokens.length; j++) {
+const tk = qTokens[j];
+const aliasTk = resolveAliasToken(tk);
+const hit = item.searchStr.includes(tk) || (aliasTk !== tk && item.searchStr.includes(aliasTk));
+if (!hit) { matchedAll = false; break; }
+if (item.nLower.startsWith(tk)) score += 20; else score += 10;
+}
+if (!matchedAll) continue;
+if (score > bestScore) { bestScore = score; best = item; }
+}
+return best ? { item: best, score: bestScore } : null;
+};
+
+const preview = (intent, target) => {
+if (!intent.query) return { text: 'Type a medicine name · x30 sets quantity · ⌘K for commands', ok: false };
+if (intent.qtyInvalid) return { text: 'Quantity must be greater than 0', ok: false };
+if (!target) return { text: `No match for "${intent.query}"`, ok: false };
+const item = target.item;
+if (intent.qty == null) {
+const priceStr = item.isDynamic ? '50% Supply Price' : `${item.p.toFixed(2)} EGP`;
+return { text: `⏎ ${item.n} · ${item.u} · ${priceStr}`, ok: true };
+}
+if (item.isDynamic && intent.price == null) {
+return { text: `${item.n} needs a supply price — type @450 or press Tab`, ok: false };
+}
+const { packs, spare } = packInfo(intent.qty, item.bQty);
+const costP = item.isDynamic ? packs * Math.round(toPiastres(intent.price) / 2) : packs * item.pP;
+const spareStr = spare > 0 ? ` · ${spare} ${item.bType} spare` : '';
+return { text: `⏎ Add ${item.n} — ${intent.qty} ${item.bType} → ${packs} pack${packs === 1 ? '' : 's'}${spareStr} · ${formatPiastres(costP)} EGP`, ok: true };
+};
+
+const commit = (op) => {
+const item = db.find(i => i.id === op.id);
+if (!item) return { ok: false, reason: 'no-item' };
+
+if (op.kind === 'edit') {
+const entry = dashboardMap.get(op.id);
+if (!entry) return { ok: false, reason: 'no-entry' };
+let rawVal = op.val;
+if (isNaN(rawVal) || rawVal < 0) rawVal = 0;
+let clamped = false;
+if (rawVal > MAX_QTY) { rawVal = MAX_QTY; clamped = true; }
+let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0, spare = 0;
+if (op.mode === 'pack') packs = rawVal;
+else if (op.mode === 'req') { req = rawVal; ({ packs, spare } = packInfo(req, item.bQty)); }
+else if (op.mode === 'sp') sp = rawVal;
+if (op.mode !== 'req') spare = Math.max(0, packs * item.bQty - req);
+const costP = item.isDynamic ? packs * Math.round(toPiastres(sp) / 2) : packs * item.pP;
+const cost = costP / 100;
+entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
+dashboardMap.set(op.id, entry);
+syncCurrentOrder();
+return { ok: true, item, req, packs, spare, cost, costP, clamped };
+}
+
+const req = op.req;
+if (isNaN(req) || req <= 0 || req > MAX_QTY) return { ok: false, reason: 'invalid-qty' };
+let sp = 0;
+if (item.isDynamic) {
+sp = op.sp;
+if (isNaN(sp) || sp < 0) return { ok: false, reason: 'needs-price' };
+}
+const result = commitToCalc(op.id, req, sp, op.additive !== false);
+if (!result) return { ok: false, reason: 'no-item' };
+return { ok: true, ...result };
+};
+
 window.inlineAdd = (id, btnEl) => {
 const input = document.getElementById(`quick-in-${id}`);
 const rawReq = parseFloat(input.value);
-if(isNaN(rawReq) || rawReq <= 0 || rawReq > 999999) return;
 const item = db.find(i => i.id === id);
 if (!item) return;
-
-let sp = 0;
-if(item.isDynamic) {
-const spInput = document.getElementById(`quick-sp-${id}`);
-sp = parseFloat(spInput.value);
-if(isNaN(sp) || sp < 0) {
-showToast("Please enter Supply Price", "warning");
-spInput.focus({ preventScroll: true });
-return;
-}
-}
 
 const toggleBtn = document.getElementById(`quick-toggle-${id}`);
 const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
 const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
-const result = commitToCalc(id, req, sp, true);
-if(!result) return;
+const sp = item.isDynamic ? parseFloat(document.getElementById(`quick-sp-${id}`).value) : 0;
+const r = commit({ kind: 'add', id, req, sp, additive: true });
+if (!r.ok) {
+if (r.reason === 'needs-price') {
+showToast("Please enter Supply Price", "warning");
+document.getElementById(`quick-sp-${id}`).focus({ preventScroll: true });
+}
+return;
+}
 
 input.value = ''; input.blur();
 if(item.isDynamic) document.getElementById(`quick-sp-${id}`).value = '';
@@ -1331,8 +1401,8 @@ const origIcon = icon.textContent;
 btnEl.style.background = 'var(--sys-success)'; btnEl.style.color = 'var(--sys-on-success)'; icon.textContent = 'check';
 setTimeout(() => { btnEl.style.background = ''; btnEl.style.color = ''; icon.textContent = origIcon; }, 800);
 }
-const spareMsg = result.spare > 0 ? ` (${result.spare} ${item.bType} spare)` : '';
-showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+const spareMsg = r.spare > 0 ? ` (${r.spare} ${item.bType} spare)` : '';
+showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
 refreshCardInPlace(id);
 };
 
@@ -1395,26 +1465,21 @@ document.getElementById('modal-calc-label').textContent = mode === 'unit' ? item
 
 window.modalAdd = (id) => {
 const qty = parseFloat(document.getElementById('modal-calc-qty').value);
-if(isNaN(qty) || qty <= 0 || qty > 999999) return;
 const item = db.find(i => i.id === id);
 if (!item) return;
 
-let sp = 0;
-if (item.isDynamic) {
-const spInput = document.getElementById('modal-calc-sp');
-sp = parseFloat(spInput.value);
-if (isNaN(sp) || sp < 0) {
+const req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
+const sp = item.isDynamic ? parseFloat(document.getElementById('modal-calc-sp').value) : 0;
+const r = commit({ kind: 'add', id, req, sp, additive: true });
+if (!r.ok) {
+if (r.reason === 'needs-price') {
 showToast("Please enter Supply Price", "warning");
-spInput.focus({ preventScroll: true });
+document.getElementById('modal-calc-sp').focus({ preventScroll: true });
+}
 return;
 }
-}
-
-const req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
-const result = commitToCalc(id, req, sp, true);
-if(!result) return;
-const spareMsg = result.spare > 0 ? ` (${result.spare} ${item.bType} spare)` : '';
-showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+const spareMsg = r.spare > 0 ? ` (${r.spare} ${item.bType} spare)` : '';
+showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
 refreshCardInPlace(id);
 closeModal();
 };
@@ -1595,43 +1660,21 @@ els.badge.style.display = dashboardMap.size ? 'block' : 'none';
 };
 
 window.updateDashItem = (id, val, mode = 'req') => {
-let rawVal = parseFloat(val);
-if(isNaN(rawVal) || rawVal < 0) rawVal = 0;
-if(rawVal > 999999) { rawVal = 999999; showToast("Maximum amount is 999,999", "warning"); }
-
-const entry = dashboardMap.get(id);
-if(!entry) return;
-
-let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0, spare = 0;
-
-if (mode === 'pack') {
-packs = rawVal;
-} else if (mode === 'req') {
-req = rawVal;
-({ packs, spare } = packInfo(req, entry.item.bQty));
-} else if (mode === 'sp') {
-sp = rawVal;
-}
-if (mode !== 'req') spare = Math.max(0, packs * entry.item.bQty - req);
-
-const costP = entry.item.isDynamic ? packs * Math.round(toPiastres(sp) / 2) : packs * entry.item.pP;
-const cost = costP / 100;
-
-entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
-dashboardMap.set(id, entry);
-syncCurrentOrder();
+const r = commit({ kind: 'edit', id, val: parseFloat(val), mode });
+if (!r.ok) return;
+if (r.clamped) showToast("Maximum amount is 999,999", "warning");
 
 const reqEl = document.getElementById(`dash-in-${id}`);
 const packEl = document.getElementById(`dash-packs-${id}`);
 const cEl = document.getElementById(`out-cost-${id}`);
 const spareEl = document.getElementById(`dash-spare-${id}`);
 
-if(mode !== 'req' && reqEl) reqEl.value = req;
-if(mode !== 'pack' && packEl) packEl.value = packs;
+if(mode !== 'req' && reqEl) reqEl.value = r.req;
+if(mode !== 'pack' && packEl) packEl.value = r.packs;
 if(mode !== 'req' && reqEl && parseFloat(reqEl.value) > 999999) reqEl.value = 999999;
 if(mode !== 'pack' && packEl && parseFloat(packEl.value) > 999999) packEl.value = 999999;
-if(cEl) cEl.textContent = formatPiastres(costP);
-if(spareEl) spareEl.textContent = spare > 0 ? `${spare} ${entry.item.bType} spare` : '';
+if(cEl) cEl.textContent = formatPiastres(r.costP);
+if(spareEl) spareEl.textContent = r.spare > 0 ? `${r.spare} ${r.item.bType} spare` : '';
 
 updateDashTotal();
 
@@ -1943,17 +1986,16 @@ run: () => {
 const qtyEl = document.getElementById('paneQty');
 const spEl = document.getElementById('paneSp');
 const qty = qtyEl ? parseFloat(qtyEl.value) : (defaultQuickQty || 1);
-if(isNaN(qty) || qty <= 0) { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus({ preventScroll: true }); return; }
-let sp = 0;
-if(m.isDynamic) {
-sp = spEl ? parseFloat(spEl.value) : NaN;
-if(isNaN(sp) || sp < 0) { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus({ preventScroll: true }); return; }
-}
 const req = globalAddMode === 'pack' ? qty * m.bQty : qty;
-const result = commitToCalc(m.id, req, sp, true);
-if(!result) return;
-const spareMsg = result.spare > 0 ? ` (${result.spare} ${m.bType} spare)` : '';
-showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${m.n}${spareMsg}`, 'bolt');
+const sp = m.isDynamic ? (spEl ? parseFloat(spEl.value) : NaN) : 0;
+const r = commit({ kind: 'add', id: m.id, req, sp, additive: true });
+if (!r.ok) {
+if (r.reason === 'invalid-qty') { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus({ preventScroll: true }); }
+else if (r.reason === 'needs-price') { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus({ preventScroll: true }); }
+return;
+}
+const spareMsg = r.spare > 0 ? ` (${r.spare} ${m.bType} spare)` : '';
+showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${m.n}${spareMsg}`, 'bolt');
 cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus({ preventScroll: true });
 }
 });
@@ -2357,6 +2399,50 @@ assert('storage migration: drops entries with no matching item', migrateEntries(
 assert('storage migration: non-array input returns an empty array', Array.isArray(migrateEntries(null)) && migrateEntries(null).length === 0);
 assert('storage migration: malformed entries are dropped without throwing', migrateEntries([['bad'], ['x', {}], ['y', { item: null }]]).length === 0);
 assert('storage migration: kept entries carry the resolved db item', migrateEntries([['old-random-id', { req: 5, packs: 1, cost: 10, supplyPrice: 0, item: { n: db[0].n, u: db[0].u, s: db[0].s, t: db[0].t } }]])[0][1].item.id === db[0].id);
+
+const tConcor = resolveTarget(parseCommand('concor 5'));
+assert('resolveTarget: direct substring match finds an item', tConcor && tConcor.item.nLower.startsWith('concor'));
+const tAlias = resolveTarget(parseCommand('glimepiride'));
+assert('resolveTarget: generic-name alias resolves to the branded item', tAlias && tAlias.item.nLower.startsWith('amaryl'));
+assert('resolveTarget: no match returns null', resolveTarget(parseCommand('zzznonexistentdrugxyz')) === null);
+assert('resolveTarget: empty query returns null', resolveTarget(parseCommand('')) === null);
+
+const pvIdle = preview(parseCommand(''), null);
+assert('preview: idle hint shown for empty query', pvIdle.text.includes('Type a medicine name'));
+const pvNoMatch = preview(parseCommand('zzznonexistentdrugxyz'), null);
+assert('preview: no-match hint names the query', pvNoMatch.text.includes('No match for'));
+const concorItem = db.find(d => d.n === 'Concor 5' && !d.t);
+const pvSearch = preview(parseCommand('concor 5'), { item: concorItem });
+assert('preview: searching (no qty) shows name, unit and price', pvSearch.ok && pvSearch.text.includes(concorItem.n) && pvSearch.text.includes(concorItem.u));
+const pvArmed = preview(parseCommand('concor 5 x30'), { item: concorItem });
+assert('preview: armed-with-qty shows pack math and total', pvArmed.ok && pvArmed.text.includes('1 pack') && pvArmed.text.includes(formatPiastres(concorItem.pP)));
+const pvSpare = preview(parseCommand('concor 5 x45'), { item: concorItem });
+assert('preview: spare quantity is called out', pvSpare.text.includes('spare'));
+const anoroItem = db.find(d => d.isDynamic);
+const pvNeedsPrice = preview(parseCommand(`${anoroItem.n} x2`), { item: anoroItem });
+assert('preview: dp item with no price prompts for one', !pvNeedsPrice.ok && pvNeedsPrice.text.includes('supply price'));
+const pvInvalid = preview(parseCommand('concor 5 x0'), { item: concorItem });
+assert('preview: rejected qty shows the must-be-positive hint', pvInvalid.text === 'Quantity must be greater than 0');
+
+(() => {
+const dashSnapshot = dashboardMap;
+dashboardMap = new Map();
+const normalItem = db.find(d => d.n === 'Concor 5' && !d.t);
+const dynamicItem = db.find(d => d.isDynamic);
+const badQty = commit({ kind: 'add', id: normalItem.id, req: 0, sp: 0, additive: true });
+assert('commit: add rejects a zero quantity without mutating', badQty.ok === false && badQty.reason === 'invalid-qty' && dashboardMap.size === 0);
+const needsPrice = commit({ kind: 'add', id: dynamicItem.id, req: 2, sp: NaN, additive: true });
+assert('commit: add on a dp item with no price asks for one', needsPrice.ok === false && needsPrice.reason === 'needs-price' && dashboardMap.size === 0);
+const added = commit({ kind: 'add', id: normalItem.id, req: 45, sp: 0, additive: true });
+assert('commit: add path matches commitToCalc\'s pack math', added.ok && added.packs === 2 && added.spare === 15 && dashboardMap.size === 1);
+const editedReq = commit({ kind: 'edit', id: normalItem.id, val: 61, mode: 'req' });
+assert('commit: edit(req) recomputes packs from the new total', editedReq.ok && editedReq.packs === 3 && dashboardMap.get(normalItem.id).req === 61);
+const editedPack = commit({ kind: 'edit', id: normalItem.id, val: 5, mode: 'pack' });
+assert('commit: edit(pack) sets packs directly and recomputes cost', editedPack.ok && editedPack.packs === 5 && editedPack.costP === 5 * normalItem.pP);
+const clampedEdit = commit({ kind: 'edit', id: normalItem.id, val: 5000000, mode: 'req' });
+assert('commit: edit clamps an over-max value and reports it', clampedEdit.ok && clampedEdit.clamped === true && clampedEdit.req === MAX_QTY);
+dashboardMap = dashSnapshot;
+})();
 
 const passCount = results.filter(r => r.pass).length;
 console.group(`%cLX self-test: ${passCount}/${results.length} passed`, `color:${passCount === results.length ? '#3ddc84' : '#ff5c5c'}; font-weight:bold;`);
