@@ -217,7 +217,6 @@ input[type="number"] { -moz-appearance: textfield; }
 .pill-add:hover { background: var(--sys-primary); color: var(--sys-on-primary); transform: scale(1.05); }
 .tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; flex-shrink: 0; }
 .tag.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
-.load-sentinel { height: 1px; width: 100%; flex-shrink: 0; }
 .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: var(--space-5); flex-shrink: 0; }
 .order-chip { position: relative; overflow: hidden; padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center; background: var(--sys-surface-low); color: var(--sys-on-surface-variant); white-space: nowrap; font-size: 0.95rem; font-family: inherit; box-shadow: var(--shadow-chip); transition: background 0.2s, box-shadow 0.2s, transform 0.2s var(--spring), color 0.2s, border-color 0.2s; }
 .order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); box-shadow: var(--shadow-chip-active); }
@@ -423,7 +422,7 @@ LX Search
 <div class="omni-divider"></div>
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
-<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines">
+<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines" role="combobox" aria-expanded="true" aria-haspopup="listbox" aria-autocomplete="list" aria-controls="resultsList">
 <button class="omni-side-btn" id="omniClear" data-action="clear-input" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
@@ -459,7 +458,7 @@ LX Search
 </button>
 </div>
 <div class="results-meta" id="resultsMeta" aria-live="polite"></div>
-<div class="results-list" id="resultsList" role="list" aria-label="Search results"></div>
+<div class="results-list" id="resultsList" role="listbox" aria-label="Search results"></div>
 </div>
 
 <div class="view-section" id="viewCalc">
@@ -807,7 +806,6 @@ const icon = getIconForUnit(i.unit);
 return { id: makeStableId(i.name, i.unit, i.company), n, nLower, t, u: i.unit, p: i.price, pP: Math.round(i.price * 100), s: sName, bQty, bType, isInsulin, searchStr, icon, isDynamic: !!i.dp };
 });
 
-const CHUNK_SIZE = 40;
 let activeView = 'search';
 const isMacPlatform = /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent || '');
 const MOD_KEY = isMacPlatform ? '⌘' : 'Ctrl';
@@ -815,7 +813,7 @@ let dashboardMap = new Map();
 let savedOrders = [];
 let currentOrderIndex = -1;
 let preferredEngine = 'brave';
-let focusedCardIndex = -1;
+let selectionIndex = -1;
 let lastDeletedOrder = null;
 let lastDeletedIndex = -1;
 let lastDeletedItem = null;
@@ -823,12 +821,7 @@ let undoTimeoutId = null;
 let globalAddMode = 'unit';
 let defaultQuickQty = 1;
 let currentResults = [];
-let renderedCount = 0;
-let resultsObserver = null;
 let lastFocusedBeforeModal = null;
-let cardEls = [];
-let cardIndexById = new Map();
-let lastFocusedCard = null;
 
 const els = {
 in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'), clear: document.getElementById('omniClear'),
@@ -1096,16 +1089,13 @@ els.icon.textContent = view === 'calc' ? 'calculate' : 'data_usage';
 if(view === 'calc') renderDashboard();
 };
 
-const disconnectObserver = () => { if(resultsObserver) { resultsObserver.disconnect(); resultsObserver = null; } };
-
 const cardTemplate = (i, qTokens, isPack) => {
 const inCalc = dashboardMap.get(i.id);
 const inCalcBadge = inCalc ? ` • <span class="tag" style="background: var(--sys-surface-highest); color: var(--sys-success);">In calc · ${escapeHTML(String(inCalc.packs))} pack${inCalc.packs === 1 ? '' : 's'}</span>` : '';
 return `
-<div class="card" id="card-${escapeHTML(i.id)}" role="listitem" tabindex="0"
+<div class="card" id="card-${escapeHTML(i.id)}" role="option" aria-selected="false"
 aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}${inCalc ? ', already in calculator' : ''}"
-data-action="open-details" data-id="${escapeHTML(i.id)}"
-onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
+data-action="open-details" data-id="${escapeHTML(i.id)}">
 <div class="card-main-info">
 <div class="card-icon${i.isDynamic ? ' dynamic' : ''}" aria-hidden="true"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
 <div class="card-content">
@@ -1133,17 +1123,33 @@ onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 `;
 };
 
-const cacheNewCards = (chunk) => {
-const startIdx = cardEls.length;
-for(let k=0; k<chunk.length; k++) {
-const el = document.getElementById(`card-${chunk[k].id}`);
-if(!el) continue;
-cardIndexById.set(chunk[k].id, startIdx + k);
-cardEls.push(el);
+const reconcileResultsList = (filtered, qTokens, isPack) => {
+const emptyEl = els.res.querySelector('[data-empty]');
+if (!filtered.length) {
+if (!emptyEl) els.res.innerHTML = '<div data-empty style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
+return;
 }
-};
+if (emptyEl) emptyEl.remove();
 
-const resetCardCache = () => { cardEls = []; cardIndexById = new Map(); lastFocusedCard = null; };
+let ref = els.res.firstChild;
+filtered.forEach(item => {
+let el = document.getElementById(`card-${item.id}`);
+const wrapper = document.createElement('div');
+wrapper.innerHTML = cardTemplate(item, qTokens, isPack).trim();
+const fresh = wrapper.firstElementChild;
+if (el) {
+if (el.innerHTML !== fresh.innerHTML) el.innerHTML = fresh.innerHTML;
+if (el.getAttribute('aria-label') !== fresh.getAttribute('aria-label')) el.setAttribute('aria-label', fresh.getAttribute('aria-label'));
+} else {
+el = fresh;
+}
+if (el === ref) ref = ref.nextSibling;
+else els.res.insertBefore(el, ref);
+});
+
+let node = ref;
+while (node) { const next = node.nextSibling; node.remove(); node = next; }
+};
 
 const refreshCardInPlace = (id) => {
 const el = document.getElementById(`card-${id}`);
@@ -1154,69 +1160,43 @@ const isPack = globalAddMode === 'pack';
 const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
 const wrapper = document.createElement('div');
 wrapper.innerHTML = cardTemplate(item, qTokens, isPack).trim();
-const newEl = wrapper.firstElementChild;
-el.replaceWith(newEl);
-const idx = cardIndexById.get(id);
-if(idx !== undefined) cardEls[idx] = newEl;
-if(lastFocusedCard && lastFocusedCard.id === `card-${id}`) lastFocusedCard = newEl;
-};
-
-const appendNextChunk = () => {
-if(renderedCount >= currentResults.length) return;
-const sentinel = document.getElementById('loadSentinel');
-if(sentinel) sentinel.remove();
-const isPack = globalAddMode === 'pack';
-const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
-const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
-const html = chunk.map(i => cardTemplate(i, qTokens, isPack)).join('');
-els.res.insertAdjacentHTML('beforeend', html);
-renderedCount += chunk.length;
-cacheNewCards(chunk);
-updateResultsMeta();
-if(renderedCount < currentResults.length) {
-els.res.insertAdjacentHTML('beforeend', '<div class="load-sentinel" id="loadSentinel"></div>');
-const newSentinel = document.getElementById('loadSentinel');
-disconnectObserver();
-resultsObserver = new IntersectionObserver((entries) => {
-if(entries[0].isIntersecting) appendNextChunk();
-}, { root: els.vSearch, rootMargin: '600px' });
-resultsObserver.observe(newSentinel);
-}
-};
-
-const loadAllRemaining = () => {
-disconnectObserver();
-while(renderedCount < currentResults.length) {
-const isPack = globalAddMode === 'pack';
-const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
-const sentinel = document.getElementById('loadSentinel');
-if(sentinel) sentinel.remove();
-const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
-els.res.insertAdjacentHTML('beforeend', chunk.map(i => cardTemplate(i, qTokens, isPack)).join(''));
-renderedCount += chunk.length;
-cacheNewCards(chunk);
-}
-updateResultsMeta();
+const fresh = wrapper.firstElementChild;
+el.innerHTML = fresh.innerHTML;
+el.setAttribute('aria-label', fresh.getAttribute('aria-label'));
 };
 
 const updateResultsMeta = () => {
-if(!currentResults.length) { els.meta.textContent = ''; return; }
-els.meta.textContent = renderedCount >= currentResults.length
-? `${currentResults.length} result${currentResults.length === 1 ? '' : 's'}`
-: `Showing ${renderedCount} of ${currentResults.length} — scroll for more`;
+els.meta.textContent = currentResults.length ? `${currentResults.length} result${currentResults.length === 1 ? '' : 's'}` : '';
 };
 
-const focusCardById = (id) => {
-setTimeout(() => {
-let guard = 0;
-while(!document.getElementById(`quick-in-${id}`) && renderedCount < currentResults.length && guard < 30) { appendNextChunk(); guard++; }
-const qtyInput = document.getElementById(`quick-in-${id}`);
-if(qtyInput) { 
-qtyInput.focus({ preventScroll: true }); 
-qtyInput.closest('.card').scrollIntoView({ block: 'nearest', behavior: 'auto' }); 
+const applySelection = () => {
+currentResults.forEach((item, idx) => {
+const row = document.getElementById(`card-${item.id}`);
+if (!row) return;
+const isSel = idx === selectionIndex;
+row.classList.toggle('focused', isSel);
+row.setAttribute('aria-selected', isSel ? 'true' : 'false');
+});
+if (selectionIndex >= 0 && currentResults[selectionIndex]) {
+const row = document.getElementById(`card-${currentResults[selectionIndex].id}`);
+if (row) {
+els.in.setAttribute('aria-activedescendant', row.id);
+row.scrollIntoView({ block: 'nearest', behavior: 'auto' });
 }
-}, 30);
+} else {
+els.in.removeAttribute('aria-activedescendant');
+}
 };
+
+const moveSelection = (delta) => {
+if (!currentResults.length) return;
+if (selectionIndex === -1) selectionIndex = delta > 0 ? 0 : currentResults.length - 1;
+else selectionIndex = ((selectionIndex + delta) % currentResults.length + currentResults.length) % currentResults.length;
+applySelection();
+};
+
+const selectFirst = () => { if (currentResults.length) { selectionIndex = 0; applySelection(); } };
+const selectLast = () => { if (currentResults.length) { selectionIndex = currentResults.length - 1; applySelection(); } };
 
 const renderSearch = () => {
 closeQuickLinks();
@@ -1224,8 +1204,6 @@ const rawQ = els.in.value;
 const qStr = normalizeSearchText(rawQ);
 els.icon.textContent = activeView === 'calc' ? 'calculate' : 'data_usage';
 els.clear.style.display = rawQ.length > 0 ? 'flex' : 'none';
-
-disconnectObserver();
 
 const qTokens = qStr.split(/\s+/).filter(Boolean);
 const u = els.fU.value, s = els.fS.value;
@@ -1256,13 +1234,13 @@ filtered.push({...item, score});
 if(qTokens.length > 0) filtered.sort((a,b) => b.score - a.score);
 
 currentResults = filtered;
-renderedCount = 0;
-resetCardCache();
-els.res.innerHTML = filtered.length ? '' : '<div style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
-if(filtered.length) appendNextChunk();
-else updateResultsMeta();
+const isPack = globalAddMode === 'pack';
+const rawTokens = rawQ.toLowerCase().trim().split(/\s+/).filter(Boolean);
+reconcileResultsList(filtered, rawTokens, isPack);
+updateResultsMeta();
 
-focusedCardIndex = -1;
+selectionIndex = -1;
+applySelection();
 };
 
 window.copyItemInfo = (id) => {
@@ -1406,34 +1384,6 @@ showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareM
 refreshCardInPlace(id);
 };
 
-const focusCardFieldByIndex = (idx, field, instant) => {
-const card = cardEls[idx];
-if (!card) return;
-setCardFocus(card, instant);
-const targetId = card.id.slice(5);
-let input = field === 'sp' ? document.getElementById(`quick-sp-${targetId}`) : document.getElementById(`quick-in-${targetId}`);
-if (!input) input = document.getElementById(`quick-in-${targetId}`);
-if (input) { input.focus({ preventScroll: true }); input.select(); }
-focusedCardIndex = idx;
-};
-
-const focusAdjacentRow = (id, delta, field, instant) => {
-const idx = cardIndexById.has(id) ? cardIndexById.get(id) : cardEls.findIndex(c => c.id === `card-${id}`);
-if (idx === -1 || idx === undefined) return;
-const nextIdx = idx + delta;
-if (nextIdx < 0) {
-clearCardFocus();
-focusedCardIndex = -1;
-els.in.focus({ preventScroll: true }); els.in.select();
-return;
-}
-if (nextIdx >= cardEls.length) {
-if (renderedCount < currentResults.length) { appendNextChunk(); focusCardFieldByIndex(nextIdx, field, instant); }
-return;
-}
-focusCardFieldByIndex(nextIdx, field, instant);
-};
-
 window.quickInputKeydown = (e, id, field) => {
 if (e.key === 'Enter') {
 e.preventDefault();
@@ -1446,11 +1396,7 @@ const qtyInput = document.getElementById(`quick-in-${id}`);
 if (qtyInput.value.trim() === '') qtyInput.value = String(defaultQuickQty || 1);
 const addBtn = qtyInput.closest('.action-pill').querySelector('.pill-add');
 inlineAdd(id, addBtn);
-if (qtyInput.value === '') focusAdjacentRow(id, 1, 'qty', e.repeat);
-return;
 }
-if (e.key === 'ArrowDown') { e.preventDefault(); focusAdjacentRow(id, 1, field, e.repeat); return; }
-if (e.key === 'ArrowUp') { e.preventDefault(); focusAdjacentRow(id, -1, field, e.repeat); return; }
 };
 
 window.currentModalAddMode = 'unit';
@@ -1876,46 +1822,6 @@ renderSearch();
 
 els.modal.addEventListener('click', e => { if(e.target === els.modal) closeModal(); });
 
-const setCardFocus = (card, instant) => {
-if(lastFocusedCard && lastFocusedCard !== card) {
-lastFocusedCard.classList.remove('focused');
-lastFocusedCard.removeAttribute('aria-current');
-lastFocusedCard.style.transitionDuration = '';
-}
-if(card) {
-card.style.transitionDuration = instant ? '0s' : '';
-card.classList.add('focused');
-card.setAttribute('aria-current', 'true');
-card.focus({ preventScroll: true });
-card.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
-}
-lastFocusedCard = card || null;
-};
-
-const clearCardFocus = () => {
-if(lastFocusedCard) {
-lastFocusedCard.classList.remove('focused');
-lastFocusedCard.removeAttribute('aria-current');
-lastFocusedCard.style.transitionDuration = '';
-lastFocusedCard = null;
-}
-};
-
-const updateFocus = (cards, instant) => { setCardFocus((cards || cardEls)[focusedCardIndex] || null, instant); };
-
-const moveFocus = (delta, instant) => {
-if(delta < 0 && focusedCardIndex <= 0) {
-clearCardFocus();
-focusedCardIndex = -1;
-els.in.focus({ preventScroll: true }); els.in.select();
-return;
-}
-if(focusedCardIndex + delta >= renderedCount - 5 && renderedCount < currentResults.length) appendNextChunk();
-if(!cardEls.length) return;
-focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cardEls.length - 1);
-setCardFocus(cardEls[focusedCardIndex], instant);
-};
-
 const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), panel: document.getElementById('cmdkPanel'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList'), pane: document.getElementById('cmdkPane') };
 let cmdkActiveIndex = -1;
 let cmdkItems = [];
@@ -2258,13 +2164,6 @@ return;
 runShortcutForActiveItem(e);
 });
 
-window.cardKeydown = (e, id) => {
-if (e.target !== e.currentTarget) return;
-if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetails(id); return; }
-if(e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1, e.repeat); }
-else if(e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1, e.repeat); }
-};
-
 document.addEventListener('keydown', e => {
 if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') {
 e.preventDefault();
@@ -2285,22 +2184,13 @@ if(document.activeElement === els.in) { els.in.blur(); return; }
 return;
 }
 if(activeView === 'search' && document.activeElement === els.in) {
-if(!cardEls.length) return;
-if(e.key === 'ArrowDown') { e.preventDefault(); focusedCardIndex = 0; moveFocus(0, e.repeat); }
-else if(e.key === 'ArrowUp') { e.preventDefault(); focusedCardIndex = cardEls.length - 1; moveFocus(0, e.repeat); }
-else if(e.key === 'Enter') {
-e.preventDefault();
-if(focusedCardIndex >= 0 && cardEls[focusedCardIndex]) { cardEls[focusedCardIndex].click(); }
-else { focusCardFieldByIndex(0, 'qty', e.repeat); }
-}
-}
-if(activeView === 'search' && e.key === 'End' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
-e.preventDefault(); loadAllRemaining();
-focusedCardIndex = cardEls.length - 1; updateFocus(null, true);
-}
-if(activeView === 'search' && e.key === 'Home' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
-e.preventDefault();
-focusedCardIndex = 0; updateFocus(null, true);
+if(e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); }
+else if(e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); }
+else if(e.key === 'PageDown') { e.preventDefault(); moveSelection(10); }
+else if(e.key === 'PageUp') { e.preventDefault(); moveSelection(-10); }
+else if(e.key === 'Home') { e.preventDefault(); selectFirst(); }
+else if(e.key === 'End') { e.preventDefault(); selectLast(); }
+else if(e.key === 'Enter' && selectionIndex >= 0 && currentResults[selectionIndex]) { e.preventDefault(); openDetails(currentResults[selectionIndex].id); }
 }
 });
 
@@ -2442,6 +2332,48 @@ assert('commit: edit(pack) sets packs directly and recomputes cost', editedPack.
 const clampedEdit = commit({ kind: 'edit', id: normalItem.id, val: 5000000, mode: 'req' });
 assert('commit: edit clamps an over-max value and reports it', clampedEdit.ok && clampedEdit.clamped === true && clampedEdit.req === MAX_QTY);
 dashboardMap = dashSnapshot;
+})();
+
+(() => {
+const savedVal = els.in.value;
+
+els.in.value = 'concor';
+renderSearch();
+const domCount = els.res.querySelectorAll('.card').length;
+assert('reconciler: every match renders, no chunk cap', domCount === currentResults.length && domCount > 1);
+
+const firstId = currentResults[0].id;
+const firstNode = document.getElementById(`card-${firstId}`);
+els.in.value = 'concor 5';
+renderSearch();
+const stillThere = currentResults.some(r => r.id === firstId);
+assert('reconciler: a row still in the result set keeps its DOM node', !stillThere || document.getElementById(`card-${firstId}`) === firstNode);
+
+els.in.value = 'concor';
+renderSearch();
+assert('selection: renderSearch resets selection to none', selectionIndex === -1 && !els.in.hasAttribute('aria-activedescendant'));
+
+els.in.focus();
+const activeBefore = document.activeElement;
+moveSelection(1);
+assert('selection: moving down from none selects the first row', selectionIndex === 0);
+assert('focus: moving selection never changes document.activeElement', document.activeElement === activeBefore);
+moveSelection(-1);
+assert('selection: moving up from the first row wraps to the last', selectionIndex === currentResults.length - 1);
+moveSelection(1);
+assert('selection: moving down from the last row wraps to the first', selectionIndex === 0);
+const selRow = document.getElementById(`card-${currentResults[0].id}`);
+assert('selection: aria-activedescendant tracks the selected row', els.in.getAttribute('aria-activedescendant') === selRow.id);
+assert('selection: selected row is aria-selected and gets the visual class', selRow.getAttribute('aria-selected') === 'true' && selRow.classList.contains('focused'));
+selectLast();
+assert('selection: End-equivalent selects the last row', selectionIndex === currentResults.length - 1);
+selectFirst();
+assert('selection: Home-equivalent selects the first row', selectionIndex === 0);
+assert('a11y: results list is a listbox of options', els.res.getAttribute('role') === 'listbox' && selRow.getAttribute('role') === 'option');
+assert('a11y: omnibar exposes role=combobox', els.in.getAttribute('role') === 'combobox');
+
+els.in.value = savedVal;
+renderSearch();
 })();
 
 const passCount = results.filter(r => r.pass).length;
