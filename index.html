@@ -734,6 +734,37 @@ const ARABIC_INDIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
 const normalizeDigits = (s) => s.replace(/[٠-٩]/g, d => String(ARABIC_INDIC_DIGITS.indexOf(d)));
 const normalizeSearchText = (s) => normalizeDigits(String(s)).toLowerCase().replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ').trim();
 
+const MAX_QTY = 999999;
+const QTY_RE = /(?<=[\s\d])[x*×]\s*(\d+(?:[.,]\d+)?)\s*([up])?\s*$/i;
+const PRICE_RE = /\s*@\s*(\d+(?:[.,]\d+)?)\s*/i;
+
+const parseCommand = (raw) => {
+let s = normalizeDigits(String(raw == null ? '' : raw));
+const intent = { query: '', qty: null, unit: null, price: null, qtyInvalid: false };
+
+const priceMatch = s.match(PRICE_RE);
+if (priceMatch) {
+intent.price = parseFloat(priceMatch[1].replace(',', '.'));
+s = s.slice(0, priceMatch.index) + ' ' + s.slice(priceMatch.index + priceMatch[0].length);
+}
+
+const qtyMatch = s.match(QTY_RE);
+if (qtyMatch) {
+const n = parseFloat(qtyMatch[1].replace(',', '.'));
+s = s.slice(0, qtyMatch.index);
+if (n > 0) {
+intent.qty = Math.min(n, MAX_QTY);
+const letter = qtyMatch[2] ? qtyMatch[2].toLowerCase() : null;
+intent.unit = letter === 'u' ? 'unit' : letter === 'p' ? 'pack' : 'default';
+} else {
+intent.qtyInvalid = true;
+}
+}
+
+intent.query = s.replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ').trim();
+return intent;
+};
+
 const genericAliases = {
 bisoprolol: 'concor', dapagliflozin: 'forxiga', atorvastatin: 'lipitor', rosuvastatin: 'crestor',
 amlodipine: 'norvasc', losartan: 'cozaar', metformin: 'glucophage', sitagliptin: 'januvia',
@@ -2248,6 +2279,10 @@ const p2 = packInfo(300, 300);
 assert('pack math: exact multiple has no spare', p2.packs === 1 && p2.spare === 0);
 const p3 = packInfo(0, 300);
 assert('pack math: zero request needs zero packs', p3.packs === 0 && p3.spare === 0);
+const p4 = packInfo(45, 30);
+assert('pack math: 45/30 rounds up to 2 packs with 15 spare', p4.packs === 2 && p4.spare === 15);
+const p5 = packInfo(5, undefined);
+assert('pack math: missing bQty falls back to 1 (no spare)', p5.packs === 5 && p5.spare === 0);
 
 assert('piastres: 11.5 EGP -> 1150', toPiastres(11.5) === 1150);
 assert('piastres: rounds fractional cents', toPiastres(2.505) === 251 || toPiastres(2.505) === 250);
@@ -2255,11 +2290,59 @@ assert('piastres: format back to 2dp string', formatPiastres(1150) === '11.50');
 let sumP = 0; [1150, 2700, 375].forEach(v => sumP += v);
 assert('piastres: integer sums have no float drift', formatPiastres(sumP) === '42.25');
 
+(() => {
+const dashSnapshot = dashboardMap, orderSnapshot = currentOrderIndex;
+dashboardMap = new Map();
+currentOrderIndex = -1;
+const normalItem = db.find(d => d.n === 'Concor 5' && !d.t);
+const dynamicItem = db.find(d => d.isDynamic);
+const r1 = commitToCalc(normalItem.id, 45, 0, false);
+assert('commitToCalc: packs/spare come from packInfo (45/30)', r1.packs === 2 && r1.spare === 15);
+assert('commitToCalc: non-dynamic cost is packs * pack price', r1.cost === +(r1.packs * normalItem.p).toFixed(2));
+const r2 = commitToCalc(normalItem.id, 5, 0, true);
+assert('commitToCalc: additive=true sums req onto the existing entry', dashboardMap.get(normalItem.id).req === 50);
+const r3 = commitToCalc(dynamicItem.id, 2, 100, true);
+assert('commitToCalc: dp item cost is 50% of supply price x packs', r3.cost === 100);
+assert('commitToCalc: dashboardMap holds exactly the two committed ids', dashboardMap.size === 2);
+dashboardMap = dashSnapshot;
+currentOrderIndex = orderSnapshot;
+})();
+
 const qtyRe = /^(.+?)\s+[x*×]\s*(\d+(?:\.\d+)?)$/i;
 assert('qty parse: "novomix 30" does not mis-fire', !qtyRe.test('novomix 30'));
 assert('qty parse: "concor 5 x 3" parses to qty 3', (() => { const m = 'concor 5 x 3'.match(qtyRe); return m && m[2] === '3'; })());
 assert('qty parse: "amaryl * 2" (asterisk) parses', (() => { const m = 'amaryl * 2'.match(qtyRe); return m && m[2] === '2'; })());
 assert('qty parse: "amaryl x2" (no space before qty) parses', (() => { const m = 'amaryl x2'.match(qtyRe); return m && m[2] === '2'; })());
+
+const parseCommandTable = [
+['concor 5', 'concor 5', null, null, null],
+['concor 5 x30', 'concor 5', 30, 'default', null],
+['concor 5x30', 'concor 5', 30, 'default', null],
+['concor 5 x 30', 'concor 5', 30, 'default', null],
+['amaryl * 2', 'amaryl', 2, 'default', null],
+['amaryl ×2', 'amaryl', 2, 'default', null],
+['concor 5 x2p', 'concor 5', 2, 'pack', null],
+['concor 5 x30u', 'concor 5', 30, 'unit', null],
+['atozet 10 / 20', 'atozet 10/20', null, null, null],
+['atozet 10 / 20 x3', 'atozet 10/20', 3, 'default', null],
+['exforge hct 160 / 5 /12.5 x2', 'exforge hct 160/5/12.5', 2, 'default', null],
+['anoro @450 x2', 'anoro', 2, 'default', 450],
+['anoro x2 @450', 'anoro', 2, 'default', 450],
+['novomix 30', 'novomix 30', null, null, null],
+['تريسيبا', 'تريسيبا', null, null, null],
+['concor ٥ x٣٠', 'concor 5', 30, 'default', null],
+['concor 5 x', 'concor 5 x', null, null, null],
+['concor 5 x0', 'concor 5', 'reject', null, null],
+['concor 5 x-3', 'concor 5 x-3', null, null, null],
+['x30', 'x30', null, null, null],
+['concor 5 x1000000', 'concor 5', 999999, 'default', null],
+['', '', null, null, null]
+];
+parseCommandTable.forEach(([input, eQuery, eQty, eUnit, ePrice]) => {
+const r = parseCommand(input);
+const qtyOk = eQty === 'reject' ? (r.qtyInvalid === true && r.qty === null) : (r.qty === eQty);
+assert(`parseCommand: ${JSON.stringify(input)}`, r.query === eQuery && qtyOk && r.unit === eUnit && r.price === ePrice);
+});
 
 assert('search normalize: tight slash matches spaced slash', normalizeSearchText('160/10') === normalizeSearchText('160 / 10'));
 assert('search normalize: Arabic-Indic digits map to ASCII', normalizeDigits('٣٠') === '30');
@@ -2271,6 +2354,9 @@ assert(`stable ids: all ${db.length} db entries have unique ids`, idSet.size ===
 const migrated = migrateEntries([['old-random-id', { req: 5, packs: 1, cost: 10, supplyPrice: 0, item: { n: db[0].n, u: db[0].u, s: db[0].s, t: db[0].t } }]]);
 assert('storage migration: old id remaps to current db id', migrated.length === 1 && migrated[0][0] === db[0].id);
 assert('storage migration: drops entries with no matching item', migrateEntries([['x', { item: { n: 'nonexistent-item-xyz', u: '?', s: '?', t: '' } }]]).length === 0);
+assert('storage migration: non-array input returns an empty array', Array.isArray(migrateEntries(null)) && migrateEntries(null).length === 0);
+assert('storage migration: malformed entries are dropped without throwing', migrateEntries([['bad'], ['x', {}], ['y', { item: null }]]).length === 0);
+assert('storage migration: kept entries carry the resolved db item', migrateEntries([['old-random-id', { req: 5, packs: 1, cost: 10, supplyPrice: 0, item: { n: db[0].n, u: db[0].u, s: db[0].s, t: db[0].t } }]])[0][1].item.id === db[0].id);
 
 const passCount = results.filter(r => r.pass).length;
 console.group(`%cLX self-test: ${passCount}/${results.length} passed`, `color:${passCount === results.length ? '#3ddc84' : '#ff5c5c'}; font-weight:bold;`);
