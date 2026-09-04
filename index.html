@@ -157,6 +157,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .omni-input-area { flex: 1; display: flex; align-items: center; gap: 8px; padding-right: 8px; height: var(--row-h); min-width: 0; }
 .omni-input-area .material-symbols-rounded#omniIcon { flex-shrink: 0; }
 .omni-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.1rem; min-width: 0; }
+.omni-price-input { flex: 0 0 120px; background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 8px; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 0.95rem; padding: 4px 10px; }
+.omni-price-input:focus { border-color: var(--sys-primary); }
 .omni-input::placeholder { color: var(--sys-on-surface-variant); }
 .omni-side-btn { color: var(--sys-on-surface-variant); cursor: pointer; width: 30px; height: 30px; border-radius: var(--radius-full); border: none; background: transparent; display: grid; place-items: center; transition: all 0.2s var(--spring); flex-shrink: 0; }
 .omni-side-btn:hover { color: var(--sys-primary); background: var(--sys-surface-highest); }
@@ -187,6 +189,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .chip-clear { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px dashed var(--sys-outline); color: var(--sys-on-surface-variant); transition: all 0.2s var(--spring); border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
 .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
 .results-meta { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-1) 0; flex-shrink: 0; }
+.hint-row { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-2) var(--space-5) 0; min-height: 1.4em; }
+.hint-row.hint-error { color: var(--sys-warning); }
 .results-list { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-5); }
 .card { background: var(--sys-surface); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: transform 0.2s var(--spring), border-color 0.2s, background-color 0.2s; cursor: pointer; box-shadow: var(--shadow-card); transform: translateZ(0); }
 .card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px) translateZ(0); background: var(--sys-surface-high); }
@@ -329,7 +333,6 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 .dash-controls { grid-template-columns: 1fr; gap: var(--space-3); }
 .glass-input { text-align: left; }
 .dash-actions { position: relative; box-shadow: none; border-top: none; padding-bottom: 24px; }
-.hint-row { display: none; }
 }
 html.fonts-loading body > *:not(#lxPreloader) { visibility: hidden; }
 #lxPreloader { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: var(--sys-bg); transition: opacity 0.6s var(--spring); }
@@ -423,6 +426,7 @@ LX Search
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
 <input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines" role="combobox" aria-expanded="true" aria-haspopup="listbox" aria-autocomplete="list" aria-controls="resultsList">
+<input type="number" inputmode="decimal" id="omniPriceInput" class="omni-price-input" placeholder="Supply price" aria-label="Supply price" min="0" style="display:none;">
 <button class="omni-side-btn" id="omniClear" data-action="clear-input" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
@@ -431,6 +435,7 @@ LX Search
 </button>
 </div>
 </div>
+<div class="hint-row" id="omniHint" aria-live="polite"></div>
 <div class="view-section active" id="viewSearch">
 <div class="filters">
 <div class="filter-wrapper">
@@ -834,7 +839,8 @@ dashActions: document.getElementById('dashActions'), badge: document.getElementB
 modal: document.getElementById('modalOverlay'), toasts: document.getElementById('toasts'),
 ordersBar: document.getElementById('ordersBar'), dashStatus: document.getElementById('dashStatus'),
 dashTitleText: document.getElementById('dashTitleText'), fileUp: document.getElementById('fileUpload'),
-engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta')
+engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta'),
+hint: document.getElementById('omniHint'), omniPrice: document.getElementById('omniPriceInput')
 };
 
 [...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
@@ -1169,6 +1175,36 @@ const updateResultsMeta = () => {
 els.meta.textContent = currentResults.length ? `${currentResults.length} result${currentResults.length === 1 ? '' : 's'}` : '';
 };
 
+let omniState = 'IDLE';
+let armed = false;
+
+const getEffectiveTarget = (intent) => {
+if (selectionIndex >= 0 && currentResults[selectionIndex]) return { item: currentResults[selectionIndex] };
+return resolveTarget(intent);
+};
+
+const computeOmniState = (intent, target) => {
+if (!intent.query) return 'IDLE';
+if (intent.qty != null && target) {
+if (target.item.isDynamic && intent.price == null) return 'ARMED_NEEDS_PRICE';
+return 'ARMED_WITH_QTY';
+}
+if (armed && target) return 'ARMED_PENDING_QTY';
+return 'SEARCHING';
+};
+
+const updateOmniHint = () => {
+const intent = parseCommand(els.in.value);
+const target = getEffectiveTarget(intent);
+omniState = computeOmniState(intent, target);
+const pv = preview(intent, target);
+if (els.hint) {
+els.hint.textContent = pv.text;
+els.hint.classList.toggle('hint-error', !pv.ok);
+}
+if (els.omniPrice && omniState !== 'ARMED_NEEDS_PRICE') els.omniPrice.style.display = 'none';
+};
+
 const applySelection = () => {
 currentResults.forEach((item, idx) => {
 const row = document.getElementById(`card-${item.id}`);
@@ -1186,6 +1222,7 @@ row.scrollIntoView({ block: 'nearest', behavior: 'auto' });
 } else {
 els.in.removeAttribute('aria-activedescendant');
 }
+updateOmniHint();
 };
 
 const moveSelection = (delta) => {
@@ -1241,6 +1278,29 @@ updateResultsMeta();
 
 selectionIndex = -1;
 applySelection();
+};
+
+const performCommit = (intent, target, opts = {}) => {
+if (!target) return false;
+const item = target.item;
+const req = intent.qty != null ? intent.qty : (opts.useDefaultQty ? (defaultQuickQty || 1) : null);
+if (req == null || req <= 0) return false;
+const sp = opts.priceOverride != null ? opts.priceOverride : (intent.price != null ? intent.price : 0);
+const r = commit({ kind: 'add', id: item.id, req, sp, additive: true });
+if (!r.ok) return false;
+
+const spareMsg = r.spare > 0 ? ` (${r.spare} ${item.bType} spare)` : '';
+showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+refreshCardInPlace(item.id);
+
+armed = false;
+if (els.omniPrice) { els.omniPrice.style.display = 'none'; els.omniPrice.value = ''; }
+els.in.value = opts.keepQuery || '';
+renderSearch();
+els.in.focus({ preventScroll: true });
+if (opts.keepQuery) els.in.select();
+if (opts.jumpToCalc) switchView('calc');
+return true;
 };
 
 window.copyItemInfo = (id) => {
@@ -1817,6 +1877,7 @@ dashboardMap = new Map(migrateEntries(validItems)); currentOrderIndex = -1; save
 
 els.in.addEventListener('input', () => {
 if(activeView === 'calc') switchView('search');
+armed = false;
 renderSearch();
 });
 
@@ -2180,7 +2241,16 @@ e.preventDefault(); switchView('search'); els.in.focus({ preventScroll: true });
 if(e.key === 'Escape') {
 if(quickLinksOpenId) { closeQuickLinks(); return; }
 if(els.modal.classList.contains('active')) { closeModal(); return; }
-if(document.activeElement === els.in) { els.in.blur(); return; }
+if(document.activeElement === els.in) {
+if (omniState === 'IDLE') { els.in.blur(); return; }
+if (omniState === 'SEARCHING') { els.in.value = ''; armed = false; renderSearch(); return; }
+const intent = parseCommand(els.in.value);
+els.in.value = intent.query;
+armed = false;
+renderSearch();
+els.in.setSelectionRange(els.in.value.length, els.in.value.length);
+return;
+}
 return;
 }
 if(activeView === 'search' && document.activeElement === els.in) {
@@ -2190,9 +2260,69 @@ else if(e.key === 'PageDown') { e.preventDefault(); moveSelection(10); }
 else if(e.key === 'PageUp') { e.preventDefault(); moveSelection(-10); }
 else if(e.key === 'Home') { e.preventDefault(); selectFirst(); }
 else if(e.key === 'End') { e.preventDefault(); selectLast(); }
-else if(e.key === 'Enter' && selectionIndex >= 0 && currentResults[selectionIndex]) { e.preventDefault(); openDetails(currentResults[selectionIndex].id); }
+else if(e.key === 'Tab' && els.in.value.length > 0) {
+const intent = parseCommand(els.in.value);
+const target = getEffectiveTarget(intent);
+if (omniState === 'ARMED_NEEDS_PRICE' && els.omniPrice) {
+e.preventDefault();
+els.omniPrice.style.display = '';
+els.omniPrice.focus({ preventScroll: true });
+} else if (omniState === 'SEARCHING' && target) {
+e.preventDefault();
+els.in.value = target.item.n;
+armed = true;
+renderSearch();
+els.in.setSelectionRange(els.in.value.length, els.in.value.length);
+}
+}
+else if(e.key === 'Enter') {
+e.preventDefault();
+const intent = parseCommand(els.in.value);
+const target = getEffectiveTarget(intent);
+if (omniState === 'SEARCHING') {
+if (target) {
+els.in.value = target.item.n;
+armed = true;
+renderSearch();
+els.in.setSelectionRange(els.in.value.length, els.in.value.length);
+}
+} else if (omniState === 'ARMED_PENDING_QTY' || omniState === 'ARMED_WITH_QTY') {
+performCommit(intent, target, {
+useDefaultQty: omniState === 'ARMED_PENDING_QTY',
+keepQuery: e.shiftKey ? els.in.value : null,
+jumpToCalc: e.ctrlKey || e.metaKey
+});
+} else if (omniState === 'ARMED_NEEDS_PRICE' && els.omniPrice) {
+els.omniPrice.style.display = '';
+els.omniPrice.focus({ preventScroll: true });
+}
+}
 }
 });
+
+if (els.omniPrice) {
+els.omniPrice.addEventListener('keydown', e => {
+if (e.key === 'Enter') {
+e.preventDefault();
+const intent = parseCommand(els.in.value);
+const target = getEffectiveTarget(intent);
+const price = parseFloat(els.omniPrice.value);
+if (isNaN(price) || price < 0) return;
+performCommit(intent, target, {
+priceOverride: price,
+keepQuery: e.shiftKey ? els.in.value : null,
+jumpToCalc: e.ctrlKey || e.metaKey
+});
+} else if (e.key === 'Escape') {
+e.preventDefault();
+els.omniPrice.style.display = 'none';
+els.omniPrice.value = '';
+armed = false;
+els.in.focus({ preventScroll: true });
+updateOmniHint();
+}
+});
+}
 
 if (!isMacPlatform) {
 const modSymbolEl = document.getElementById('cmdkModSymbol');
@@ -2373,6 +2503,103 @@ assert('a11y: results list is a listbox of options', els.res.getAttribute('role'
 assert('a11y: omnibar exposes role=combobox', els.in.getAttribute('role') === 'combobox');
 
 els.in.value = savedVal;
+renderSearch();
+})();
+
+(() => {
+const dashSnapshot = dashboardMap;
+dashboardMap = new Map();
+const savedVal = els.in.value;
+const savedArmed = armed;
+const savedView = activeView;
+document.documentElement.classList.remove('fonts-loading');
+document.querySelector('.omnibar').style.setProperty('visibility', 'visible', 'important');
+document.querySelector('.omni-input-area').style.setProperty('visibility', 'visible', 'important');
+els.in.style.setProperty('visibility', 'visible', 'important');
+void document.body.offsetHeight;
+
+const pressKey = (target, key, opts = {}) => {
+if (target === els.in) els.in.focus();
+const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, shiftKey: !!opts.shiftKey, ctrlKey: !!opts.ctrlKey, metaKey: !!opts.metaKey });
+target.dispatchEvent(ev);
+return ev;
+};
+
+els.in.focus();
+els.in.value = ''; armed = false; renderSearch();
+assert('state: empty input is IDLE', omniState === 'IDLE');
+
+els.in.value = 'concor'; armed = false; renderSearch();
+assert('state: text with no qty parsed is SEARCHING', omniState === 'SEARCHING');
+
+els.in.value = 'concor 5 x30'; armed = false; renderSearch();
+assert('state: qty parsed against a real match is ARMED_WITH_QTY', omniState === 'ARMED_WITH_QTY');
+
+const anoroItem = db.find(d => d.isDynamic);
+els.in.value = `${anoroItem.n} x2`; armed = false; renderSearch();
+assert('state: qty on a dp item with no price is ARMED_NEEDS_PRICE', omniState === 'ARMED_NEEDS_PRICE');
+els.in.value = `${anoroItem.n} @450 x2`; armed = false; renderSearch();
+assert('state: @price in the grammar skips ARMED_NEEDS_PRICE entirely', omniState === 'ARMED_WITH_QTY');
+
+els.in.value = 'concor 5'; armed = true; renderSearch();
+assert('state: armed with a resolved match and no qty is ARMED_PENDING_QTY', omniState === 'ARMED_PENDING_QTY');
+
+els.in.value = ''; armed = false; renderSearch();
+const emptyTabEvent = pressKey(els.in, 'Tab');
+assert('tab: not intercepted when the omnibar is empty', !emptyTabEvent.defaultPrevented);
+
+els.in.value = 'concor'; armed = false; renderSearch();
+const tabTarget = getEffectiveTarget(parseCommand(els.in.value));
+pressKey(els.in, 'Tab');
+assert('tab: completes the omnibar to the matched item\'s exact name and arms it', els.in.value === tabTarget.item.n && omniState === 'ARMED_PENDING_QTY');
+
+els.in.value = 'concor 5 x30'; armed = false; renderSearch();
+pressKey(els.in, 'Escape');
+assert('escape: from an armed state, strips the qty suffix back to SEARCHING', els.in.value === 'concor 5' && omniState === 'SEARCHING');
+pressKey(els.in, 'Escape');
+assert('escape: from SEARCHING, clears the input to IDLE', els.in.value === '' && omniState === 'IDLE');
+
+els.in.value = `${anoroItem.n} x2`; armed = false; renderSearch();
+pressKey(els.in, 'Enter');
+assert('armed-needs-price: Enter reveals and focuses the inline price field', els.omniPrice.style.display !== 'none' && document.activeElement === els.omniPrice);
+els.omniPrice.value = '450';
+const sizeBeforePriceCommit = dashboardMap.size;
+pressKey(els.omniPrice, 'Enter');
+assert('armed-needs-price: Enter in the price field commits and closes the loop', dashboardMap.size === sizeBeforePriceCommit + 1 && omniState === 'IDLE' && document.activeElement === els.in);
+
+els.in.value = 'concor 5 x5'; armed = false; renderSearch();
+const sizeBeforeShift = dashboardMap.size;
+const shiftTargetId = getEffectiveTarget(parseCommand(els.in.value)).item.id;
+pressKey(els.in, 'Enter', { shiftKey: true });
+assert('shift+enter: commits but keeps the query for a repeat add', dashboardMap.size === sizeBeforeShift + 1 && els.in.value === 'concor 5 x5' && omniState === 'ARMED_WITH_QTY');
+const reqBeforeRepeat = dashboardMap.get(shiftTargetId).req;
+pressKey(els.in, 'Enter');
+assert('shift+enter: a follow-up Enter repeats the commit', dashboardMap.get(shiftTargetId).req === reqBeforeRepeat + 5);
+
+els.in.value = 'concor 5 x5'; armed = false; renderSearch();
+pressKey(els.in, 'Enter', { ctrlKey: true });
+assert('ctrl+enter: commits and jumps to the Calculator view', activeView === 'calc');
+switchView('search');
+
+els.in.value = 'concor 5 x30'; armed = false; renderSearch();
+assert('loop: "concor 5 x30" resolves to a real match, armed with qty', omniState === 'ARMED_WITH_QTY');
+const loopTarget1Id = getEffectiveTarget(parseCommand(els.in.value)).item.id;
+const reqBeforeLoop1 = dashboardMap.has(loopTarget1Id) ? dashboardMap.get(loopTarget1Id).req : 0;
+pressKey(els.in, 'Enter');
+assert('loop: first commit lands, state returns to IDLE', dashboardMap.has(loopTarget1Id) && dashboardMap.get(loopTarget1Id).req === reqBeforeLoop1 + 30 && omniState === 'IDLE');
+assert('loop: focus never left the omnibar after the first commit', document.activeElement === els.in);
+els.in.value = 'amaryl 2 x10'; armed = false; renderSearch();
+assert('loop: "amaryl 2 x10" resolves and arms with qty, no mouse needed', omniState === 'ARMED_WITH_QTY');
+const loopTarget2Id = getEffectiveTarget(parseCommand(els.in.value)).item.id;
+const reqBeforeLoop2 = dashboardMap.has(loopTarget2Id) ? dashboardMap.get(loopTarget2Id).req : 0;
+pressKey(els.in, 'Enter');
+assert('loop: second commit also lands, state returns to IDLE', dashboardMap.has(loopTarget2Id) && dashboardMap.get(loopTarget2Id).req === reqBeforeLoop2 + 10 && omniState === 'IDLE');
+assert('loop: focus never left the omnibar after the second commit either', document.activeElement === els.in);
+
+dashboardMap = dashSnapshot;
+els.in.value = savedVal;
+armed = savedArmed;
+if (activeView !== savedView) switchView(savedView);
 renderSearch();
 })();
 
