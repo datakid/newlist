@@ -15,7 +15,7 @@ document.documentElement.setAttribute('data-theme-mode', mode);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>LX Search 4.1</title>
+<title>LX Search 4.3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -189,7 +189,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .chip-clear { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px dashed var(--sys-outline); color: var(--sys-on-surface-variant); transition: all 0.2s var(--spring); border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
 .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
 .results-meta { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-1) 0; flex-shrink: 0; }
-.hint-row { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-2) var(--space-5) 0; min-height: 1.4em; }
+.hint-row { width: 100%; text-align: left; font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-2) var(--space-5) 0; min-height: 1.4em; }
 .hint-row.hint-error { color: var(--sys-warning); }
 .results-list { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-5); }
 .card { background: var(--sys-surface); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: transform 0.2s var(--spring), border-color 0.2s, background-color 0.2s; cursor: pointer; box-shadow: var(--shadow-card); transform: translateZ(0); }
@@ -381,7 +381,7 @@ main, .view-section { overflow: visible !important; height: auto !important; pad
 <span class="material-symbols-rounded">stream</span>
 <div>
 LX Search
-<div class="brand-sub">v4.1</div>
+<div class="brand-sub">v4.3</div>
 </div>
 </div>
 <div class="dock">
@@ -1200,7 +1200,7 @@ omniState = computeOmniState(intent, target);
 const pv = preview(intent, target);
 if (els.hint) {
 els.hint.textContent = pv.text;
-els.hint.classList.toggle('hint-error', !pv.ok);
+els.hint.classList.toggle('hint-error', !pv.ok && omniState !== 'IDLE');
 }
 if (els.omniPrice && omniState !== 'ARMED_NEEDS_PRICE') els.omniPrice.style.display = 'none';
 };
@@ -1358,7 +1358,7 @@ return best ? { item: best, score: bestScore } : null;
 };
 
 const preview = (intent, target) => {
-if (!intent.query) return { text: 'Type a medicine name · x30 sets quantity · ⌘K for commands', ok: false };
+if (!intent.query) return { text: 'x30 sets quantity', ok: false };
 if (intent.qtyInvalid) return { text: 'Quantity must be greater than 0', ok: false };
 if (!target) return { text: `No match for "${intent.query}"`, ok: false };
 const item = target.item;
@@ -2428,7 +2428,16 @@ assert('resolveTarget: no match returns null', resolveTarget(parseCommand('zzzno
 assert('resolveTarget: empty query returns null', resolveTarget(parseCommand('')) === null);
 
 const pvIdle = preview(parseCommand(''), null);
-assert('preview: idle hint shown for empty query', pvIdle.text.includes('Type a medicine name'));
+assert('preview: idle hint shown for empty query', pvIdle.text.includes('x30 sets quantity'));
+
+(() => {
+const savedVal2 = els.in.value;
+els.in.value = ''; armed = false;
+renderSearch();
+assert('hint styling: IDLE never gets the warning/error color', omniState === 'IDLE' && !els.hint.classList.contains('hint-error'));
+els.in.value = savedVal2;
+renderSearch();
+})();
 const pvNoMatch = preview(parseCommand('zzznonexistentdrugxyz'), null);
 assert('preview: no-match hint names the query', pvNoMatch.text.includes('No match for'));
 const concorItem = db.find(d => d.n === 'Concor 5' && !d.t);
