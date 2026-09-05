@@ -15,7 +15,7 @@ document.documentElement.setAttribute('data-theme-mode', mode);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>LX Search 4.3</title>
+<title>LX Search 4.4</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -123,7 +123,7 @@ body { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
 :focus { outline: none; }
 :focus-visible { box-shadow: var(--focus-ring); }
 input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: none; }
-.card:focus-visible, .order-chip-main:focus-visible, .chip-del:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .pill-toggle:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
+.card:focus-visible, .order-chip-main:focus-visible, .chip-del:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
 .omni-input:focus-visible { box-shadow: none; }
 .action-pill:focus-within { border-color: var(--sys-primary); box-shadow: 0 0 0 3px var(--sys-primary-container); }
 .glass-input:focus-visible { box-shadow: none; }
@@ -215,8 +215,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .pill-input.sp-input { color: var(--sys-secondary); width: 88px; }
 .pill-suffix { color: var(--sys-on-surface-variant); font-size: 0.75rem; font-weight: 500; flex-shrink: 0; }
 .pill-sep { width: 1px; align-self: stretch; margin: 12px 0; background: var(--sys-outline); flex-shrink: 0; }
-.pill-toggle { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-bg); font-family: inherit; font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
-.pill-toggle:hover { background: var(--sys-surface-high); border-color: var(--sys-primary); color: var(--sys-primary); }
+.pill-unit-label { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-surface-variant); font-family: inherit; font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: var(--radius-md); display: flex; align-items: center; flex-shrink: 0; white-space: nowrap; }
 .pill-add { background: var(--sys-surface-highest); color: var(--sys-on-bg); border: none; width: 42px; height: 42px; flex-shrink: 0; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; }
 .pill-add:hover { background: var(--sys-primary); color: var(--sys-on-primary); transform: scale(1.05); }
 .tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; flex-shrink: 0; }
@@ -309,6 +308,7 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 }
 .cmdk-group-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-3) var(--space-1); }
 .cmdk-item { display: flex; align-items: center; gap: var(--space-3); padding: 11px var(--space-3); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.12s; }
+.cmdk-item:hover { background: var(--sys-surface-high); }
 .cmdk-item .material-symbols-rounded { color: var(--sys-on-surface-variant); font-size: 20px; flex-shrink: 0; }
 .cmdk-item-title { font-size: 0.98rem; color: var(--sys-on-bg); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmdk-item-sub { font-size: 0.8rem; color: var(--sys-on-surface-variant); flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -381,7 +381,7 @@ main, .view-section { overflow: visible !important; height: auto !important; pad
 <span class="material-symbols-rounded">stream</span>
 <div>
 LX Search
-<div class="brand-sub">v4.3</div>
+<div class="brand-sub">v4.4</div>
 </div>
 </div>
 <div class="dock">
@@ -487,7 +487,7 @@ LX Search
 </div>
 </main>
 <div class="modal-overlay" id="modalOverlay">
-<div class="bottom-sheet" id="bottomSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+<div class="bottom-sheet" id="bottomSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
 <div class="handle"></div>
 <div>
 <h2 id="sheetTitle" dir="auto" style="font-size: 2rem; margin-bottom: 8px;"></h2>
@@ -495,7 +495,6 @@ LX Search
 <div id="sheetPriceData" style="margin-top: 20px; margin-bottom: 12px;"></div>
 <div class="engine-links" id="sheetLinks"></div>
 </div>
-<div id="sheetAddCalc"></div>
 </div>
 </div>
 <div class="cmdk-overlay" id="cmdkOverlay">
@@ -975,11 +974,8 @@ case 'undo-delete': undoDelete(); break;
 case 'open-details': openDetails(id); break;
 case 'toggle-quick-links': toggleQuickLinks(e, id, target); break;
 case 'copy-item-info': copyItemInfo(id); break;
-case 'toggle-quick-mode': toggleQuickMode(e, id, target.getAttribute('data-btype')); break;
 case 'inline-add': inlineAdd(id, target); break;
 case 'close-quick-links': closeQuickLinks(); break;
-case 'set-modal-add-mode': setModalAddMode(target.getAttribute('data-mode'), id); break;
-case 'modal-add': modalAdd(id); break;
 case 'load-order': loadOrder(parseInt(target.getAttribute('data-idx'), 10)); break;
 case 'delete-order': deleteOrder(e, parseInt(target.getAttribute('data-idx'), 10)); break;
 case 'remove-dashboard-item': removeDashboardItem(id); break;
@@ -993,6 +989,20 @@ break;
 case 'toggle-filter-menu': toggleFilterMenu(id, target); break;
 case 'set-filter': setFilter(target.getAttribute('data-filter-id'), target.getAttribute('data-value')); break;
 }
+});
+
+document.addEventListener('input', (e) => {
+const target = e.target;
+if (!target || !target.classList) return;
+if (target.classList.contains('pill-input')) { checkMax(target); return; }
+if (target.classList.contains('dash-edit-input')) { updateDashItem(target.getAttribute('data-id'), target.value, target.getAttribute('data-field')); return; }
+});
+
+document.addEventListener('keydown', (e) => {
+const target = e.target;
+if (!target || !target.classList) return;
+if (target.classList.contains('pill-input')) { quickInputKeydown(e, target.getAttribute('data-id'), target.getAttribute('data-field')); return; }
+if (target.classList.contains('pane-nav-item')) { paneKeydown(e, parseInt(target.getAttribute('data-nav-idx'), 10)); return; }
 });
 
 document.addEventListener('wheel', (e) => {
@@ -1114,14 +1124,12 @@ data-action="open-details" data-id="${escapeHTML(i.id)}">
 <button class="copy-btn" data-action="copy-item-info" data-id="${escapeHTML(i.id)}" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
 <div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
  ${i.isDynamic ? `
-<input type="number" inputmode="decimal" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'sp')">
+<input type="number" inputmode="decimal" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" data-id="${escapeHTML(i.id)}" data-field="sp" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0">
 <span class="pill-suffix">EGP</span>
 <span class="pill-sep"></span>
 ` : ''}
-<input type="number" inputmode="decimal" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty · ${escapeHTML(String(defaultQuickQty || 1))}" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'qty')">
-<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" data-action="toggle-quick-mode" data-id="${escapeHTML(i.id)}" data-btype="${escapeHTML(i.bType)}">
- ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
-</button>
+<input type="number" inputmode="decimal" id="quick-in-${escapeHTML(i.id)}" class="pill-input" data-id="${escapeHTML(i.id)}" data-field="qty" placeholder="Qty · ${escapeHTML(String(defaultQuickQty || 1))}" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999">
+<span class="pill-unit-label">${isPack ? 'Packs' : escapeHTML(i.bType)}</span>
 <button class="pill-add" data-action="inline-add" data-id="${escapeHTML(i.id)}" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
 </div>
 </div>
@@ -1310,16 +1318,6 @@ const pStr = item.isDynamic ? '50% Supply Price' : `${item.p.toFixed(2)} EGP`;
 copyTextToClipboard(`${item.n} ${item.t} | ${item.u} | ${pStr}`).then(ok => showToast(ok ? `Copied ${item.n}` : 'Copy failed — select text manually', ok ? 'content_copy' : 'warning'));
 };
 
-window.toggleQuickMode = (e, id, bType) => {
-e.stopPropagation();
-const btn = document.getElementById(`quick-toggle-${id}`);
-if(!btn) return;
-const currentMode = btn.getAttribute('data-mode');
-const newMode = currentMode === 'unit' ? 'pack' : 'unit';
-btn.setAttribute('data-mode', newMode);
-btn.innerHTML = `${newMode === 'pack' ? 'Packs' : escapeHTML(bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>`;
-};
-
 const commitToCalc = (id, req, sp = 0, additive = false) => {
 const item = db.find(i => i.id === id);
 if (!item) return null;
@@ -1417,9 +1415,7 @@ const rawReq = parseFloat(input.value);
 const item = db.find(i => i.id === id);
 if (!item) return;
 
-const toggleBtn = document.getElementById(`quick-toggle-${id}`);
-const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
-const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
+const req = globalAddMode === 'pack' ? rawReq * item.bQty : rawReq;
 const sp = item.isDynamic ? parseFloat(document.getElementById(`quick-sp-${id}`).value) : 0;
 const r = commit({ kind: 'add', id, req, sp, additive: true });
 if (!r.ok) {
@@ -1457,37 +1453,6 @@ if (qtyInput.value.trim() === '') qtyInput.value = String(defaultQuickQty || 1);
 const addBtn = qtyInput.closest('.action-pill').querySelector('.pill-add');
 inlineAdd(id, addBtn);
 }
-};
-
-window.currentModalAddMode = 'unit';
-
-window.setModalAddMode = (mode, id) => {
-currentModalAddMode = mode;
-document.getElementById('mtg-unit').classList.toggle('active', mode === 'unit');
-document.getElementById('mtg-pack').classList.toggle('active', mode === 'pack');
-const item = db.find(i => i.id === id);
-document.getElementById('modal-calc-label').textContent = mode === 'unit' ? item.bType : 'Packs';
-};
-
-window.modalAdd = (id) => {
-const qty = parseFloat(document.getElementById('modal-calc-qty').value);
-const item = db.find(i => i.id === id);
-if (!item) return;
-
-const req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
-const sp = item.isDynamic ? parseFloat(document.getElementById('modal-calc-sp').value) : 0;
-const r = commit({ kind: 'add', id, req, sp, additive: true });
-if (!r.ok) {
-if (r.reason === 'needs-price') {
-showToast("Please enter Supply Price", "warning");
-document.getElementById('modal-calc-sp').focus({ preventScroll: true });
-}
-return;
-}
-const spareMsg = r.spare > 0 ? ` (${r.spare} ${item.bType} spare)` : '';
-showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
-refreshCardInPlace(id);
-closeModal();
 };
 
 const qlPop = document.getElementById('quickLinksPopover');
@@ -1622,32 +1587,8 @@ document.getElementById('sheetLinks').innerHTML = `
 <a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
 <a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
 `;
-document.getElementById('sheetAddCalc').innerHTML = `
-<div style="background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<div style="font-weight: 600; color: var(--sys-on-bg);">Quick Add to Calculator</div>
-<span class="tag" style="background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant);">1 Pack = ${item.bQty} ${escapeHTML(item.bType)}</span>
-</div>
- ${item.isDynamic ? `
-<div style="display: flex; gap: 12px; align-items: center;">
-<input type="number" inputmode="decimal" id="modal-calc-sp" class="glass-input" placeholder="Enter Supply Price..." aria-label="Supply price" min="0" oninput="checkMax(this)" style="padding:10px; font-size:1.1rem; text-align:left; border-color: var(--sys-secondary);">
-<span style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">EGP</span>
-</div>
-` : ''}
-<div style="display: flex; background: var(--sys-well); border-radius: var(--radius-full); padding: 4px; border: 1px solid var(--sys-outline);">
-<button class="omni-tab active" id="mtg-unit" data-action="set-modal-add-mode" data-mode="unit" data-id="${escapeHTML(id)}" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
-<button class="omni-tab" id="mtg-pack" data-action="set-modal-add-mode" data-mode="pack" data-id="${escapeHTML(id)}" style="flex:1; justify-content:center; height:32px;">By Packages</button>
-</div>
-<div style="display: flex; gap: 12px; align-items: center;">
-<input type="number" inputmode="decimal" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd(${escapeAttr(id)})" style="padding:10px; font-size:1.1rem; text-align:left;">
-<span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
-<button data-action="modal-add" data-id="${escapeHTML(id)}" style="background:var(--sys-primary); color:var(--sys-on-primary); border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
-</div>
-</div>
-`;
-window.currentModalAddMode = 'unit';
 els.modal.classList.add('active');
-setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus({ preventScroll: true }); trapFocus(document.getElementById('bottomSheet')); }, 100);
+setTimeout(() => { const sheet = document.getElementById('bottomSheet'); if(sheet) sheet.focus({ preventScroll: true }); trapFocus(sheet); }, 100);
 };
 window.openDetails = openDetails;
 
@@ -1723,9 +1664,9 @@ return `
 <button class="trash-btn" data-action="remove-dashboard-item" data-id="${escapeHTML(c.item.id)}" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
 </div>
 <div class="dash-controls">
-<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" inputmode="decimal" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.req))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
-<div class="control-group"><span class="control-label">Packs <span id="dash-spare-${escapeHTML(c.item.id)}" style="text-transform:none; font-weight:400; color: var(--sys-on-surface-variant);">${spare > 0 ? `· ${escapeHTML(String(spare))} ${escapeHTML(c.item.bType)} spare` : ''}</span></span><input type="number" inputmode="decimal" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.packs))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'pack')" aria-label="Packs"></div>
- ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" inputmode="decimal" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'sp')" aria-label="Supply price"></div>` : ''}
+<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" inputmode="decimal" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input dash-edit-input" data-id="${escapeHTML(c.item.id)}" data-field="req" value="${escapeHTML(String(c.req))}" min="0" max="999999" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
+<div class="control-group"><span class="control-label">Packs <span id="dash-spare-${escapeHTML(c.item.id)}" style="text-transform:none; font-weight:400; color: var(--sys-on-surface-variant);">${spare > 0 ? `· ${escapeHTML(String(spare))} ${escapeHTML(c.item.bType)} spare` : ''}</span></span><input type="number" inputmode="decimal" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input dash-edit-input" data-id="${escapeHTML(c.item.id)}" data-field="pack" value="${escapeHTML(String(c.packs))}" min="0" max="999999" aria-label="Packs"></div>
+ ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" inputmode="decimal" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input dash-edit-input" data-id="${escapeHTML(c.item.id)}" data-field="sp" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" aria-label="Supply price"></div>` : ''}
 <div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${formatPiastres(toPiastres(c.cost))}</div></div>
 </div>
 </div>
@@ -1887,7 +1828,6 @@ const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), panel: docume
 let cmdkActiveIndex = -1;
 let cmdkItems = [];
 let cmdkLastFocused = null;
-let cmdkParsedQty = null;
 let cmdkPaneFocused = false;
 let cmdkPaneIndex = 0;
 const sizePresets = [1, 10, 20, 30, 50, 100];
@@ -1945,36 +1885,6 @@ const buildOrderActions = (idx) => [
 { icon: 'delete', label: 'Delete Order', run: () => { closeCmdk(); deleteOrder({ stopPropagation(){} }, idx); } }
 ];
 
-const buildMedicineActions = (m) => {
-const actions = [];
-actions.push({
-icon: 'bolt', label: 'Add to Calculator', shortcut: 'Enter',
-run: () => {
-const qtyEl = document.getElementById('paneQty');
-const spEl = document.getElementById('paneSp');
-const qty = qtyEl ? parseFloat(qtyEl.value) : (defaultQuickQty || 1);
-const req = globalAddMode === 'pack' ? qty * m.bQty : qty;
-const sp = m.isDynamic ? (spEl ? parseFloat(spEl.value) : NaN) : 0;
-const r = commit({ kind: 'add', id: m.id, req, sp, additive: true });
-if (!r.ok) {
-if (r.reason === 'invalid-qty') { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus({ preventScroll: true }); }
-else if (r.reason === 'needs-price') { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus({ preventScroll: true }); }
-return;
-}
-const spareMsg = r.spare > 0 ? ` (${r.spare} ${m.bType} spare)` : '';
-showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${m.n}${spareMsg}`, 'bolt');
-cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus({ preventScroll: true });
-}
-});
-actions.push({ icon: 'open_in_new', label: 'Open Full Details', shortcut: `${MOD_KEY}1`, run: () => { closeCmdkSilently(); openDetails(m.id); } });
-const qStr = encodeURIComponent(m.n);
-actions.push({ icon: engineMeta[preferredEngine].icon, label: getEngineName(), shortcut: `${MOD_KEY}2`, run: () => window.open(generateSearchURL(qStr), '_blank', 'noopener,noreferrer') });
-actions.push({ icon: 'image', label: 'View Images', shortcut: `${MOD_KEY}3`, run: () => window.open(generateImageURL(qStr), '_blank', 'noopener,noreferrer') });
-actions.push({ icon: 'medical_services', label: 'Drugs.com', shortcut: `${MOD_KEY}4`, run: () => window.open(`https://www.drugs.com/search.php?searchterm=${qStr}`, '_blank', 'noopener,noreferrer') });
-actions.push({ icon: 'psychology', label: 'Perplexity', shortcut: `${MOD_KEY}5`, run: () => window.open(`https://www.perplexity.ai/search?q=${qStr}`, '_blank', 'noopener,noreferrer') });
-return actions;
-};
-
 let cmdkLastQuery = '';
 
 window.openCmdk = () => {
@@ -2000,15 +1910,10 @@ const closeCmdkSilently = () => { cmdkEls.overlay.classList.remove('active'); cm
 
 const renderCmdk = (q) => {
 const raw = q.trim();
-cmdkParsedQty = null;
 cmdkPaneFocused = false;
 cmdkPaneIndex = 0;
 
-let searchStr = raw;
-const qtyMatch = raw.match(/^(.+?)\s+[x*×]\s*(\d+(?:\.\d+)?)$/i);
-if(qtyMatch && qtyMatch[1].trim()) { searchStr = qtyMatch[1].trim(); cmdkParsedQty = parseFloat(qtyMatch[2]); }
-
-const qStr = normalizeSearchText(searchStr);
+const qStr = normalizeSearchText(raw);
 cmdkItems = [];
 baseCommands().filter(c => !qStr || c.title.toLowerCase().includes(qStr)).forEach(c => cmdkItems.push({ type: 'command', ...c }));
 savedOrders.forEach((o, idx) => {
@@ -2016,16 +1921,6 @@ if(!qStr || o.name.toLowerCase().includes(qStr)) {
 cmdkItems.push({ type: 'order', idx, icon: 'bookmark', title: o.name, sub: o.total, actions: buildOrderActions(idx) });
 }
 });
-if(qStr) {
-const qTokens = qStr.split(/\s+/).filter(Boolean);
-db.filter(item => qTokens.every(tk => { const aliasTk = resolveAliasToken(tk); return item.searchStr.includes(tk) || (aliasTk !== tk && item.searchStr.includes(aliasTk)); })).slice(0, 8).forEach(m => {
-cmdkItems.push({
-type: 'medicine', id: m.id, icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
-sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
-dynamic: m.isDynamic, actions: buildMedicineActions(m)
-});
-});
-}
 cmdkActiveIndex = cmdkItems.length ? 0 : -1;
 paintCmdk();
 };
@@ -2046,10 +1941,10 @@ return;
 }
 let html = '';
 const shown = {};
-const typeLabel = { command: 'Commands', order: 'Saved Orders', medicine: 'Medicines' };
+const typeLabel = { command: 'Commands', order: 'Saved Orders' };
 cmdkItems.forEach((item, i) => {
 if(!shown[item.type]) { html += `<div class="cmdk-group-label">${escapeHTML(typeLabel[item.type] || '')}</div>`; shown[item.type] = true; }
-html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" data-action="cmdk-click-item" data-idx="${i}">
+html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" data-action="cmdk-click-item" data-idx="${i}">
 <span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
 <span class="cmdk-item-title">${escapeHTML(item.title)}</span>
 <span class="cmdk-item-sub">${escapeHTML(item.sub || '')}</span>
@@ -2065,21 +1960,11 @@ const item = cmdkItems[cmdkActiveIndex];
 if(!item) { cmdkEls.pane.innerHTML = '<div class="cmdk-pane-empty">Select an item to see actions</div>'; return; }
 let extraFields = '';
 let navIdx = 0;
-if(item.type === 'medicine') {
-const med = db.find(d => d.id === item.id);
-const qtyVal = cmdkParsedQty || defaultQuickQty || 1;
-extraFields = `
-<div class="cmdk-pane-fields">
-<div class="cmdk-pane-field"><label>Quantity (${escapeHTML(med.bType)})</label><input type="number" inputmode="decimal" id="paneQty" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(String(qtyVal))}" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>
- ${med.isDynamic ? `<div class="cmdk-pane-field sp-field"><label>Supply Price</label><input type="number" inputmode="decimal" id="paneSp" class="cmdk-pane-input sp-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
-</div>
-<div class="cmdk-pane-preview" id="panePreview"></div>
-`;
-} else if(item.type === 'order') {
+if(item.type === 'order') {
 const o = savedOrders[item.idx];
 extraFields = `
 <div class="cmdk-pane-fields">
-<div class="cmdk-pane-field"><label>Order Name</label><input type="text" id="paneOrderName" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(o ? o.name : '')}" maxlength="60" onkeydown="paneKeydown(event, ${navIdx++})"></div>
+<div class="cmdk-pane-field"><label>Order Name</label><input type="text" id="paneOrderName" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(o ? o.name : '')}" maxlength="60" data-nav-idx="${navIdx++}"></div>
 </div>
 `;
 }
@@ -2091,7 +1976,7 @@ cmdkEls.pane.innerHTML = `
  ${extraFields}
 <div class="cmdk-pane-actions">
  ${item.actions.map((a, i) => `
-<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" onkeydown="paneKeydown(event, ${navIdx + i})" data-action="cmdk-pane-action" data-idx="${i}">
+<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" data-nav-idx="${navIdx + i}" data-action="cmdk-pane-action" data-idx="${i}">
 <span class="material-symbols-rounded">${escapeHTML(a.icon)}</span>
 <span class="cmdk-pane-action-label">${escapeHTML(a.label)}</span>
  ${a.active ? '<span class="material-symbols-rounded cmdk-pane-check">check</span>' : ''}
@@ -2100,37 +1985,12 @@ cmdkEls.pane.innerHTML = `
 `).join('')}
 </div>
 `;
-if(item.type === 'medicine') updatePanePreview(item.id);
 if(cmdkPaneFocused) {
 const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
 const target = navEls[Math.min(cmdkPaneIndex, navEls.length - 1)];
 if(target) target.focus({ preventScroll: true });
 }
 };
-
-window.updatePanePreview = (id) => {
-const med = db.find(d => d.id === id);
-const preview = document.getElementById('panePreview');
-if(!med || !preview) return;
-const qtyEl = document.getElementById('paneQty');
-const qty = qtyEl ? parseFloat(qtyEl.value) : NaN;
-if(isNaN(qty) || qty <= 0) { preview.textContent = 'Enter a quantity to preview cost'; return; }
-const req = globalAddMode === 'pack' ? qty * med.bQty : qty;
-const { packs, spare } = packInfo(req, med.bQty);
-const spareMsg = spare > 0 ? ` (${spare} ${med.bType} spare)` : '';
-if(med.isDynamic) {
-const spEl = document.getElementById('paneSp');
-const sp = spEl ? parseFloat(spEl.value) : NaN;
-if(isNaN(sp) || sp < 0) { preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} — enter supply price`; return; }
-const costP = packs * Math.round(toPiastres(sp) / 2);
-preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} → ${formatPiastres(costP)} EGP`;
-} else {
-const costP = packs * med.pP;
-preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} → ${formatPiastres(costP)} EGP`;
-}
-};
-
-window.cmdkHover = (i) => { cmdkActiveIndex = i; cmdkPaneFocused = false; cmdkPaneIndex = 0; paintCmdk(); };
 window.cmdkClickItem = (i) => { cmdkActiveIndex = i; cmdkPaneFocused = false; cmdkPaneIndex = 0; const item = cmdkItems[i]; if(item && item.actions && item.actions[0]) item.actions[0].run(); else paintCmdk(); };
 
 const codeToLabel = (code) => {
@@ -2183,7 +2043,7 @@ return;
 if(e.key === 'ArrowLeft') { e.preventDefault(); exitPaneToList(); return; }
 if(e.key === 'Escape') { e.preventDefault(); exitPaneToList(); return; }
 if(e.key === 'Enter') {
-const target = e.currentTarget;
+const target = e.target;
 if(target.tagName === 'INPUT') {
 e.preventDefault();
 const item = cmdkItems[cmdkActiveIndex];
