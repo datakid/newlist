@@ -818,10 +818,6 @@ let savedOrders = [];
 let currentOrderIndex = -1;
 let preferredEngine = 'brave';
 let selectionIndex = -1;
-let lastDeletedOrder = null;
-let lastDeletedIndex = -1;
-let lastDeletedItem = null;
-let undoTimeoutId = null;
 let globalAddMode = 'unit';
 let defaultQuickQty = 1;
 let currentResults = [];
@@ -912,6 +908,10 @@ else updateDashTotal();
 }
 });
 
+document.addEventListener('visibilitychange', () => {
+if (document.visibilityState === 'hidden') persistNow();
+});
+
 window.toggleEngineMenu = () => {
 const active = els.engineMenu.classList.toggle('active');
 document.getElementById('engineToggleBtn').setAttribute('aria-expanded', String(active));
@@ -970,7 +970,7 @@ case 'download-dashboard': downloadDashboard(); break;
 case 'download-dashboard-csv': downloadDashboardCSV(); break;
 case 'save-as-order': saveAsOrder(); break;
 case 'create-new-order': createNewOrder(); break;
-case 'undo-delete': undoDelete(); break;
+case 'undo-delete': performUndo(); break;
 case 'open-details': openDetails(id); break;
 case 'toggle-quick-links': toggleQuickLinks(e, id, target); break;
 case 'copy-item-info': copyItemInfo(id); break;
@@ -1048,8 +1048,6 @@ const t = document.createElement('div'); t.className = 'toast undo-toast';
 t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-secondary)">${escapeHTML(icon)}</span> <span style="flex:1; text-align:left;">${escapeHTML(msg)}</span>
 <button data-action="undo-delete" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
 els.toasts.appendChild(t);
-clearTimeout(undoTimeoutId);
-undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; lastDeletedItem = null; }, 30000);
 setTimeout(() => t.remove(), 30000);
 };
 
@@ -1373,6 +1371,23 @@ const spareStr = spare > 0 ? ` · ${spare} ${item.bType} spare` : '';
 return { text: `⏎ Add ${item.n} — ${intent.qty} ${item.bType} → ${packs} pack${packs === 1 ? '' : 's'}${spareStr} · ${formatPiastres(costP)} EGP`, ok: true };
 };
 
+const MAX_UNDO_STACK = 25;
+let undoStack = [];
+
+const pushUndo = (label, invert) => {
+undoStack.push({ label, invert });
+if (undoStack.length > MAX_UNDO_STACK) undoStack.shift();
+};
+
+const performUndo = () => {
+const entry = undoStack.pop();
+const toastEl = document.querySelector('.undo-toast');
+if (toastEl) toastEl.remove();
+if (!entry) return;
+entry.invert();
+showToast(`Undid: ${entry.label}`, 'undo');
+};
+
 const commit = (op) => {
 const item = db.find(i => i.id === op.id);
 if (!item) return { ok: false, reason: 'no-item' };
@@ -1380,6 +1395,7 @@ if (!item) return { ok: false, reason: 'no-item' };
 if (op.kind === 'edit') {
 const entry = dashboardMap.get(op.id);
 if (!entry) return { ok: false, reason: 'no-entry' };
+const prevSnapshot = { ...entry };
 let rawVal = op.val;
 if (isNaN(rawVal) || rawVal < 0) rawVal = 0;
 let clamped = false;
@@ -1394,6 +1410,11 @@ const cost = costP / 100;
 entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
 dashboardMap.set(op.id, entry);
 syncCurrentOrder();
+pushUndo(`edited ${item.n}`, () => {
+dashboardMap.set(op.id, prevSnapshot);
+syncCurrentOrder();
+if (activeView === 'calc') renderDashboard(); else refreshCardInPlace(op.id);
+});
 return { ok: true, item, req, packs, spare, cost, costP, clamped };
 }
 
@@ -1404,8 +1425,17 @@ if (item.isDynamic) {
 sp = op.sp;
 if (isNaN(sp) || sp < 0) return { ok: false, reason: 'needs-price' };
 }
+const prevEntry = dashboardMap.get(op.id);
+const prevSnapshot = prevEntry ? { ...prevEntry } : null;
 const result = commitToCalc(op.id, req, sp, op.additive !== false);
 if (!result) return { ok: false, reason: 'no-item' };
+pushUndo(`added ${item.n}`, () => {
+if (prevSnapshot) dashboardMap.set(op.id, prevSnapshot); else dashboardMap.delete(op.id);
+syncCurrentOrder();
+els.badge.textContent = dashboardMap.size;
+els.badge.style.display = dashboardMap.size ? 'block' : 'none';
+if (activeView === 'calc') renderDashboard(); else refreshCardInPlace(op.id);
+});
 return { ok: true, ...result };
 };
 
@@ -1692,14 +1722,27 @@ dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard();
 window.removeDashboardItem = (id) => {
 const entry = dashboardMap.get(id);
 if (!entry) return;
-lastDeletedOrder = null;
-lastDeletedItem = { id, entry, wasCurrentOrder: currentOrderIndex };
+const wasCurrentOrder = currentOrderIndex;
 dashboardMap.delete(id);
 syncCurrentOrder();
 renderDashboard();
+pushUndo(`removed ${entry.item.n}`, () => {
+if (wasCurrentOrder === currentOrderIndex) { dashboardMap.set(id, entry); syncCurrentOrder(); renderDashboard(); }
+});
 showUndoToast(`Removed ${entry.item.n}`, "delete");
 };
-window.clearDashboard = () => { dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard(); };
+window.clearDashboard = () => {
+const prevMap = new Map(dashboardMap);
+const prevOrderIndex = currentOrderIndex;
+dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard();
+if (prevMap.size > 0) {
+pushUndo('cleared the calculator', () => {
+dashboardMap = new Map(prevMap);
+currentOrderIndex = prevOrderIndex;
+saveState(); renderDashboard();
+});
+}
+};
 
 window.saveAsOrder = () => {
 if(dashboardMap.size === 0) return;
@@ -1739,24 +1782,20 @@ dashboardMap = new Map(order.items); currentOrderIndex = idx; saveState(); rende
 
 window.deleteOrder = (e, idx) => {
 e.stopPropagation();
-lastDeletedItem = null;
-lastDeletedOrder = savedOrders[idx]; lastDeletedIndex = idx; savedOrders.splice(idx, 1);
+const deletedOrder = savedOrders[idx];
+const wasCurrentOrder = currentOrderIndex;
+const dashSnapshotForUndo = wasCurrentOrder === idx ? new Map(dashboardMap) : null;
+savedOrders.splice(idx, 1);
 if(currentOrderIndex === idx) { currentOrderIndex = -1; dashboardMap.clear(); }
 else if (currentOrderIndex > idx) { currentOrderIndex--; }
-saveState(); renderDashboard(); showUndoToast(`Order deleted`, "delete");
-};
-
-window.undoDelete = () => {
-if(lastDeletedItem) {
-const { id, entry, wasCurrentOrder } = lastDeletedItem;
-if (wasCurrentOrder === currentOrderIndex) { dashboardMap.set(id, entry); syncCurrentOrder(); renderDashboard(); showToast("Item restored", "restore"); }
-lastDeletedItem = null;
-} else if(lastDeletedOrder) {
-savedOrders.splice(lastDeletedIndex, 0, lastDeletedOrder);
-if (currentOrderIndex !== -1 && currentOrderIndex >= lastDeletedIndex) { currentOrderIndex++; }
-lastDeletedOrder = null; saveState(); renderDashboard(); showToast("Order restored", "restore");
-} else { return; }
-const toastBtn = document.querySelector('.undo-toast button'); if(toastBtn && toastBtn.parentElement) toastBtn.parentElement.remove();
+saveState(); renderDashboard();
+pushUndo(`deleted order "${deletedOrder.name}"`, () => {
+savedOrders.splice(idx, 0, deletedOrder);
+currentOrderIndex = wasCurrentOrder;
+if (dashSnapshotForUndo) dashboardMap = dashSnapshotForUndo;
+saveState(); renderDashboard();
+});
+showUndoToast(`Order deleted`, "delete");
 };
 
 window.exportDashboardText = () => {
@@ -2086,6 +2125,11 @@ runShortcutForActiveItem(e);
 });
 
 document.addEventListener('keydown', e => {
+if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+e.preventDefault();
+performUndo();
+return;
+}
 if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') {
 e.preventDefault();
 if(cmdkEls.overlay.classList.contains('active')) closeCmdk(); else openCmdk();
@@ -2470,6 +2514,90 @@ els.in.value = savedVal;
 armed = savedArmed;
 if (activeView !== savedView) switchView(savedView);
 renderSearch();
+})();
+
+(() => {
+const dashSnapshot = dashboardMap;
+const undoStackSnapshot = undoStack;
+const ordersSnapshot = savedOrders;
+const orderIdxSnapshot = currentOrderIndex;
+dashboardMap = new Map();
+undoStack = [];
+savedOrders = [];
+currentOrderIndex = -1;
+
+const testItems = db.filter(d => !d.isDynamic).slice(0, 5);
+testItems.forEach(item => commit({ kind: 'add', id: item.id, req: 10, sp: 0, additive: true }));
+assert('undo: 5 adds create 5 dashboard entries', dashboardMap.size === 5);
+assert('undo: each add pushes one inverse operation', undoStack.length === 5);
+for (let i = 0; i < 5; i++) performUndo();
+assert('undo: 5 undos empty the calculator', dashboardMap.size === 0);
+let totalPAfter5 = 0; dashboardMap.forEach(c => totalPAfter5 += toPiastres(c.cost));
+assert('undo: total is exactly 0.00 EGP after 5 undos', formatPiastres(totalPAfter5) === '0.00');
+
+const editItem = db.find(d => d.n === 'Concor 5' && !d.t);
+commit({ kind: 'add', id: editItem.id, req: 30, sp: 0, additive: true });
+commit({ kind: 'edit', id: editItem.id, val: 60, mode: 'req' });
+assert('undo: edit updates the entry', dashboardMap.get(editItem.id).req === 60);
+performUndo();
+assert('undo: edit reverts to the pre-edit snapshot', dashboardMap.get(editItem.id).req === 30);
+
+removeDashboardItem(editItem.id);
+assert('undo: removal deletes the entry', !dashboardMap.has(editItem.id));
+performUndo();
+assert('undo: removal restores the entry', dashboardMap.has(editItem.id) && dashboardMap.get(editItem.id).req === 30);
+
+clearDashboard();
+assert('undo: clear empties the calculator', dashboardMap.size === 0);
+performUndo();
+assert('undo: clear is reversible', dashboardMap.has(editItem.id) && dashboardMap.get(editItem.id).req === 30);
+
+dashboardMap.clear();
+savedOrders.push({ id: '1', name: 'Order A', total: '10.00 EGP', items: [] });
+savedOrders.push({ id: '2', name: 'Order B', total: '20.00 EGP', items: [] });
+const fakeEvent = { stopPropagation: () => {} };
+deleteOrder(fakeEvent, 0);
+assert('undo: order delete removes it from savedOrders', savedOrders.length === 1 && savedOrders[0].name === 'Order B');
+performUndo();
+assert('undo: order delete is reversible at the original index', savedOrders.length === 2 && savedOrders[0].name === 'Order A');
+
+assert('undo: stack caps at MAX_UNDO_STACK', (() => {
+undoStack = [];
+for (let i = 0; i < MAX_UNDO_STACK + 5; i++) pushUndo(`op ${i}`, () => {});
+return undoStack.length === MAX_UNDO_STACK;
+})());
+
+dashboardMap = dashSnapshot;
+undoStack = undoStackSnapshot;
+savedOrders = ordersSnapshot;
+currentOrderIndex = orderIdxSnapshot;
+})();
+
+(() => {
+const savedSchemaVersion = localStorage.getItem('lx_schema_version');
+const savedCurrentCalc = localStorage.getItem('lx_current_calc');
+const savedCalcOrders = localStorage.getItem('lx_calc_orders');
+const dashSnapshot = dashboardMap;
+const ordersSnapshot = savedOrders;
+const orderIdxSnapshot = currentOrderIndex;
+
+const testItem = db.find(d => d.n === 'Concor 5' && !d.t);
+const v2Payload = [[testItem.id, { req: 30, packs: 1, cost: 26, supplyPrice: 0, item: { ...testItem } }]];
+try {
+localStorage.setItem('lx_schema_version', '2');
+localStorage.setItem('lx_current_calc', JSON.stringify(v2Payload));
+localStorage.setItem('lx_calc_orders', '[]');
+loadState();
+const migratedEntry = dashboardMap.get(testItem.id);
+assert('persistence: a v2 localStorage payload loads intact', !!migratedEntry && migratedEntry.req === 30 && migratedEntry.cost === 26 && migratedEntry.item.id === testItem.id);
+} finally {
+dashboardMap = dashSnapshot;
+savedOrders = ordersSnapshot;
+currentOrderIndex = orderIdxSnapshot;
+if (savedSchemaVersion === null) localStorage.removeItem('lx_schema_version'); else localStorage.setItem('lx_schema_version', savedSchemaVersion);
+if (savedCurrentCalc === null) localStorage.removeItem('lx_current_calc'); else localStorage.setItem('lx_current_calc', savedCurrentCalc);
+if (savedCalcOrders === null) localStorage.removeItem('lx_calc_orders'); else localStorage.setItem('lx_calc_orders', savedCalcOrders);
+}
 })();
 
 const passCount = results.filter(r => r.pass).length;
