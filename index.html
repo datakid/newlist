@@ -15,7 +15,7 @@ document.documentElement.setAttribute('data-theme-mode', mode);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>LX Search 4.4</title>
+<title>LX Search 4.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -123,7 +123,7 @@ body { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
 :focus { outline: none; }
 :focus-visible { box-shadow: var(--focus-ring); }
 input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: none; }
-.card:focus-visible, .order-chip-main:focus-visible, .chip-del:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
+.card:focus-visible, .order-chip-main:focus-visible, .chip-del:focus-visible, .dropdown-item:focus-visible, .engine-btn:focus-visible, .chip:focus-visible, .chip-clear:focus-visible, .icon-btn:focus-visible, .cmdk-badge:focus-visible, .copy-btn:focus-visible, .pill-add:focus-visible, .pill-toggle:focus-visible, .trash-btn:focus-visible, .btn-action:focus-visible { box-shadow: var(--focus-ring); }
 .omni-input:focus-visible { box-shadow: none; }
 .action-pill:focus-within { border-color: var(--sys-primary); box-shadow: 0 0 0 3px var(--sys-primary-container); }
 .glass-input:focus-visible { box-shadow: none; }
@@ -147,7 +147,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .quick-links-popover { position: fixed; background: var(--sys-menu-bg); backdrop-filter: var(--blur-lg); -webkit-backdrop-filter: var(--blur-lg); border: 1px solid var(--sys-outline); border-radius: var(--radius-md); padding: 8px; display: flex; flex-direction: column; gap: 4px; min-width: 190px; box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transform: translateY(-6px); transition: all 0.15s var(--spring); z-index: 250; }
 .quick-links-popover.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .main-container { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto; padding: 0 var(--space-5); z-index: 10; min-height: 0; }
-.omnibar { width: 100%; background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border: 1px solid var(--sys-outline); border-radius: var(--radius-full); padding: 8px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: var(--space-2); flex-shrink: 0; }
+.omnibar { width: 100%; background: var(--sys-surface); backdrop-filter: var(--blur-md); -webkit-backdrop-filter: var(--blur-md); border: 1px solid var(--sys-outline); border-radius: var(--radius-full); padding: 8px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-float); transition: all 0.3s var(--spring); margin-bottom: var(--space-4); flex-shrink: 0; }
 .omnibar:focus-within { border-color: var(--sys-outline-glow); box-shadow: var(--shadow-float), var(--shadow-glow); transform: translateY(-2px); background: var(--sys-surface-high); }
 .omni-tabs { display: flex; background: var(--sys-well); border-radius: var(--radius-full); padding: 4px; gap: 4px; align-items: center; flex-shrink: 0; }
 .omni-tab { padding: 8px 16px; border-radius: var(--radius-full); border: none; background: transparent; color: var(--sys-on-surface-variant); font-family: inherit; font-size: 0.95rem; font-weight: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s var(--spring); height: var(--row-h); }
@@ -157,8 +157,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .omni-input-area { flex: 1; display: flex; align-items: center; gap: 8px; padding-right: 8px; height: var(--row-h); min-width: 0; }
 .omni-input-area .material-symbols-rounded#omniIcon { flex-shrink: 0; }
 .omni-input { flex: 1; background: transparent; border: none; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 1.1rem; min-width: 0; }
-.omni-price-input { flex: 0 0 120px; background: var(--sys-surface-high); border: 1px solid var(--sys-outline); border-radius: 8px; outline: none; color: var(--sys-on-bg); font-family: inherit; font-size: 0.95rem; padding: 4px 10px; }
-.omni-price-input:focus { border-color: var(--sys-primary); }
 .omni-input::placeholder { color: var(--sys-on-surface-variant); }
 .omni-side-btn { color: var(--sys-on-surface-variant); cursor: pointer; width: 30px; height: 30px; border-radius: var(--radius-full); border: none; background: transparent; display: grid; place-items: center; transition: all 0.2s var(--spring); flex-shrink: 0; }
 .omni-side-btn:hover { color: var(--sys-primary); background: var(--sys-surface-highest); }
@@ -189,8 +187,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { box-shadow: 
 .chip-clear { display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: transparent; border: 1px dashed var(--sys-outline); color: var(--sys-on-surface-variant); transition: all 0.2s var(--spring); border-radius: var(--radius-full); font-family: inherit; font-size: 0.9rem; cursor: pointer; flex-shrink: 0; }
 .chip-clear:hover { background: var(--sys-surface-high); color: var(--sys-on-bg); border-color: var(--sys-on-bg); }
 .results-meta { font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-1) 0; flex-shrink: 0; }
-.hint-row { width: 100%; text-align: left; font-size: 0.8rem; color: var(--sys-on-surface-variant); padding: 0 var(--space-5); margin-bottom: var(--space-3); min-height: 1.4em; }
-.hint-row.hint-error { color: var(--sys-warning); }
 .results-list { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); padding-bottom: var(--space-5); }
 .card { background: var(--sys-surface); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; align-items: center; gap: var(--space-4); transition: transform 0.2s var(--spring), border-color 0.2s, background-color 0.2s; cursor: pointer; box-shadow: var(--shadow-card); transform: translateZ(0); }
 .card:hover, .card.focused { border-color: var(--sys-outline-glow); transform: translateX(4px) translateZ(0); background: var(--sys-surface-high); }
@@ -215,11 +211,13 @@ input[type="number"] { -moz-appearance: textfield; }
 .pill-input.sp-input { color: var(--sys-secondary); width: 88px; }
 .pill-suffix { color: var(--sys-on-surface-variant); font-size: 0.75rem; font-weight: 500; flex-shrink: 0; }
 .pill-sep { width: 1px; align-self: stretch; margin: 12px 0; background: var(--sys-outline); flex-shrink: 0; }
-.pill-unit-label { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-surface-variant); font-family: inherit; font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: var(--radius-md); display: flex; align-items: center; flex-shrink: 0; white-space: nowrap; }
+.pill-toggle { background: var(--sys-surface-highest); border: 1px solid transparent; color: var(--sys-on-bg); font-family: inherit; font-size: 0.84rem; font-weight: 600; padding: 8px 12px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; white-space: nowrap; }
+.pill-toggle:hover { background: var(--sys-surface-high); border-color: var(--sys-primary); color: var(--sys-primary); }
 .pill-add { background: var(--sys-surface-highest); color: var(--sys-on-bg); border: none; width: 42px; height: 42px; flex-shrink: 0; border-radius: var(--radius-full); display: grid; place-items: center; cursor: pointer; transition: all 0.2s; }
 .pill-add:hover { background: var(--sys-primary); color: var(--sys-on-primary); transform: scale(1.05); }
 .tag { background: var(--sys-primary-container); color: var(--sys-primary); padding: 2px 6px; border-radius: 6px; font-size: 0.75rem; flex-shrink: 0; }
 .tag.dynamic { background: var(--sys-secondary-container); color: var(--sys-secondary); }
+.load-sentinel { height: 1px; width: 100%; flex-shrink: 0; }
 .saved-orders-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px; border-bottom: 1px solid var(--sys-outline); margin-top: 8px; margin-bottom: var(--space-5); flex-shrink: 0; }
 .order-chip { position: relative; overflow: hidden; padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--sys-outline); display: flex; align-items: center; background: var(--sys-surface-low); color: var(--sys-on-surface-variant); white-space: nowrap; font-size: 0.95rem; font-family: inherit; box-shadow: var(--shadow-chip); transition: background 0.2s, box-shadow 0.2s, transform 0.2s var(--spring), color 0.2s, border-color 0.2s; }
 .order-chip.active { background: var(--sys-surface-highest); color: var(--sys-primary); border-color: var(--sys-primary); box-shadow: var(--shadow-chip-active); }
@@ -308,7 +306,6 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 }
 .cmdk-group-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--sys-on-surface-variant); padding: var(--space-3) var(--space-3) var(--space-1); }
 .cmdk-item { display: flex; align-items: center; gap: var(--space-3); padding: 11px var(--space-3); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.12s; }
-.cmdk-item:hover { background: var(--sys-surface-high); }
 .cmdk-item .material-symbols-rounded { color: var(--sys-on-surface-variant); font-size: 20px; flex-shrink: 0; }
 .cmdk-item-title { font-size: 0.98rem; color: var(--sys-on-bg); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmdk-item-sub { font-size: 0.8rem; color: var(--sys-on-surface-variant); flex-shrink: 0; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -333,6 +330,7 @@ mark { background: var(--sys-primary-container); color: var(--sys-primary); bord
 .dash-controls { grid-template-columns: 1fr; gap: var(--space-3); }
 .glass-input { text-align: left; }
 .dash-actions { position: relative; box-shadow: none; border-top: none; padding-bottom: 24px; }
+.hint-row { display: none; }
 }
 html.fonts-loading body > *:not(#lxPreloader) { visibility: hidden; }
 #lxPreloader { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: var(--sys-bg); transition: opacity 0.6s var(--spring); }
@@ -381,7 +379,7 @@ main, .view-section { overflow: visible !important; height: auto !important; pad
 <span class="material-symbols-rounded">stream</span>
 <div>
 LX Search
-<div class="brand-sub">v4.4</div>
+<div class="brand-sub">v4.1</div>
 </div>
 </div>
 <div class="dock">
@@ -425,8 +423,7 @@ LX Search
 <div class="omni-divider"></div>
 <div class="omni-input-area">
 <span class="material-symbols-rounded" id="omniIcon" style="color: var(--sys-on-surface-variant);">data_usage</span>
-<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines" role="combobox" aria-expanded="true" aria-haspopup="listbox" aria-autocomplete="list" aria-controls="resultsList">
-<input type="number" inputmode="decimal" id="omniPriceInput" class="omni-price-input" placeholder="Supply price" aria-label="Supply price" min="0" style="display:none;">
+<input type="text" id="omniInput" class="omni-input" placeholder="Search medicines, or press ⌘K..." autocomplete="off" spellcheck="false" aria-label="Search medicines">
 <button class="omni-side-btn" id="omniClear" data-action="clear-input" title="Clear search" aria-label="Clear search" style="display:none;">
 <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
 </button>
@@ -435,7 +432,6 @@ LX Search
 </button>
 </div>
 </div>
-<div class="hint-row" id="omniHint" aria-live="polite"></div>
 <div class="view-section active" id="viewSearch">
 <div class="filters">
 <div class="filter-wrapper">
@@ -463,7 +459,7 @@ LX Search
 </button>
 </div>
 <div class="results-meta" id="resultsMeta" aria-live="polite"></div>
-<div class="results-list" id="resultsList" role="listbox" aria-label="Search results"></div>
+<div class="results-list" id="resultsList" role="list" aria-label="Search results"></div>
 </div>
 
 <div class="view-section" id="viewCalc">
@@ -487,7 +483,7 @@ LX Search
 </div>
 </main>
 <div class="modal-overlay" id="modalOverlay">
-<div class="bottom-sheet" id="bottomSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
+<div class="bottom-sheet" id="bottomSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
 <div class="handle"></div>
 <div>
 <h2 id="sheetTitle" dir="auto" style="font-size: 2rem; margin-bottom: 8px;"></h2>
@@ -495,6 +491,7 @@ LX Search
 <div id="sheetPriceData" style="margin-top: 20px; margin-bottom: 12px;"></div>
 <div class="engine-links" id="sheetLinks"></div>
 </div>
+<div id="sheetAddCalc"></div>
 </div>
 </div>
 <div class="cmdk-overlay" id="cmdkOverlay">
@@ -737,37 +734,6 @@ const ARABIC_INDIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
 const normalizeDigits = (s) => s.replace(/[٠-٩]/g, d => String(ARABIC_INDIC_DIGITS.indexOf(d)));
 const normalizeSearchText = (s) => normalizeDigits(String(s)).toLowerCase().replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ').trim();
 
-const MAX_QTY = 999999;
-const QTY_RE = /(?<=[\s\d])[x*×]\s*(\d+(?:[.,]\d+)?)\s*([up])?\s*$/i;
-const PRICE_RE = /\s*@\s*(\d+(?:[.,]\d+)?)\s*/i;
-
-const parseCommand = (raw) => {
-let s = normalizeDigits(String(raw == null ? '' : raw));
-const intent = { query: '', qty: null, unit: null, price: null, qtyInvalid: false };
-
-const priceMatch = s.match(PRICE_RE);
-if (priceMatch) {
-intent.price = parseFloat(priceMatch[1].replace(',', '.'));
-s = s.slice(0, priceMatch.index) + ' ' + s.slice(priceMatch.index + priceMatch[0].length);
-}
-
-const qtyMatch = s.match(QTY_RE);
-if (qtyMatch) {
-const n = parseFloat(qtyMatch[1].replace(',', '.'));
-s = s.slice(0, qtyMatch.index);
-if (n > 0) {
-intent.qty = Math.min(n, MAX_QTY);
-const letter = qtyMatch[2] ? qtyMatch[2].toLowerCase() : null;
-intent.unit = letter === 'u' ? 'unit' : letter === 'p' ? 'pack' : 'default';
-} else {
-intent.qtyInvalid = true;
-}
-}
-
-intent.query = s.replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ').trim();
-return intent;
-};
-
 const genericAliases = {
 bisoprolol: 'concor', dapagliflozin: 'forxiga', atorvastatin: 'lipitor', rosuvastatin: 'crestor',
 amlodipine: 'norvasc', losartan: 'cozaar', metformin: 'glucophage', sitagliptin: 'januvia',
@@ -810,6 +776,7 @@ const icon = getIconForUnit(i.unit);
 return { id: makeStableId(i.name, i.unit, i.company), n, nLower, t, u: i.unit, p: i.price, pP: Math.round(i.price * 100), s: sName, bQty, bType, isInsulin, searchStr, icon, isDynamic: !!i.dp };
 });
 
+const CHUNK_SIZE = 40;
 let activeView = 'search';
 const isMacPlatform = /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent || '');
 const MOD_KEY = isMacPlatform ? '⌘' : 'Ctrl';
@@ -817,11 +784,20 @@ let dashboardMap = new Map();
 let savedOrders = [];
 let currentOrderIndex = -1;
 let preferredEngine = 'brave';
-let selectionIndex = -1;
+let focusedCardIndex = -1;
+let lastDeletedOrder = null;
+let lastDeletedIndex = -1;
+let lastDeletedItem = null;
+let undoTimeoutId = null;
 let globalAddMode = 'unit';
 let defaultQuickQty = 1;
 let currentResults = [];
+let renderedCount = 0;
+let resultsObserver = null;
 let lastFocusedBeforeModal = null;
+let cardEls = [];
+let cardIndexById = new Map();
+let lastFocusedCard = null;
 
 const els = {
 in: document.getElementById('omniInput'), icon: document.getElementById('omniIcon'), clear: document.getElementById('omniClear'),
@@ -834,8 +810,7 @@ dashActions: document.getElementById('dashActions'), badge: document.getElementB
 modal: document.getElementById('modalOverlay'), toasts: document.getElementById('toasts'),
 ordersBar: document.getElementById('ordersBar'), dashStatus: document.getElementById('dashStatus'),
 dashTitleText: document.getElementById('dashTitleText'), fileUp: document.getElementById('fileUpload'),
-engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta'),
-hint: document.getElementById('omniHint'), omniPrice: document.getElementById('omniPriceInput')
+engineMenu: document.getElementById('engineMenu'), meta: document.getElementById('resultsMeta')
 };
 
 [...new Set(db.map(i=>i.u))].sort().forEach(u => els.fU.add(new Option(u,u)));
@@ -908,10 +883,6 @@ else updateDashTotal();
 }
 });
 
-document.addEventListener('visibilitychange', () => {
-if (document.visibilityState === 'hidden') persistNow();
-});
-
 window.toggleEngineMenu = () => {
 const active = els.engineMenu.classList.toggle('active');
 document.getElementById('engineToggleBtn').setAttribute('aria-expanded', String(active));
@@ -970,12 +941,15 @@ case 'download-dashboard': downloadDashboard(); break;
 case 'download-dashboard-csv': downloadDashboardCSV(); break;
 case 'save-as-order': saveAsOrder(); break;
 case 'create-new-order': createNewOrder(); break;
-case 'undo-delete': performUndo(); break;
+case 'undo-delete': undoDelete(); break;
 case 'open-details': openDetails(id); break;
 case 'toggle-quick-links': toggleQuickLinks(e, id, target); break;
 case 'copy-item-info': copyItemInfo(id); break;
+case 'toggle-quick-mode': toggleQuickMode(e, id, target.getAttribute('data-btype')); break;
 case 'inline-add': inlineAdd(id, target); break;
 case 'close-quick-links': closeQuickLinks(); break;
+case 'set-modal-add-mode': setModalAddMode(target.getAttribute('data-mode'), id); break;
+case 'modal-add': modalAdd(id); break;
 case 'load-order': loadOrder(parseInt(target.getAttribute('data-idx'), 10)); break;
 case 'delete-order': deleteOrder(e, parseInt(target.getAttribute('data-idx'), 10)); break;
 case 'remove-dashboard-item': removeDashboardItem(id); break;
@@ -989,20 +963,6 @@ break;
 case 'toggle-filter-menu': toggleFilterMenu(id, target); break;
 case 'set-filter': setFilter(target.getAttribute('data-filter-id'), target.getAttribute('data-value')); break;
 }
-});
-
-document.addEventListener('input', (e) => {
-const target = e.target;
-if (!target || !target.classList) return;
-if (target.classList.contains('pill-input')) { checkMax(target); return; }
-if (target.classList.contains('dash-edit-input')) { updateDashItem(target.getAttribute('data-id'), target.value, target.getAttribute('data-field')); return; }
-});
-
-document.addEventListener('keydown', (e) => {
-const target = e.target;
-if (!target || !target.classList) return;
-if (target.classList.contains('pill-input')) { quickInputKeydown(e, target.getAttribute('data-id'), target.getAttribute('data-field')); return; }
-if (target.classList.contains('pane-nav-item')) { paneKeydown(e, parseInt(target.getAttribute('data-nav-idx'), 10)); return; }
 });
 
 document.addEventListener('wheel', (e) => {
@@ -1048,6 +1008,8 @@ const t = document.createElement('div'); t.className = 'toast undo-toast';
 t.innerHTML = `<span class="material-symbols-rounded" style="color:var(--sys-secondary)">${escapeHTML(icon)}</span> <span style="flex:1; text-align:left;">${escapeHTML(msg)}</span>
 <button data-action="undo-delete" style="background:var(--sys-primary-container); border:none; border-radius:var(--radius-full); color:var(--sys-primary); font-weight:700; cursor:pointer; font-family:inherit; padding:6px 16px; font-size:0.9rem; transition:transform 0.2s;">UNDO</button><div class="toast-progress"></div>`;
 els.toasts.appendChild(t);
+clearTimeout(undoTimeoutId);
+undoTimeoutId = setTimeout(() => { lastDeletedOrder = null; lastDeletedItem = null; }, 30000);
 setTimeout(() => t.remove(), 30000);
 };
 
@@ -1103,13 +1065,16 @@ els.icon.textContent = view === 'calc' ? 'calculate' : 'data_usage';
 if(view === 'calc') renderDashboard();
 };
 
+const disconnectObserver = () => { if(resultsObserver) { resultsObserver.disconnect(); resultsObserver = null; } };
+
 const cardTemplate = (i, qTokens, isPack) => {
 const inCalc = dashboardMap.get(i.id);
 const inCalcBadge = inCalc ? ` • <span class="tag" style="background: var(--sys-surface-highest); color: var(--sys-success);">In calc · ${escapeHTML(String(inCalc.packs))} pack${inCalc.packs === 1 ? '' : 's'}</span>` : '';
 return `
-<div class="card" id="card-${escapeHTML(i.id)}" role="option" aria-selected="false"
+<div class="card" id="card-${escapeHTML(i.id)}" role="listitem" tabindex="0"
 aria-label="${escapeHTML(i.n)}${i.t ? ', ' + escapeHTML(i.t) : ''}, ${escapeHTML(i.u)}, ${i.isDynamic ? '50 percent of supply price' : i.p.toFixed(2) + ' EGP'}${inCalc ? ', already in calculator' : ''}"
-data-action="open-details" data-id="${escapeHTML(i.id)}">
+data-action="open-details" data-id="${escapeHTML(i.id)}"
+onkeydown="cardKeydown(event, ${escapeAttr(i.id)})">
 <div class="card-main-info">
 <div class="card-icon${i.isDynamic ? ' dynamic' : ''}" aria-hidden="true"><span class="material-symbols-rounded">${escapeHTML(i.icon)}</span></div>
 <div class="card-content">
@@ -1122,12 +1087,14 @@ data-action="open-details" data-id="${escapeHTML(i.id)}">
 <button class="copy-btn" data-action="copy-item-info" data-id="${escapeHTML(i.id)}" title="Copy info" aria-label="Copy info for ${escapeHTML(i.n)}"><span class="material-symbols-rounded" style="font-size:18px">content_copy</span></button>
 <div class="action-pill${i.isDynamic ? ' has-sp' : ''}">
  ${i.isDynamic ? `
-<input type="number" inputmode="decimal" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" data-id="${escapeHTML(i.id)}" data-field="sp" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0">
+<input type="number" inputmode="decimal" id="quick-sp-${escapeHTML(i.id)}" class="pill-input sp-input" placeholder="Price" aria-label="Supply price for ${escapeHTML(i.n)}" min="0" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'sp')">
 <span class="pill-suffix">EGP</span>
 <span class="pill-sep"></span>
 ` : ''}
-<input type="number" inputmode="decimal" id="quick-in-${escapeHTML(i.id)}" class="pill-input" data-id="${escapeHTML(i.id)}" data-field="qty" placeholder="Qty · ${escapeHTML(String(defaultQuickQty || 1))}" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999">
-<span class="pill-unit-label">${isPack ? 'Packs' : escapeHTML(i.bType)}</span>
+<input type="number" inputmode="decimal" id="quick-in-${escapeHTML(i.id)}" class="pill-input" placeholder="Qty · ${escapeHTML(String(defaultQuickQty || 1))}" aria-label="Quantity for ${escapeHTML(i.n)}" min="0" max="999999" oninput="checkMax(this)" onkeydown="quickInputKeydown(event, ${escapeAttr(i.id)}, 'qty')">
+<button class="pill-toggle" id="quick-toggle-${escapeHTML(i.id)}" data-mode="${globalAddMode}" data-action="toggle-quick-mode" data-id="${escapeHTML(i.id)}" data-btype="${escapeHTML(i.bType)}">
+ ${isPack ? 'Packs' : escapeHTML(i.bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>
+</button>
 <button class="pill-add" data-action="inline-add" data-id="${escapeHTML(i.id)}" aria-label="Add ${escapeHTML(i.n)} to calculator"><span class="material-symbols-rounded" style="font-size:20px">add</span></button>
 </div>
 </div>
@@ -1135,33 +1102,17 @@ data-action="open-details" data-id="${escapeHTML(i.id)}">
 `;
 };
 
-const reconcileResultsList = (filtered, qTokens, isPack) => {
-const emptyEl = els.res.querySelector('[data-empty]');
-if (!filtered.length) {
-if (!emptyEl) els.res.innerHTML = '<div data-empty style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
-return;
+const cacheNewCards = (chunk) => {
+const startIdx = cardEls.length;
+for(let k=0; k<chunk.length; k++) {
+const el = document.getElementById(`card-${chunk[k].id}`);
+if(!el) continue;
+cardIndexById.set(chunk[k].id, startIdx + k);
+cardEls.push(el);
 }
-if (emptyEl) emptyEl.remove();
-
-let ref = els.res.firstChild;
-filtered.forEach(item => {
-let el = document.getElementById(`card-${item.id}`);
-const wrapper = document.createElement('div');
-wrapper.innerHTML = cardTemplate(item, qTokens, isPack).trim();
-const fresh = wrapper.firstElementChild;
-if (el) {
-if (el.innerHTML !== fresh.innerHTML) el.innerHTML = fresh.innerHTML;
-if (el.getAttribute('aria-label') !== fresh.getAttribute('aria-label')) el.setAttribute('aria-label', fresh.getAttribute('aria-label'));
-} else {
-el = fresh;
-}
-if (el === ref) ref = ref.nextSibling;
-else els.res.insertBefore(el, ref);
-});
-
-let node = ref;
-while (node) { const next = node.nextSibling; node.remove(); node = next; }
 };
+
+const resetCardCache = () => { cardEls = []; cardIndexById = new Map(); lastFocusedCard = null; };
 
 const refreshCardInPlace = (id) => {
 const el = document.getElementById(`card-${id}`);
@@ -1172,74 +1123,69 @@ const isPack = globalAddMode === 'pack';
 const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
 const wrapper = document.createElement('div');
 wrapper.innerHTML = cardTemplate(item, qTokens, isPack).trim();
-const fresh = wrapper.firstElementChild;
-el.innerHTML = fresh.innerHTML;
-el.setAttribute('aria-label', fresh.getAttribute('aria-label'));
+const newEl = wrapper.firstElementChild;
+el.replaceWith(newEl);
+const idx = cardIndexById.get(id);
+if(idx !== undefined) cardEls[idx] = newEl;
+if(lastFocusedCard && lastFocusedCard.id === `card-${id}`) lastFocusedCard = newEl;
+};
+
+const appendNextChunk = () => {
+if(renderedCount >= currentResults.length) return;
+const sentinel = document.getElementById('loadSentinel');
+if(sentinel) sentinel.remove();
+const isPack = globalAddMode === 'pack';
+const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
+const html = chunk.map(i => cardTemplate(i, qTokens, isPack)).join('');
+els.res.insertAdjacentHTML('beforeend', html);
+renderedCount += chunk.length;
+cacheNewCards(chunk);
+updateResultsMeta();
+if(renderedCount < currentResults.length) {
+els.res.insertAdjacentHTML('beforeend', '<div class="load-sentinel" id="loadSentinel"></div>');
+const newSentinel = document.getElementById('loadSentinel');
+disconnectObserver();
+resultsObserver = new IntersectionObserver((entries) => {
+if(entries[0].isIntersecting) appendNextChunk();
+}, { root: els.vSearch, rootMargin: '600px' });
+resultsObserver.observe(newSentinel);
+}
+};
+
+const loadAllRemaining = () => {
+disconnectObserver();
+while(renderedCount < currentResults.length) {
+const isPack = globalAddMode === 'pack';
+const qTokens = els.in.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+const sentinel = document.getElementById('loadSentinel');
+if(sentinel) sentinel.remove();
+const chunk = currentResults.slice(renderedCount, renderedCount + CHUNK_SIZE);
+els.res.insertAdjacentHTML('beforeend', chunk.map(i => cardTemplate(i, qTokens, isPack)).join(''));
+renderedCount += chunk.length;
+cacheNewCards(chunk);
+}
+updateResultsMeta();
 };
 
 const updateResultsMeta = () => {
-els.meta.textContent = currentResults.length ? `${currentResults.length} result${currentResults.length === 1 ? '' : 's'}` : '';
+if(!currentResults.length) { els.meta.textContent = ''; return; }
+els.meta.textContent = renderedCount >= currentResults.length
+? `${currentResults.length} result${currentResults.length === 1 ? '' : 's'}`
+: `Showing ${renderedCount} of ${currentResults.length} — scroll for more`;
 };
 
-let omniState = 'IDLE';
-let armed = false;
-
-const getEffectiveTarget = (intent) => {
-if (selectionIndex >= 0 && currentResults[selectionIndex]) return { item: currentResults[selectionIndex] };
-return resolveTarget(intent);
-};
-
-const computeOmniState = (intent, target) => {
-if (!intent.query) return 'IDLE';
-if (intent.qty != null && target) {
-if (target.item.isDynamic && intent.price == null) return 'ARMED_NEEDS_PRICE';
-return 'ARMED_WITH_QTY';
+const focusCardById = (id) => {
+setTimeout(() => {
+let guard = 0;
+while(!document.getElementById(`quick-in-${id}`) && renderedCount < currentResults.length && guard < 30) { appendNextChunk(); guard++; }
+const qtyInput = document.getElementById(`quick-in-${id}`);
+if(qtyInput) { 
+qtyInput.focus({ preventScroll: true }); 
+qtyInput.closest('.card').scrollIntoView({ block: 'nearest', behavior: 'auto' }); 
 }
-if (armed && target) return 'ARMED_PENDING_QTY';
-return 'SEARCHING';
+}, 30);
 };
-
-const updateOmniHint = () => {
-const intent = parseCommand(els.in.value);
-const target = getEffectiveTarget(intent);
-omniState = computeOmniState(intent, target);
-const pv = preview(intent, target);
-if (els.hint) {
-els.hint.textContent = pv.text;
-els.hint.classList.toggle('hint-error', !pv.ok && omniState !== 'IDLE');
-}
-if (els.omniPrice && omniState !== 'ARMED_NEEDS_PRICE') els.omniPrice.style.display = 'none';
-};
-
-const applySelection = () => {
-currentResults.forEach((item, idx) => {
-const row = document.getElementById(`card-${item.id}`);
-if (!row) return;
-const isSel = idx === selectionIndex;
-row.classList.toggle('focused', isSel);
-row.setAttribute('aria-selected', isSel ? 'true' : 'false');
-});
-if (selectionIndex >= 0 && currentResults[selectionIndex]) {
-const row = document.getElementById(`card-${currentResults[selectionIndex].id}`);
-if (row) {
-els.in.setAttribute('aria-activedescendant', row.id);
-row.scrollIntoView({ block: 'nearest', behavior: 'auto' });
-}
-} else {
-els.in.removeAttribute('aria-activedescendant');
-}
-updateOmniHint();
-};
-
-const moveSelection = (delta) => {
-if (!currentResults.length) return;
-if (selectionIndex === -1) selectionIndex = delta > 0 ? 0 : currentResults.length - 1;
-else selectionIndex = ((selectionIndex + delta) % currentResults.length + currentResults.length) % currentResults.length;
-applySelection();
-};
-
-const selectFirst = () => { if (currentResults.length) { selectionIndex = 0; applySelection(); } };
-const selectLast = () => { if (currentResults.length) { selectionIndex = currentResults.length - 1; applySelection(); } };
 
 const renderSearch = () => {
 closeQuickLinks();
@@ -1247,6 +1193,8 @@ const rawQ = els.in.value;
 const qStr = normalizeSearchText(rawQ);
 els.icon.textContent = activeView === 'calc' ? 'calculate' : 'data_usage';
 els.clear.style.display = rawQ.length > 0 ? 'flex' : 'none';
+
+disconnectObserver();
 
 const qTokens = qStr.split(/\s+/).filter(Boolean);
 const u = els.fU.value, s = els.fS.value;
@@ -1277,36 +1225,13 @@ filtered.push({...item, score});
 if(qTokens.length > 0) filtered.sort((a,b) => b.score - a.score);
 
 currentResults = filtered;
-const isPack = globalAddMode === 'pack';
-const rawTokens = rawQ.toLowerCase().trim().split(/\s+/).filter(Boolean);
-reconcileResultsList(filtered, rawTokens, isPack);
-updateResultsMeta();
+renderedCount = 0;
+resetCardCache();
+els.res.innerHTML = filtered.length ? '' : '<div style="text-align:center; padding:40px; color:var(--sys-on-surface-variant);">No matches found</div>';
+if(filtered.length) appendNextChunk();
+else updateResultsMeta();
 
-selectionIndex = -1;
-applySelection();
-};
-
-const performCommit = (intent, target, opts = {}) => {
-if (!target) return false;
-const item = target.item;
-const req = intent.qty != null ? intent.qty : (opts.useDefaultQty ? (defaultQuickQty || 1) : null);
-if (req == null || req <= 0) return false;
-const sp = opts.priceOverride != null ? opts.priceOverride : (intent.price != null ? intent.price : 0);
-const r = commit({ kind: 'add', id: item.id, req, sp, additive: true });
-if (!r.ok) return false;
-
-const spareMsg = r.spare > 0 ? ` (${r.spare} ${item.bType} spare)` : '';
-showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
-refreshCardInPlace(item.id);
-
-armed = false;
-if (els.omniPrice) { els.omniPrice.style.display = 'none'; els.omniPrice.value = ''; }
-els.in.value = opts.keepQuery || '';
-renderSearch();
-els.in.focus({ preventScroll: true });
-if (opts.keepQuery) els.in.select();
-if (opts.jumpToCalc) switchView('calc');
-return true;
+focusedCardIndex = -1;
 };
 
 window.copyItemInfo = (id) => {
@@ -1314,6 +1239,16 @@ const item = db.find(i => i.id === id);
 if (!item) return;
 const pStr = item.isDynamic ? '50% Supply Price' : `${item.p.toFixed(2)} EGP`;
 copyTextToClipboard(`${item.n} ${item.t} | ${item.u} | ${pStr}`).then(ok => showToast(ok ? `Copied ${item.n}` : 'Copy failed — select text manually', ok ? 'content_copy' : 'warning'));
+};
+
+window.toggleQuickMode = (e, id, bType) => {
+e.stopPropagation();
+const btn = document.getElementById(`quick-toggle-${id}`);
+if(!btn) return;
+const currentMode = btn.getAttribute('data-mode');
+const newMode = currentMode === 'unit' ? 'pack' : 'unit';
+btn.setAttribute('data-mode', newMode);
+btn.innerHTML = `${newMode === 'pack' ? 'Packs' : escapeHTML(bType)} <span class="material-symbols-rounded" style="font-size:16px">swap_vert</span>`;
 };
 
 const commitToCalc = (id, req, sp = 0, additive = false) => {
@@ -1332,129 +1267,29 @@ if(activeView === 'calc') renderDashboard();
 return { item, packs, cost, spare };
 };
 
-const resolveTarget = (intent) => {
-const qStr = normalizeSearchText(intent.query);
-if (!qStr) return null;
-const qTokens = qStr.split(/\s+/).filter(Boolean);
-let best = null, bestScore = -1;
-for (let i = 0; i < db.length; i++) {
-const item = db[i];
-let score = 0, matchedAll = true;
-for (let j = 0; j < qTokens.length; j++) {
-const tk = qTokens[j];
-const aliasTk = resolveAliasToken(tk);
-const hit = item.searchStr.includes(tk) || (aliasTk !== tk && item.searchStr.includes(aliasTk));
-if (!hit) { matchedAll = false; break; }
-if (item.nLower.startsWith(tk)) score += 20; else score += 10;
-}
-if (!matchedAll) continue;
-if (score > bestScore) { bestScore = score; best = item; }
-}
-return best ? { item: best, score: bestScore } : null;
-};
-
-const preview = (intent, target) => {
-if (!intent.query) return { text: 'x30 sets quantity', ok: false };
-if (intent.qtyInvalid) return { text: 'Quantity must be greater than 0', ok: false };
-if (!target) return { text: `No match for "${intent.query}"`, ok: false };
-const item = target.item;
-if (intent.qty == null) {
-const priceStr = item.isDynamic ? '50% Supply Price' : `${item.p.toFixed(2)} EGP`;
-return { text: `⏎ ${item.n} · ${item.u} · ${priceStr}`, ok: true };
-}
-if (item.isDynamic && intent.price == null) {
-return { text: `${item.n} needs a supply price — type @450 or press Tab`, ok: false };
-}
-const { packs, spare } = packInfo(intent.qty, item.bQty);
-const costP = item.isDynamic ? packs * Math.round(toPiastres(intent.price) / 2) : packs * item.pP;
-const spareStr = spare > 0 ? ` · ${spare} ${item.bType} spare` : '';
-return { text: `⏎ Add ${item.n} — ${intent.qty} ${item.bType} → ${packs} pack${packs === 1 ? '' : 's'}${spareStr} · ${formatPiastres(costP)} EGP`, ok: true };
-};
-
-const MAX_UNDO_STACK = 25;
-let undoStack = [];
-
-const pushUndo = (label, invert) => {
-undoStack.push({ label, invert });
-if (undoStack.length > MAX_UNDO_STACK) undoStack.shift();
-};
-
-const performUndo = () => {
-const entry = undoStack.pop();
-const toastEl = document.querySelector('.undo-toast');
-if (toastEl) toastEl.remove();
-if (!entry) return;
-entry.invert();
-showToast(`Undid: ${entry.label}`, 'undo');
-};
-
-const commit = (op) => {
-const item = db.find(i => i.id === op.id);
-if (!item) return { ok: false, reason: 'no-item' };
-
-if (op.kind === 'edit') {
-const entry = dashboardMap.get(op.id);
-if (!entry) return { ok: false, reason: 'no-entry' };
-const prevSnapshot = { ...entry };
-let rawVal = op.val;
-if (isNaN(rawVal) || rawVal < 0) rawVal = 0;
-let clamped = false;
-if (rawVal > MAX_QTY) { rawVal = MAX_QTY; clamped = true; }
-let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0, spare = 0;
-if (op.mode === 'pack') packs = rawVal;
-else if (op.mode === 'req') { req = rawVal; ({ packs, spare } = packInfo(req, item.bQty)); }
-else if (op.mode === 'sp') sp = rawVal;
-if (op.mode !== 'req') spare = Math.max(0, packs * item.bQty - req);
-const costP = item.isDynamic ? packs * Math.round(toPiastres(sp) / 2) : packs * item.pP;
-const cost = costP / 100;
-entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
-dashboardMap.set(op.id, entry);
-syncCurrentOrder();
-pushUndo(`edited ${item.n}`, () => {
-dashboardMap.set(op.id, prevSnapshot);
-syncCurrentOrder();
-if (activeView === 'calc') renderDashboard(); else refreshCardInPlace(op.id);
-});
-return { ok: true, item, req, packs, spare, cost, costP, clamped };
-}
-
-const req = op.req;
-if (isNaN(req) || req <= 0 || req > MAX_QTY) return { ok: false, reason: 'invalid-qty' };
-let sp = 0;
-if (item.isDynamic) {
-sp = op.sp;
-if (isNaN(sp) || sp < 0) return { ok: false, reason: 'needs-price' };
-}
-const prevEntry = dashboardMap.get(op.id);
-const prevSnapshot = prevEntry ? { ...prevEntry } : null;
-const result = commitToCalc(op.id, req, sp, op.additive !== false);
-if (!result) return { ok: false, reason: 'no-item' };
-pushUndo(`added ${item.n}`, () => {
-if (prevSnapshot) dashboardMap.set(op.id, prevSnapshot); else dashboardMap.delete(op.id);
-syncCurrentOrder();
-els.badge.textContent = dashboardMap.size;
-els.badge.style.display = dashboardMap.size ? 'block' : 'none';
-if (activeView === 'calc') renderDashboard(); else refreshCardInPlace(op.id);
-});
-return { ok: true, ...result };
-};
-
 window.inlineAdd = (id, btnEl) => {
 const input = document.getElementById(`quick-in-${id}`);
 const rawReq = parseFloat(input.value);
+if(isNaN(rawReq) || rawReq <= 0 || rawReq > 999999) return;
 const item = db.find(i => i.id === id);
 if (!item) return;
 
-const req = globalAddMode === 'pack' ? rawReq * item.bQty : rawReq;
-const sp = item.isDynamic ? parseFloat(document.getElementById(`quick-sp-${id}`).value) : 0;
-const r = commit({ kind: 'add', id, req, sp, additive: true });
-if (!r.ok) {
-if (r.reason === 'needs-price') {
+let sp = 0;
+if(item.isDynamic) {
+const spInput = document.getElementById(`quick-sp-${id}`);
+sp = parseFloat(spInput.value);
+if(isNaN(sp) || sp < 0) {
 showToast("Please enter Supply Price", "warning");
-document.getElementById(`quick-sp-${id}`).focus({ preventScroll: true });
-}
+spInput.focus({ preventScroll: true });
 return;
 }
+}
+
+const toggleBtn = document.getElementById(`quick-toggle-${id}`);
+const mode = toggleBtn ? toggleBtn.getAttribute('data-mode') : globalAddMode;
+const req = mode === 'pack' ? rawReq * item.bQty : rawReq;
+const result = commitToCalc(id, req, sp, true);
+if(!result) return;
 
 input.value = ''; input.blur();
 if(item.isDynamic) document.getElementById(`quick-sp-${id}`).value = '';
@@ -1465,9 +1300,37 @@ const origIcon = icon.textContent;
 btnEl.style.background = 'var(--sys-success)'; btnEl.style.color = 'var(--sys-on-success)'; icon.textContent = 'check';
 setTimeout(() => { btnEl.style.background = ''; btnEl.style.color = ''; icon.textContent = origIcon; }, 800);
 }
-const spareMsg = r.spare > 0 ? ` (${r.spare} ${item.bType} spare)` : '';
-showToast(`Added ${r.packs} pack${r.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+const spareMsg = result.spare > 0 ? ` (${result.spare} ${item.bType} spare)` : '';
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
 refreshCardInPlace(id);
+};
+
+const focusCardFieldByIndex = (idx, field, instant) => {
+const card = cardEls[idx];
+if (!card) return;
+setCardFocus(card, instant);
+const targetId = card.id.slice(5);
+let input = field === 'sp' ? document.getElementById(`quick-sp-${targetId}`) : document.getElementById(`quick-in-${targetId}`);
+if (!input) input = document.getElementById(`quick-in-${targetId}`);
+if (input) { input.focus({ preventScroll: true }); input.select(); }
+focusedCardIndex = idx;
+};
+
+const focusAdjacentRow = (id, delta, field, instant) => {
+const idx = cardIndexById.has(id) ? cardIndexById.get(id) : cardEls.findIndex(c => c.id === `card-${id}`);
+if (idx === -1 || idx === undefined) return;
+const nextIdx = idx + delta;
+if (nextIdx < 0) {
+clearCardFocus();
+focusedCardIndex = -1;
+els.in.focus({ preventScroll: true }); els.in.select();
+return;
+}
+if (nextIdx >= cardEls.length) {
+if (renderedCount < currentResults.length) { appendNextChunk(); focusCardFieldByIndex(nextIdx, field, instant); }
+return;
+}
+focusCardFieldByIndex(nextIdx, field, instant);
 };
 
 window.quickInputKeydown = (e, id, field) => {
@@ -1482,7 +1345,47 @@ const qtyInput = document.getElementById(`quick-in-${id}`);
 if (qtyInput.value.trim() === '') qtyInput.value = String(defaultQuickQty || 1);
 const addBtn = qtyInput.closest('.action-pill').querySelector('.pill-add');
 inlineAdd(id, addBtn);
+if (qtyInput.value === '') focusAdjacentRow(id, 1, 'qty', e.repeat);
+return;
 }
+if (e.key === 'ArrowDown') { e.preventDefault(); focusAdjacentRow(id, 1, field, e.repeat); return; }
+if (e.key === 'ArrowUp') { e.preventDefault(); focusAdjacentRow(id, -1, field, e.repeat); return; }
+};
+
+window.currentModalAddMode = 'unit';
+
+window.setModalAddMode = (mode, id) => {
+currentModalAddMode = mode;
+document.getElementById('mtg-unit').classList.toggle('active', mode === 'unit');
+document.getElementById('mtg-pack').classList.toggle('active', mode === 'pack');
+const item = db.find(i => i.id === id);
+document.getElementById('modal-calc-label').textContent = mode === 'unit' ? item.bType : 'Packs';
+};
+
+window.modalAdd = (id) => {
+const qty = parseFloat(document.getElementById('modal-calc-qty').value);
+if(isNaN(qty) || qty <= 0 || qty > 999999) return;
+const item = db.find(i => i.id === id);
+if (!item) return;
+
+let sp = 0;
+if (item.isDynamic) {
+const spInput = document.getElementById('modal-calc-sp');
+sp = parseFloat(spInput.value);
+if (isNaN(sp) || sp < 0) {
+showToast("Please enter Supply Price", "warning");
+spInput.focus({ preventScroll: true });
+return;
+}
+}
+
+const req = currentModalAddMode === 'pack' ? qty * item.bQty : qty;
+const result = commitToCalc(id, req, sp, true);
+if(!result) return;
+const spareMsg = result.spare > 0 ? ` (${result.spare} ${item.bType} spare)` : '';
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${item.n}${spareMsg}`);
+refreshCardInPlace(id);
+closeModal();
 };
 
 const qlPop = document.getElementById('quickLinksPopover');
@@ -1617,8 +1520,32 @@ document.getElementById('sheetLinks').innerHTML = `
 <a href="https://www.drugs.com/search.php?searchterm=${qStr}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">medical_services</span> Drugs.com</a>
 <a href="https://www.perplexity.ai/search?q=${qStr}" target="_blank" rel="noopener noreferrer" class="engine-btn"><span class="material-symbols-rounded" style="font-size:18px">psychology</span> Perplexity</a>
 `;
+document.getElementById('sheetAddCalc').innerHTML = `
+<div style="background: var(--sys-surface-low); border: 1px solid var(--sys-outline); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
+<div style="font-weight: 600; color: var(--sys-on-bg);">Quick Add to Calculator</div>
+<span class="tag" style="background: transparent; border: 1px solid var(--sys-outline); color: var(--sys-on-surface-variant);">1 Pack = ${item.bQty} ${escapeHTML(item.bType)}</span>
+</div>
+ ${item.isDynamic ? `
+<div style="display: flex; gap: 12px; align-items: center;">
+<input type="number" inputmode="decimal" id="modal-calc-sp" class="glass-input" placeholder="Enter Supply Price..." aria-label="Supply price" min="0" oninput="checkMax(this)" style="padding:10px; font-size:1.1rem; text-align:left; border-color: var(--sys-secondary);">
+<span style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">EGP</span>
+</div>
+` : ''}
+<div style="display: flex; background: var(--sys-well); border-radius: var(--radius-full); padding: 4px; border: 1px solid var(--sys-outline);">
+<button class="omni-tab active" id="mtg-unit" data-action="set-modal-add-mode" data-mode="unit" data-id="${escapeHTML(id)}" style="flex:1; justify-content:center; height:32px;">By Base Unit</button>
+<button class="omni-tab" id="mtg-pack" data-action="set-modal-add-mode" data-mode="pack" data-id="${escapeHTML(id)}" style="flex:1; justify-content:center; height:32px;">By Packages</button>
+</div>
+<div style="display: flex; gap: 12px; align-items: center;">
+<input type="number" inputmode="decimal" id="modal-calc-qty" class="glass-input" placeholder="Enter amount..." aria-label="Amount" min="0" max="999999" oninput="checkMax(this)" onkeydown="if(event.key==='Enter') modalAdd(${escapeAttr(id)})" style="padding:10px; font-size:1.1rem; text-align:left;">
+<span id="modal-calc-label" style="color:var(--sys-on-surface-variant); font-size:0.9rem; font-weight:500; min-width:50px;">${escapeHTML(item.bType)}</span>
+<button data-action="modal-add" data-id="${escapeHTML(id)}" style="background:var(--sys-primary); color:var(--sys-on-primary); border:none; padding:10px 24px; border-radius:var(--radius-full); font-weight:600; cursor:pointer; font-family:inherit; transition:transform 0.2s, filter 0.2s;">Add</button>
+</div>
+</div>
+`;
+window.currentModalAddMode = 'unit';
 els.modal.classList.add('active');
-setTimeout(() => { const sheet = document.getElementById('bottomSheet'); if(sheet) sheet.focus({ preventScroll: true }); trapFocus(sheet); }, 100);
+setTimeout(() => { const i = document.getElementById(item.isDynamic ? 'modal-calc-sp' : 'modal-calc-qty'); if(i) i.focus({ preventScroll: true }); trapFocus(document.getElementById('bottomSheet')); }, 100);
 };
 window.openDetails = openDetails;
 
@@ -1637,21 +1564,43 @@ els.badge.style.display = dashboardMap.size ? 'block' : 'none';
 };
 
 window.updateDashItem = (id, val, mode = 'req') => {
-const r = commit({ kind: 'edit', id, val: parseFloat(val), mode });
-if (!r.ok) return;
-if (r.clamped) showToast("Maximum amount is 999,999", "warning");
+let rawVal = parseFloat(val);
+if(isNaN(rawVal) || rawVal < 0) rawVal = 0;
+if(rawVal > 999999) { rawVal = 999999; showToast("Maximum amount is 999,999", "warning"); }
+
+const entry = dashboardMap.get(id);
+if(!entry) return;
+
+let req = entry.req, packs = entry.packs, sp = entry.supplyPrice || 0, spare = 0;
+
+if (mode === 'pack') {
+packs = rawVal;
+} else if (mode === 'req') {
+req = rawVal;
+({ packs, spare } = packInfo(req, entry.item.bQty));
+} else if (mode === 'sp') {
+sp = rawVal;
+}
+if (mode !== 'req') spare = Math.max(0, packs * entry.item.bQty - req);
+
+const costP = entry.item.isDynamic ? packs * Math.round(toPiastres(sp) / 2) : packs * entry.item.pP;
+const cost = costP / 100;
+
+entry.req = req; entry.packs = packs; entry.cost = cost; entry.supplyPrice = sp;
+dashboardMap.set(id, entry);
+syncCurrentOrder();
 
 const reqEl = document.getElementById(`dash-in-${id}`);
 const packEl = document.getElementById(`dash-packs-${id}`);
 const cEl = document.getElementById(`out-cost-${id}`);
 const spareEl = document.getElementById(`dash-spare-${id}`);
 
-if(mode !== 'req' && reqEl) reqEl.value = r.req;
-if(mode !== 'pack' && packEl) packEl.value = r.packs;
+if(mode !== 'req' && reqEl) reqEl.value = req;
+if(mode !== 'pack' && packEl) packEl.value = packs;
 if(mode !== 'req' && reqEl && parseFloat(reqEl.value) > 999999) reqEl.value = 999999;
 if(mode !== 'pack' && packEl && parseFloat(packEl.value) > 999999) packEl.value = 999999;
-if(cEl) cEl.textContent = formatPiastres(r.costP);
-if(spareEl) spareEl.textContent = r.spare > 0 ? `${r.spare} ${r.item.bType} spare` : '';
+if(cEl) cEl.textContent = formatPiastres(costP);
+if(spareEl) spareEl.textContent = spare > 0 ? `${spare} ${entry.item.bType} spare` : '';
 
 updateDashTotal();
 
@@ -1694,9 +1643,9 @@ return `
 <button class="trash-btn" data-action="remove-dashboard-item" data-id="${escapeHTML(c.item.id)}" aria-label="Remove ${escapeHTML(c.item.n)}"><span class="material-symbols-rounded">delete</span></button>
 </div>
 <div class="dash-controls">
-<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" inputmode="decimal" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input dash-edit-input" data-id="${escapeHTML(c.item.id)}" data-field="req" value="${escapeHTML(String(c.req))}" min="0" max="999999" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
-<div class="control-group"><span class="control-label">Packs <span id="dash-spare-${escapeHTML(c.item.id)}" style="text-transform:none; font-weight:400; color: var(--sys-on-surface-variant);">${spare > 0 ? `· ${escapeHTML(String(spare))} ${escapeHTML(c.item.bType)} spare` : ''}</span></span><input type="number" inputmode="decimal" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input dash-edit-input" data-id="${escapeHTML(c.item.id)}" data-field="pack" value="${escapeHTML(String(c.packs))}" min="0" max="999999" aria-label="Packs"></div>
- ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" inputmode="decimal" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input dash-edit-input" data-id="${escapeHTML(c.item.id)}" data-field="sp" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" aria-label="Supply price"></div>` : ''}
+<div class="control-group"><span class="control-label">Req. ${escapeHTML(c.item.bType)}</span><input type="number" inputmode="decimal" id="dash-in-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.req))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'req')" aria-label="Required ${escapeHTML(c.item.bType)}"></div>
+<div class="control-group"><span class="control-label">Packs <span id="dash-spare-${escapeHTML(c.item.id)}" style="text-transform:none; font-weight:400; color: var(--sys-on-surface-variant);">${spare > 0 ? `· ${escapeHTML(String(spare))} ${escapeHTML(c.item.bType)} spare` : ''}</span></span><input type="number" inputmode="decimal" id="dash-packs-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.packs))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'pack')" aria-label="Packs"></div>
+ ${c.item.isDynamic ? `<div class="control-group"><span class="control-label" style="color:var(--sys-secondary)">Supply Price</span><input type="number" inputmode="decimal" id="dash-sp-${escapeHTML(c.item.id)}" class="glass-input" value="${escapeHTML(String(c.supplyPrice))}" min="0" max="999999" oninput="updateDashItem(${escapeAttr(c.item.id)}, this.value, 'sp')" aria-label="Supply price"></div>` : ''}
 <div class="control-group"><span class="control-label">Cost (EGP)</span><div class="calc-output" id="out-cost-${escapeHTML(c.item.id)}" style="color: var(--sys-primary)">${formatPiastres(toPiastres(c.cost))}</div></div>
 </div>
 </div>
@@ -1722,27 +1671,14 @@ dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard();
 window.removeDashboardItem = (id) => {
 const entry = dashboardMap.get(id);
 if (!entry) return;
-const wasCurrentOrder = currentOrderIndex;
+lastDeletedOrder = null;
+lastDeletedItem = { id, entry, wasCurrentOrder: currentOrderIndex };
 dashboardMap.delete(id);
 syncCurrentOrder();
 renderDashboard();
-pushUndo(`removed ${entry.item.n}`, () => {
-if (wasCurrentOrder === currentOrderIndex) { dashboardMap.set(id, entry); syncCurrentOrder(); renderDashboard(); }
-});
 showUndoToast(`Removed ${entry.item.n}`, "delete");
 };
-window.clearDashboard = () => {
-const prevMap = new Map(dashboardMap);
-const prevOrderIndex = currentOrderIndex;
-dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard();
-if (prevMap.size > 0) {
-pushUndo('cleared the calculator', () => {
-dashboardMap = new Map(prevMap);
-currentOrderIndex = prevOrderIndex;
-saveState(); renderDashboard();
-});
-}
-};
+window.clearDashboard = () => { dashboardMap.clear(); currentOrderIndex = -1; saveState(); renderDashboard(); };
 
 window.saveAsOrder = () => {
 if(dashboardMap.size === 0) return;
@@ -1782,20 +1718,24 @@ dashboardMap = new Map(order.items); currentOrderIndex = idx; saveState(); rende
 
 window.deleteOrder = (e, idx) => {
 e.stopPropagation();
-const deletedOrder = savedOrders[idx];
-const wasCurrentOrder = currentOrderIndex;
-const dashSnapshotForUndo = wasCurrentOrder === idx ? new Map(dashboardMap) : null;
-savedOrders.splice(idx, 1);
+lastDeletedItem = null;
+lastDeletedOrder = savedOrders[idx]; lastDeletedIndex = idx; savedOrders.splice(idx, 1);
 if(currentOrderIndex === idx) { currentOrderIndex = -1; dashboardMap.clear(); }
 else if (currentOrderIndex > idx) { currentOrderIndex--; }
-saveState(); renderDashboard();
-pushUndo(`deleted order "${deletedOrder.name}"`, () => {
-savedOrders.splice(idx, 0, deletedOrder);
-currentOrderIndex = wasCurrentOrder;
-if (dashSnapshotForUndo) dashboardMap = dashSnapshotForUndo;
-saveState(); renderDashboard();
-});
-showUndoToast(`Order deleted`, "delete");
+saveState(); renderDashboard(); showUndoToast(`Order deleted`, "delete");
+};
+
+window.undoDelete = () => {
+if(lastDeletedItem) {
+const { id, entry, wasCurrentOrder } = lastDeletedItem;
+if (wasCurrentOrder === currentOrderIndex) { dashboardMap.set(id, entry); syncCurrentOrder(); renderDashboard(); showToast("Item restored", "restore"); }
+lastDeletedItem = null;
+} else if(lastDeletedOrder) {
+savedOrders.splice(lastDeletedIndex, 0, lastDeletedOrder);
+if (currentOrderIndex !== -1 && currentOrderIndex >= lastDeletedIndex) { currentOrderIndex++; }
+lastDeletedOrder = null; saveState(); renderDashboard(); showToast("Order restored", "restore");
+} else { return; }
+const toastBtn = document.querySelector('.undo-toast button'); if(toastBtn && toastBtn.parentElement) toastBtn.parentElement.remove();
 };
 
 window.exportDashboardText = () => {
@@ -1857,16 +1797,56 @@ dashboardMap = new Map(migrateEntries(validItems)); currentOrderIndex = -1; save
 
 els.in.addEventListener('input', () => {
 if(activeView === 'calc') switchView('search');
-armed = false;
 renderSearch();
 });
 
 els.modal.addEventListener('click', e => { if(e.target === els.modal) closeModal(); });
 
+const setCardFocus = (card, instant) => {
+if(lastFocusedCard && lastFocusedCard !== card) {
+lastFocusedCard.classList.remove('focused');
+lastFocusedCard.removeAttribute('aria-current');
+lastFocusedCard.style.transitionDuration = '';
+}
+if(card) {
+card.style.transitionDuration = instant ? '0s' : '';
+card.classList.add('focused');
+card.setAttribute('aria-current', 'true');
+card.focus({ preventScroll: true });
+card.scrollIntoView({ block: 'nearest', behavior: instant ? 'auto' : 'smooth' });
+}
+lastFocusedCard = card || null;
+};
+
+const clearCardFocus = () => {
+if(lastFocusedCard) {
+lastFocusedCard.classList.remove('focused');
+lastFocusedCard.removeAttribute('aria-current');
+lastFocusedCard.style.transitionDuration = '';
+lastFocusedCard = null;
+}
+};
+
+const updateFocus = (cards, instant) => { setCardFocus((cards || cardEls)[focusedCardIndex] || null, instant); };
+
+const moveFocus = (delta, instant) => {
+if(delta < 0 && focusedCardIndex <= 0) {
+clearCardFocus();
+focusedCardIndex = -1;
+els.in.focus({ preventScroll: true }); els.in.select();
+return;
+}
+if(focusedCardIndex + delta >= renderedCount - 5 && renderedCount < currentResults.length) appendNextChunk();
+if(!cardEls.length) return;
+focusedCardIndex = Math.min(Math.max(focusedCardIndex + delta, 0), cardEls.length - 1);
+setCardFocus(cardEls[focusedCardIndex], instant);
+};
+
 const cmdkEls = { overlay: document.getElementById('cmdkOverlay'), panel: document.getElementById('cmdkPanel'), input: document.getElementById('cmdkInput'), list: document.getElementById('cmdkList'), pane: document.getElementById('cmdkPane') };
 let cmdkActiveIndex = -1;
 let cmdkItems = [];
 let cmdkLastFocused = null;
+let cmdkParsedQty = null;
 let cmdkPaneFocused = false;
 let cmdkPaneIndex = 0;
 const sizePresets = [1, 10, 20, 30, 50, 100];
@@ -1924,6 +1904,37 @@ const buildOrderActions = (idx) => [
 { icon: 'delete', label: 'Delete Order', run: () => { closeCmdk(); deleteOrder({ stopPropagation(){} }, idx); } }
 ];
 
+const buildMedicineActions = (m) => {
+const actions = [];
+actions.push({
+icon: 'bolt', label: 'Add to Calculator', shortcut: 'Enter',
+run: () => {
+const qtyEl = document.getElementById('paneQty');
+const spEl = document.getElementById('paneSp');
+const qty = qtyEl ? parseFloat(qtyEl.value) : (defaultQuickQty || 1);
+if(isNaN(qty) || qty <= 0) { showToast('Enter a valid quantity', 'warning'); if(qtyEl) qtyEl.focus({ preventScroll: true }); return; }
+let sp = 0;
+if(m.isDynamic) {
+sp = spEl ? parseFloat(spEl.value) : NaN;
+if(isNaN(sp) || sp < 0) { showToast('Enter a supply price', 'warning'); if(spEl) spEl.focus({ preventScroll: true }); return; }
+}
+const req = globalAddMode === 'pack' ? qty * m.bQty : qty;
+const result = commitToCalc(m.id, req, sp, true);
+if(!result) return;
+const spareMsg = result.spare > 0 ? ` (${result.spare} ${m.bType} spare)` : '';
+showToast(`Added ${result.packs} pack${result.packs === 1 ? '' : 's'} of ${m.n}${spareMsg}`, 'bolt');
+cmdkEls.input.value = ''; cmdkLastQuery = ''; renderCmdk(''); cmdkEls.input.focus({ preventScroll: true });
+}
+});
+actions.push({ icon: 'open_in_new', label: 'Open Full Details', shortcut: `${MOD_KEY}1`, run: () => { closeCmdkSilently(); openDetails(m.id); } });
+const qStr = encodeURIComponent(m.n);
+actions.push({ icon: engineMeta[preferredEngine].icon, label: getEngineName(), shortcut: `${MOD_KEY}2`, run: () => window.open(generateSearchURL(qStr), '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'image', label: 'View Images', shortcut: `${MOD_KEY}3`, run: () => window.open(generateImageURL(qStr), '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'medical_services', label: 'Drugs.com', shortcut: `${MOD_KEY}4`, run: () => window.open(`https://www.drugs.com/search.php?searchterm=${qStr}`, '_blank', 'noopener,noreferrer') });
+actions.push({ icon: 'psychology', label: 'Perplexity', shortcut: `${MOD_KEY}5`, run: () => window.open(`https://www.perplexity.ai/search?q=${qStr}`, '_blank', 'noopener,noreferrer') });
+return actions;
+};
+
 let cmdkLastQuery = '';
 
 window.openCmdk = () => {
@@ -1949,10 +1960,15 @@ const closeCmdkSilently = () => { cmdkEls.overlay.classList.remove('active'); cm
 
 const renderCmdk = (q) => {
 const raw = q.trim();
+cmdkParsedQty = null;
 cmdkPaneFocused = false;
 cmdkPaneIndex = 0;
 
-const qStr = normalizeSearchText(raw);
+let searchStr = raw;
+const qtyMatch = raw.match(/^(.+?)\s+[x*×]\s*(\d+(?:\.\d+)?)$/i);
+if(qtyMatch && qtyMatch[1].trim()) { searchStr = qtyMatch[1].trim(); cmdkParsedQty = parseFloat(qtyMatch[2]); }
+
+const qStr = normalizeSearchText(searchStr);
 cmdkItems = [];
 baseCommands().filter(c => !qStr || c.title.toLowerCase().includes(qStr)).forEach(c => cmdkItems.push({ type: 'command', ...c }));
 savedOrders.forEach((o, idx) => {
@@ -1960,6 +1976,16 @@ if(!qStr || o.name.toLowerCase().includes(qStr)) {
 cmdkItems.push({ type: 'order', idx, icon: 'bookmark', title: o.name, sub: o.total, actions: buildOrderActions(idx) });
 }
 });
+if(qStr) {
+const qTokens = qStr.split(/\s+/).filter(Boolean);
+db.filter(item => qTokens.every(tk => { const aliasTk = resolveAliasToken(tk); return item.searchStr.includes(tk) || (aliasTk !== tk && item.searchStr.includes(aliasTk)); })).slice(0, 8).forEach(m => {
+cmdkItems.push({
+type: 'medicine', id: m.id, icon: m.icon, title: m.n + (m.t ? ' ' + m.t : ''),
+sub: m.isDynamic ? '50% Supply Price' : `${m.p.toFixed(2)} EGP`,
+dynamic: m.isDynamic, actions: buildMedicineActions(m)
+});
+});
+}
 cmdkActiveIndex = cmdkItems.length ? 0 : -1;
 paintCmdk();
 };
@@ -1980,10 +2006,10 @@ return;
 }
 let html = '';
 const shown = {};
-const typeLabel = { command: 'Commands', order: 'Saved Orders' };
+const typeLabel = { command: 'Commands', order: 'Saved Orders', medicine: 'Medicines' };
 cmdkItems.forEach((item, i) => {
 if(!shown[item.type]) { html += `<div class="cmdk-group-label">${escapeHTML(typeLabel[item.type] || '')}</div>`; shown[item.type] = true; }
-html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" data-action="cmdk-click-item" data-idx="${i}">
+html += `<div class="cmdk-item${i === cmdkActiveIndex ? ' active' : ''}" role="option" aria-selected="${i === cmdkActiveIndex}" onmouseenter="cmdkHover(${i})" data-action="cmdk-click-item" data-idx="${i}">
 <span class="material-symbols-rounded">${escapeHTML(item.icon)}</span>
 <span class="cmdk-item-title">${escapeHTML(item.title)}</span>
 <span class="cmdk-item-sub">${escapeHTML(item.sub || '')}</span>
@@ -1999,11 +2025,21 @@ const item = cmdkItems[cmdkActiveIndex];
 if(!item) { cmdkEls.pane.innerHTML = '<div class="cmdk-pane-empty">Select an item to see actions</div>'; return; }
 let extraFields = '';
 let navIdx = 0;
-if(item.type === 'order') {
+if(item.type === 'medicine') {
+const med = db.find(d => d.id === item.id);
+const qtyVal = cmdkParsedQty || defaultQuickQty || 1;
+extraFields = `
+<div class="cmdk-pane-fields">
+<div class="cmdk-pane-field"><label>Quantity (${escapeHTML(med.bType)})</label><input type="number" inputmode="decimal" id="paneQty" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(String(qtyVal))}" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>
+ ${med.isDynamic ? `<div class="cmdk-pane-field sp-field"><label>Supply Price</label><input type="number" inputmode="decimal" id="paneSp" class="cmdk-pane-input sp-input pane-nav-item" placeholder="EGP" min="0" oninput="checkMax(this); updatePanePreview(${escapeAttr(item.id)})" onkeydown="paneKeydown(event, ${navIdx++})"></div>` : ''}
+</div>
+<div class="cmdk-pane-preview" id="panePreview"></div>
+`;
+} else if(item.type === 'order') {
 const o = savedOrders[item.idx];
 extraFields = `
 <div class="cmdk-pane-fields">
-<div class="cmdk-pane-field"><label>Order Name</label><input type="text" id="paneOrderName" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(o ? o.name : '')}" maxlength="60" data-nav-idx="${navIdx++}"></div>
+<div class="cmdk-pane-field"><label>Order Name</label><input type="text" id="paneOrderName" class="cmdk-pane-input pane-nav-item" value="${escapeHTML(o ? o.name : '')}" maxlength="60" onkeydown="paneKeydown(event, ${navIdx++})"></div>
 </div>
 `;
 }
@@ -2015,7 +2051,7 @@ cmdkEls.pane.innerHTML = `
  ${extraFields}
 <div class="cmdk-pane-actions">
  ${item.actions.map((a, i) => `
-<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" data-nav-idx="${navIdx + i}" data-action="cmdk-pane-action" data-idx="${i}">
+<div class="cmdk-pane-action pane-nav-item${i === 0 ? ' default-action' : ''}" tabindex="0" role="button" aria-label="${escapeHTML(a.label)}" onkeydown="paneKeydown(event, ${navIdx + i})" data-action="cmdk-pane-action" data-idx="${i}">
 <span class="material-symbols-rounded">${escapeHTML(a.icon)}</span>
 <span class="cmdk-pane-action-label">${escapeHTML(a.label)}</span>
  ${a.active ? '<span class="material-symbols-rounded cmdk-pane-check">check</span>' : ''}
@@ -2024,12 +2060,37 @@ cmdkEls.pane.innerHTML = `
 `).join('')}
 </div>
 `;
+if(item.type === 'medicine') updatePanePreview(item.id);
 if(cmdkPaneFocused) {
 const navEls = Array.from(cmdkEls.pane.querySelectorAll('.pane-nav-item'));
 const target = navEls[Math.min(cmdkPaneIndex, navEls.length - 1)];
 if(target) target.focus({ preventScroll: true });
 }
 };
+
+window.updatePanePreview = (id) => {
+const med = db.find(d => d.id === id);
+const preview = document.getElementById('panePreview');
+if(!med || !preview) return;
+const qtyEl = document.getElementById('paneQty');
+const qty = qtyEl ? parseFloat(qtyEl.value) : NaN;
+if(isNaN(qty) || qty <= 0) { preview.textContent = 'Enter a quantity to preview cost'; return; }
+const req = globalAddMode === 'pack' ? qty * med.bQty : qty;
+const { packs, spare } = packInfo(req, med.bQty);
+const spareMsg = spare > 0 ? ` (${spare} ${med.bType} spare)` : '';
+if(med.isDynamic) {
+const spEl = document.getElementById('paneSp');
+const sp = spEl ? parseFloat(spEl.value) : NaN;
+if(isNaN(sp) || sp < 0) { preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} — enter supply price`; return; }
+const costP = packs * Math.round(toPiastres(sp) / 2);
+preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} → ${formatPiastres(costP)} EGP`;
+} else {
+const costP = packs * med.pP;
+preview.textContent = `${packs} pack${packs === 1 ? '' : 's'} (${req} ${med.bType})${spareMsg} → ${formatPiastres(costP)} EGP`;
+}
+};
+
+window.cmdkHover = (i) => { cmdkActiveIndex = i; cmdkPaneFocused = false; cmdkPaneIndex = 0; paintCmdk(); };
 window.cmdkClickItem = (i) => { cmdkActiveIndex = i; cmdkPaneFocused = false; cmdkPaneIndex = 0; const item = cmdkItems[i]; if(item && item.actions && item.actions[0]) item.actions[0].run(); else paintCmdk(); };
 
 const codeToLabel = (code) => {
@@ -2082,7 +2143,7 @@ return;
 if(e.key === 'ArrowLeft') { e.preventDefault(); exitPaneToList(); return; }
 if(e.key === 'Escape') { e.preventDefault(); exitPaneToList(); return; }
 if(e.key === 'Enter') {
-const target = e.target;
+const target = e.currentTarget;
 if(target.tagName === 'INPUT') {
 e.preventDefault();
 const item = cmdkItems[cmdkActiveIndex];
@@ -2124,12 +2185,14 @@ return;
 runShortcutForActiveItem(e);
 });
 
+window.cardKeydown = (e, id) => {
+if (e.target !== e.currentTarget) return;
+if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetails(id); return; }
+if(e.key === 'ArrowDown') { e.preventDefault(); moveFocus(1, e.repeat); }
+else if(e.key === 'ArrowUp') { e.preventDefault(); moveFocus(-1, e.repeat); }
+};
+
 document.addEventListener('keydown', e => {
-if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
-e.preventDefault();
-performUndo();
-return;
-}
 if ((e.ctrlKey || e.metaKey) && e.code === 'KeyK') {
 e.preventDefault();
 if(cmdkEls.overlay.classList.contains('active')) closeCmdk(); else openCmdk();
@@ -2145,88 +2208,28 @@ e.preventDefault(); switchView('search'); els.in.focus({ preventScroll: true });
 if(e.key === 'Escape') {
 if(quickLinksOpenId) { closeQuickLinks(); return; }
 if(els.modal.classList.contains('active')) { closeModal(); return; }
-if(document.activeElement === els.in) {
-if (omniState === 'IDLE') { els.in.blur(); return; }
-if (omniState === 'SEARCHING') { els.in.value = ''; armed = false; renderSearch(); return; }
-const intent = parseCommand(els.in.value);
-els.in.value = intent.query;
-armed = false;
-renderSearch();
-els.in.setSelectionRange(els.in.value.length, els.in.value.length);
-return;
-}
+if(document.activeElement === els.in) { els.in.blur(); return; }
 return;
 }
 if(activeView === 'search' && document.activeElement === els.in) {
-if(e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); }
-else if(e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); }
-else if(e.key === 'PageDown') { e.preventDefault(); moveSelection(10); }
-else if(e.key === 'PageUp') { e.preventDefault(); moveSelection(-10); }
-else if(e.key === 'Home') { e.preventDefault(); selectFirst(); }
-else if(e.key === 'End') { e.preventDefault(); selectLast(); }
-else if(e.key === 'Tab' && els.in.value.length > 0) {
-const intent = parseCommand(els.in.value);
-const target = getEffectiveTarget(intent);
-if (omniState === 'ARMED_NEEDS_PRICE' && els.omniPrice) {
-e.preventDefault();
-els.omniPrice.style.display = '';
-els.omniPrice.focus({ preventScroll: true });
-} else if (omniState === 'SEARCHING' && target) {
-e.preventDefault();
-els.in.value = target.item.n;
-armed = true;
-renderSearch();
-els.in.setSelectionRange(els.in.value.length, els.in.value.length);
-}
-}
+if(!cardEls.length) return;
+if(e.key === 'ArrowDown') { e.preventDefault(); focusedCardIndex = 0; moveFocus(0, e.repeat); }
+else if(e.key === 'ArrowUp') { e.preventDefault(); focusedCardIndex = cardEls.length - 1; moveFocus(0, e.repeat); }
 else if(e.key === 'Enter') {
 e.preventDefault();
-const intent = parseCommand(els.in.value);
-const target = getEffectiveTarget(intent);
-if (omniState === 'SEARCHING') {
-if (target) {
-els.in.value = target.item.n;
-armed = true;
-renderSearch();
-els.in.setSelectionRange(els.in.value.length, els.in.value.length);
-}
-} else if (omniState === 'ARMED_PENDING_QTY' || omniState === 'ARMED_WITH_QTY') {
-performCommit(intent, target, {
-useDefaultQty: omniState === 'ARMED_PENDING_QTY',
-keepQuery: e.shiftKey ? els.in.value : null,
-jumpToCalc: e.ctrlKey || e.metaKey
-});
-} else if (omniState === 'ARMED_NEEDS_PRICE' && els.omniPrice) {
-els.omniPrice.style.display = '';
-els.omniPrice.focus({ preventScroll: true });
+if(focusedCardIndex >= 0 && cardEls[focusedCardIndex]) { cardEls[focusedCardIndex].click(); }
+else { focusCardFieldByIndex(0, 'qty', e.repeat); }
 }
 }
+if(activeView === 'search' && e.key === 'End' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
+e.preventDefault(); loadAllRemaining();
+focusedCardIndex = cardEls.length - 1; updateFocus(null, true);
 }
-});
-
-if (els.omniPrice) {
-els.omniPrice.addEventListener('keydown', e => {
-if (e.key === 'Enter') {
+if(activeView === 'search' && e.key === 'Home' && document.activeElement !== els.in && !document.activeElement.matches('input')) {
 e.preventDefault();
-const intent = parseCommand(els.in.value);
-const target = getEffectiveTarget(intent);
-const price = parseFloat(els.omniPrice.value);
-if (isNaN(price) || price < 0) return;
-performCommit(intent, target, {
-priceOverride: price,
-keepQuery: e.shiftKey ? els.in.value : null,
-jumpToCalc: e.ctrlKey || e.metaKey
-});
-} else if (e.key === 'Escape') {
-e.preventDefault();
-els.omniPrice.style.display = 'none';
-els.omniPrice.value = '';
-armed = false;
-els.in.focus({ preventScroll: true });
-updateOmniHint();
+focusedCardIndex = 0; updateFocus(null, true);
 }
 });
-}
 
 if (!isMacPlatform) {
 const modSymbolEl = document.getElementById('cmdkModSymbol');
@@ -2245,10 +2248,6 @@ const p2 = packInfo(300, 300);
 assert('pack math: exact multiple has no spare', p2.packs === 1 && p2.spare === 0);
 const p3 = packInfo(0, 300);
 assert('pack math: zero request needs zero packs', p3.packs === 0 && p3.spare === 0);
-const p4 = packInfo(45, 30);
-assert('pack math: 45/30 rounds up to 2 packs with 15 spare', p4.packs === 2 && p4.spare === 15);
-const p5 = packInfo(5, undefined);
-assert('pack math: missing bQty falls back to 1 (no spare)', p5.packs === 5 && p5.spare === 0);
 
 assert('piastres: 11.5 EGP -> 1150', toPiastres(11.5) === 1150);
 assert('piastres: rounds fractional cents', toPiastres(2.505) === 251 || toPiastres(2.505) === 250);
@@ -2256,59 +2255,11 @@ assert('piastres: format back to 2dp string', formatPiastres(1150) === '11.50');
 let sumP = 0; [1150, 2700, 375].forEach(v => sumP += v);
 assert('piastres: integer sums have no float drift', formatPiastres(sumP) === '42.25');
 
-(() => {
-const dashSnapshot = dashboardMap, orderSnapshot = currentOrderIndex;
-dashboardMap = new Map();
-currentOrderIndex = -1;
-const normalItem = db.find(d => d.n === 'Concor 5' && !d.t);
-const dynamicItem = db.find(d => d.isDynamic);
-const r1 = commitToCalc(normalItem.id, 45, 0, false);
-assert('commitToCalc: packs/spare come from packInfo (45/30)', r1.packs === 2 && r1.spare === 15);
-assert('commitToCalc: non-dynamic cost is packs * pack price', r1.cost === +(r1.packs * normalItem.p).toFixed(2));
-const r2 = commitToCalc(normalItem.id, 5, 0, true);
-assert('commitToCalc: additive=true sums req onto the existing entry', dashboardMap.get(normalItem.id).req === 50);
-const r3 = commitToCalc(dynamicItem.id, 2, 100, true);
-assert('commitToCalc: dp item cost is 50% of supply price x packs', r3.cost === 100);
-assert('commitToCalc: dashboardMap holds exactly the two committed ids', dashboardMap.size === 2);
-dashboardMap = dashSnapshot;
-currentOrderIndex = orderSnapshot;
-})();
-
 const qtyRe = /^(.+?)\s+[x*×]\s*(\d+(?:\.\d+)?)$/i;
 assert('qty parse: "novomix 30" does not mis-fire', !qtyRe.test('novomix 30'));
 assert('qty parse: "concor 5 x 3" parses to qty 3', (() => { const m = 'concor 5 x 3'.match(qtyRe); return m && m[2] === '3'; })());
 assert('qty parse: "amaryl * 2" (asterisk) parses', (() => { const m = 'amaryl * 2'.match(qtyRe); return m && m[2] === '2'; })());
 assert('qty parse: "amaryl x2" (no space before qty) parses', (() => { const m = 'amaryl x2'.match(qtyRe); return m && m[2] === '2'; })());
-
-const parseCommandTable = [
-['concor 5', 'concor 5', null, null, null],
-['concor 5 x30', 'concor 5', 30, 'default', null],
-['concor 5x30', 'concor 5', 30, 'default', null],
-['concor 5 x 30', 'concor 5', 30, 'default', null],
-['amaryl * 2', 'amaryl', 2, 'default', null],
-['amaryl ×2', 'amaryl', 2, 'default', null],
-['concor 5 x2p', 'concor 5', 2, 'pack', null],
-['concor 5 x30u', 'concor 5', 30, 'unit', null],
-['atozet 10 / 20', 'atozet 10/20', null, null, null],
-['atozet 10 / 20 x3', 'atozet 10/20', 3, 'default', null],
-['exforge hct 160 / 5 /12.5 x2', 'exforge hct 160/5/12.5', 2, 'default', null],
-['anoro @450 x2', 'anoro', 2, 'default', 450],
-['anoro x2 @450', 'anoro', 2, 'default', 450],
-['novomix 30', 'novomix 30', null, null, null],
-['تريسيبا', 'تريسيبا', null, null, null],
-['concor ٥ x٣٠', 'concor 5', 30, 'default', null],
-['concor 5 x', 'concor 5 x', null, null, null],
-['concor 5 x0', 'concor 5', 'reject', null, null],
-['concor 5 x-3', 'concor 5 x-3', null, null, null],
-['x30', 'x30', null, null, null],
-['concor 5 x1000000', 'concor 5', 999999, 'default', null],
-['', '', null, null, null]
-];
-parseCommandTable.forEach(([input, eQuery, eQty, eUnit, ePrice]) => {
-const r = parseCommand(input);
-const qtyOk = eQty === 'reject' ? (r.qtyInvalid === true && r.qty === null) : (r.qty === eQty);
-assert(`parseCommand: ${JSON.stringify(input)}`, r.query === eQuery && qtyOk && r.unit === eUnit && r.price === ePrice);
-});
 
 assert('search normalize: tight slash matches spaced slash', normalizeSearchText('160/10') === normalizeSearchText('160 / 10'));
 assert('search normalize: Arabic-Indic digits map to ASCII', normalizeDigits('٣٠') === '30');
@@ -2320,285 +2271,6 @@ assert(`stable ids: all ${db.length} db entries have unique ids`, idSet.size ===
 const migrated = migrateEntries([['old-random-id', { req: 5, packs: 1, cost: 10, supplyPrice: 0, item: { n: db[0].n, u: db[0].u, s: db[0].s, t: db[0].t } }]]);
 assert('storage migration: old id remaps to current db id', migrated.length === 1 && migrated[0][0] === db[0].id);
 assert('storage migration: drops entries with no matching item', migrateEntries([['x', { item: { n: 'nonexistent-item-xyz', u: '?', s: '?', t: '' } }]]).length === 0);
-assert('storage migration: non-array input returns an empty array', Array.isArray(migrateEntries(null)) && migrateEntries(null).length === 0);
-assert('storage migration: malformed entries are dropped without throwing', migrateEntries([['bad'], ['x', {}], ['y', { item: null }]]).length === 0);
-assert('storage migration: kept entries carry the resolved db item', migrateEntries([['old-random-id', { req: 5, packs: 1, cost: 10, supplyPrice: 0, item: { n: db[0].n, u: db[0].u, s: db[0].s, t: db[0].t } }]])[0][1].item.id === db[0].id);
-
-const tConcor = resolveTarget(parseCommand('concor 5'));
-assert('resolveTarget: direct substring match finds an item', tConcor && tConcor.item.nLower.startsWith('concor'));
-const tAlias = resolveTarget(parseCommand('glimepiride'));
-assert('resolveTarget: generic-name alias resolves to the branded item', tAlias && tAlias.item.nLower.startsWith('amaryl'));
-assert('resolveTarget: no match returns null', resolveTarget(parseCommand('zzznonexistentdrugxyz')) === null);
-assert('resolveTarget: empty query returns null', resolveTarget(parseCommand('')) === null);
-
-const pvIdle = preview(parseCommand(''), null);
-assert('preview: idle hint shown for empty query', pvIdle.text.includes('x30 sets quantity'));
-
-(() => {
-const savedVal2 = els.in.value;
-els.in.value = ''; armed = false;
-renderSearch();
-assert('hint styling: IDLE never gets the warning/error color', omniState === 'IDLE' && !els.hint.classList.contains('hint-error'));
-els.in.value = savedVal2;
-renderSearch();
-})();
-const pvNoMatch = preview(parseCommand('zzznonexistentdrugxyz'), null);
-assert('preview: no-match hint names the query', pvNoMatch.text.includes('No match for'));
-const concorItem = db.find(d => d.n === 'Concor 5' && !d.t);
-const pvSearch = preview(parseCommand('concor 5'), { item: concorItem });
-assert('preview: searching (no qty) shows name, unit and price', pvSearch.ok && pvSearch.text.includes(concorItem.n) && pvSearch.text.includes(concorItem.u));
-const pvArmed = preview(parseCommand('concor 5 x30'), { item: concorItem });
-assert('preview: armed-with-qty shows pack math and total', pvArmed.ok && pvArmed.text.includes('1 pack') && pvArmed.text.includes(formatPiastres(concorItem.pP)));
-const pvSpare = preview(parseCommand('concor 5 x45'), { item: concorItem });
-assert('preview: spare quantity is called out', pvSpare.text.includes('spare'));
-const anoroItem = db.find(d => d.isDynamic);
-const pvNeedsPrice = preview(parseCommand(`${anoroItem.n} x2`), { item: anoroItem });
-assert('preview: dp item with no price prompts for one', !pvNeedsPrice.ok && pvNeedsPrice.text.includes('supply price'));
-const pvInvalid = preview(parseCommand('concor 5 x0'), { item: concorItem });
-assert('preview: rejected qty shows the must-be-positive hint', pvInvalid.text === 'Quantity must be greater than 0');
-
-(() => {
-const dashSnapshot = dashboardMap;
-dashboardMap = new Map();
-const normalItem = db.find(d => d.n === 'Concor 5' && !d.t);
-const dynamicItem = db.find(d => d.isDynamic);
-const badQty = commit({ kind: 'add', id: normalItem.id, req: 0, sp: 0, additive: true });
-assert('commit: add rejects a zero quantity without mutating', badQty.ok === false && badQty.reason === 'invalid-qty' && dashboardMap.size === 0);
-const needsPrice = commit({ kind: 'add', id: dynamicItem.id, req: 2, sp: NaN, additive: true });
-assert('commit: add on a dp item with no price asks for one', needsPrice.ok === false && needsPrice.reason === 'needs-price' && dashboardMap.size === 0);
-const added = commit({ kind: 'add', id: normalItem.id, req: 45, sp: 0, additive: true });
-assert('commit: add path matches commitToCalc\'s pack math', added.ok && added.packs === 2 && added.spare === 15 && dashboardMap.size === 1);
-const editedReq = commit({ kind: 'edit', id: normalItem.id, val: 61, mode: 'req' });
-assert('commit: edit(req) recomputes packs from the new total', editedReq.ok && editedReq.packs === 3 && dashboardMap.get(normalItem.id).req === 61);
-const editedPack = commit({ kind: 'edit', id: normalItem.id, val: 5, mode: 'pack' });
-assert('commit: edit(pack) sets packs directly and recomputes cost', editedPack.ok && editedPack.packs === 5 && editedPack.costP === 5 * normalItem.pP);
-const clampedEdit = commit({ kind: 'edit', id: normalItem.id, val: 5000000, mode: 'req' });
-assert('commit: edit clamps an over-max value and reports it', clampedEdit.ok && clampedEdit.clamped === true && clampedEdit.req === MAX_QTY);
-dashboardMap = dashSnapshot;
-})();
-
-(() => {
-const savedVal = els.in.value;
-
-els.in.value = 'concor';
-renderSearch();
-const domCount = els.res.querySelectorAll('.card').length;
-assert('reconciler: every match renders, no chunk cap', domCount === currentResults.length && domCount > 1);
-
-const firstId = currentResults[0].id;
-const firstNode = document.getElementById(`card-${firstId}`);
-els.in.value = 'concor 5';
-renderSearch();
-const stillThere = currentResults.some(r => r.id === firstId);
-assert('reconciler: a row still in the result set keeps its DOM node', !stillThere || document.getElementById(`card-${firstId}`) === firstNode);
-
-els.in.value = 'concor';
-renderSearch();
-assert('selection: renderSearch resets selection to none', selectionIndex === -1 && !els.in.hasAttribute('aria-activedescendant'));
-
-els.in.focus();
-const activeBefore = document.activeElement;
-moveSelection(1);
-assert('selection: moving down from none selects the first row', selectionIndex === 0);
-assert('focus: moving selection never changes document.activeElement', document.activeElement === activeBefore);
-moveSelection(-1);
-assert('selection: moving up from the first row wraps to the last', selectionIndex === currentResults.length - 1);
-moveSelection(1);
-assert('selection: moving down from the last row wraps to the first', selectionIndex === 0);
-const selRow = document.getElementById(`card-${currentResults[0].id}`);
-assert('selection: aria-activedescendant tracks the selected row', els.in.getAttribute('aria-activedescendant') === selRow.id);
-assert('selection: selected row is aria-selected and gets the visual class', selRow.getAttribute('aria-selected') === 'true' && selRow.classList.contains('focused'));
-selectLast();
-assert('selection: End-equivalent selects the last row', selectionIndex === currentResults.length - 1);
-selectFirst();
-assert('selection: Home-equivalent selects the first row', selectionIndex === 0);
-assert('a11y: results list is a listbox of options', els.res.getAttribute('role') === 'listbox' && selRow.getAttribute('role') === 'option');
-assert('a11y: omnibar exposes role=combobox', els.in.getAttribute('role') === 'combobox');
-
-els.in.value = savedVal;
-renderSearch();
-})();
-
-(() => {
-const dashSnapshot = dashboardMap;
-dashboardMap = new Map();
-const savedVal = els.in.value;
-const savedArmed = armed;
-const savedView = activeView;
-document.documentElement.classList.remove('fonts-loading');
-document.querySelector('.omnibar').style.setProperty('visibility', 'visible', 'important');
-document.querySelector('.omni-input-area').style.setProperty('visibility', 'visible', 'important');
-els.in.style.setProperty('visibility', 'visible', 'important');
-void document.body.offsetHeight;
-
-const pressKey = (target, key, opts = {}) => {
-if (target === els.in) els.in.focus();
-const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, shiftKey: !!opts.shiftKey, ctrlKey: !!opts.ctrlKey, metaKey: !!opts.metaKey });
-target.dispatchEvent(ev);
-return ev;
-};
-
-els.in.focus();
-els.in.value = ''; armed = false; renderSearch();
-assert('state: empty input is IDLE', omniState === 'IDLE');
-
-els.in.value = 'concor'; armed = false; renderSearch();
-assert('state: text with no qty parsed is SEARCHING', omniState === 'SEARCHING');
-
-els.in.value = 'concor 5 x30'; armed = false; renderSearch();
-assert('state: qty parsed against a real match is ARMED_WITH_QTY', omniState === 'ARMED_WITH_QTY');
-
-const anoroItem = db.find(d => d.isDynamic);
-els.in.value = `${anoroItem.n} x2`; armed = false; renderSearch();
-assert('state: qty on a dp item with no price is ARMED_NEEDS_PRICE', omniState === 'ARMED_NEEDS_PRICE');
-els.in.value = `${anoroItem.n} @450 x2`; armed = false; renderSearch();
-assert('state: @price in the grammar skips ARMED_NEEDS_PRICE entirely', omniState === 'ARMED_WITH_QTY');
-
-els.in.value = 'concor 5'; armed = true; renderSearch();
-assert('state: armed with a resolved match and no qty is ARMED_PENDING_QTY', omniState === 'ARMED_PENDING_QTY');
-
-els.in.value = ''; armed = false; renderSearch();
-const emptyTabEvent = pressKey(els.in, 'Tab');
-assert('tab: not intercepted when the omnibar is empty', !emptyTabEvent.defaultPrevented);
-
-els.in.value = 'concor'; armed = false; renderSearch();
-const tabTarget = getEffectiveTarget(parseCommand(els.in.value));
-pressKey(els.in, 'Tab');
-assert('tab: completes the omnibar to the matched item\'s exact name and arms it', els.in.value === tabTarget.item.n && omniState === 'ARMED_PENDING_QTY');
-
-els.in.value = 'concor 5 x30'; armed = false; renderSearch();
-pressKey(els.in, 'Escape');
-assert('escape: from an armed state, strips the qty suffix back to SEARCHING', els.in.value === 'concor 5' && omniState === 'SEARCHING');
-pressKey(els.in, 'Escape');
-assert('escape: from SEARCHING, clears the input to IDLE', els.in.value === '' && omniState === 'IDLE');
-
-els.in.value = `${anoroItem.n} x2`; armed = false; renderSearch();
-pressKey(els.in, 'Enter');
-assert('armed-needs-price: Enter reveals and focuses the inline price field', els.omniPrice.style.display !== 'none' && document.activeElement === els.omniPrice);
-els.omniPrice.value = '450';
-const sizeBeforePriceCommit = dashboardMap.size;
-pressKey(els.omniPrice, 'Enter');
-assert('armed-needs-price: Enter in the price field commits and closes the loop', dashboardMap.size === sizeBeforePriceCommit + 1 && omniState === 'IDLE' && document.activeElement === els.in);
-
-els.in.value = 'concor 5 x5'; armed = false; renderSearch();
-const sizeBeforeShift = dashboardMap.size;
-const shiftTargetId = getEffectiveTarget(parseCommand(els.in.value)).item.id;
-pressKey(els.in, 'Enter', { shiftKey: true });
-assert('shift+enter: commits but keeps the query for a repeat add', dashboardMap.size === sizeBeforeShift + 1 && els.in.value === 'concor 5 x5' && omniState === 'ARMED_WITH_QTY');
-const reqBeforeRepeat = dashboardMap.get(shiftTargetId).req;
-pressKey(els.in, 'Enter');
-assert('shift+enter: a follow-up Enter repeats the commit', dashboardMap.get(shiftTargetId).req === reqBeforeRepeat + 5);
-
-els.in.value = 'concor 5 x5'; armed = false; renderSearch();
-pressKey(els.in, 'Enter', { ctrlKey: true });
-assert('ctrl+enter: commits and jumps to the Calculator view', activeView === 'calc');
-switchView('search');
-
-els.in.value = 'concor 5 x30'; armed = false; renderSearch();
-assert('loop: "concor 5 x30" resolves to a real match, armed with qty', omniState === 'ARMED_WITH_QTY');
-const loopTarget1Id = getEffectiveTarget(parseCommand(els.in.value)).item.id;
-const reqBeforeLoop1 = dashboardMap.has(loopTarget1Id) ? dashboardMap.get(loopTarget1Id).req : 0;
-pressKey(els.in, 'Enter');
-assert('loop: first commit lands, state returns to IDLE', dashboardMap.has(loopTarget1Id) && dashboardMap.get(loopTarget1Id).req === reqBeforeLoop1 + 30 && omniState === 'IDLE');
-assert('loop: focus never left the omnibar after the first commit', document.activeElement === els.in);
-els.in.value = 'amaryl 2 x10'; armed = false; renderSearch();
-assert('loop: "amaryl 2 x10" resolves and arms with qty, no mouse needed', omniState === 'ARMED_WITH_QTY');
-const loopTarget2Id = getEffectiveTarget(parseCommand(els.in.value)).item.id;
-const reqBeforeLoop2 = dashboardMap.has(loopTarget2Id) ? dashboardMap.get(loopTarget2Id).req : 0;
-pressKey(els.in, 'Enter');
-assert('loop: second commit also lands, state returns to IDLE', dashboardMap.has(loopTarget2Id) && dashboardMap.get(loopTarget2Id).req === reqBeforeLoop2 + 10 && omniState === 'IDLE');
-assert('loop: focus never left the omnibar after the second commit either', document.activeElement === els.in);
-
-dashboardMap = dashSnapshot;
-els.in.value = savedVal;
-armed = savedArmed;
-if (activeView !== savedView) switchView(savedView);
-renderSearch();
-})();
-
-(() => {
-const dashSnapshot = dashboardMap;
-const undoStackSnapshot = undoStack;
-const ordersSnapshot = savedOrders;
-const orderIdxSnapshot = currentOrderIndex;
-dashboardMap = new Map();
-undoStack = [];
-savedOrders = [];
-currentOrderIndex = -1;
-
-const testItems = db.filter(d => !d.isDynamic).slice(0, 5);
-testItems.forEach(item => commit({ kind: 'add', id: item.id, req: 10, sp: 0, additive: true }));
-assert('undo: 5 adds create 5 dashboard entries', dashboardMap.size === 5);
-assert('undo: each add pushes one inverse operation', undoStack.length === 5);
-for (let i = 0; i < 5; i++) performUndo();
-assert('undo: 5 undos empty the calculator', dashboardMap.size === 0);
-let totalPAfter5 = 0; dashboardMap.forEach(c => totalPAfter5 += toPiastres(c.cost));
-assert('undo: total is exactly 0.00 EGP after 5 undos', formatPiastres(totalPAfter5) === '0.00');
-
-const editItem = db.find(d => d.n === 'Concor 5' && !d.t);
-commit({ kind: 'add', id: editItem.id, req: 30, sp: 0, additive: true });
-commit({ kind: 'edit', id: editItem.id, val: 60, mode: 'req' });
-assert('undo: edit updates the entry', dashboardMap.get(editItem.id).req === 60);
-performUndo();
-assert('undo: edit reverts to the pre-edit snapshot', dashboardMap.get(editItem.id).req === 30);
-
-removeDashboardItem(editItem.id);
-assert('undo: removal deletes the entry', !dashboardMap.has(editItem.id));
-performUndo();
-assert('undo: removal restores the entry', dashboardMap.has(editItem.id) && dashboardMap.get(editItem.id).req === 30);
-
-clearDashboard();
-assert('undo: clear empties the calculator', dashboardMap.size === 0);
-performUndo();
-assert('undo: clear is reversible', dashboardMap.has(editItem.id) && dashboardMap.get(editItem.id).req === 30);
-
-dashboardMap.clear();
-savedOrders.push({ id: '1', name: 'Order A', total: '10.00 EGP', items: [] });
-savedOrders.push({ id: '2', name: 'Order B', total: '20.00 EGP', items: [] });
-const fakeEvent = { stopPropagation: () => {} };
-deleteOrder(fakeEvent, 0);
-assert('undo: order delete removes it from savedOrders', savedOrders.length === 1 && savedOrders[0].name === 'Order B');
-performUndo();
-assert('undo: order delete is reversible at the original index', savedOrders.length === 2 && savedOrders[0].name === 'Order A');
-
-assert('undo: stack caps at MAX_UNDO_STACK', (() => {
-undoStack = [];
-for (let i = 0; i < MAX_UNDO_STACK + 5; i++) pushUndo(`op ${i}`, () => {});
-return undoStack.length === MAX_UNDO_STACK;
-})());
-
-dashboardMap = dashSnapshot;
-undoStack = undoStackSnapshot;
-savedOrders = ordersSnapshot;
-currentOrderIndex = orderIdxSnapshot;
-})();
-
-(() => {
-const savedSchemaVersion = localStorage.getItem('lx_schema_version');
-const savedCurrentCalc = localStorage.getItem('lx_current_calc');
-const savedCalcOrders = localStorage.getItem('lx_calc_orders');
-const dashSnapshot = dashboardMap;
-const ordersSnapshot = savedOrders;
-const orderIdxSnapshot = currentOrderIndex;
-
-const testItem = db.find(d => d.n === 'Concor 5' && !d.t);
-const v2Payload = [[testItem.id, { req: 30, packs: 1, cost: 26, supplyPrice: 0, item: { ...testItem } }]];
-try {
-localStorage.setItem('lx_schema_version', '2');
-localStorage.setItem('lx_current_calc', JSON.stringify(v2Payload));
-localStorage.setItem('lx_calc_orders', '[]');
-loadState();
-const migratedEntry = dashboardMap.get(testItem.id);
-assert('persistence: a v2 localStorage payload loads intact', !!migratedEntry && migratedEntry.req === 30 && migratedEntry.cost === 26 && migratedEntry.item.id === testItem.id);
-} finally {
-dashboardMap = dashSnapshot;
-savedOrders = ordersSnapshot;
-currentOrderIndex = orderIdxSnapshot;
-if (savedSchemaVersion === null) localStorage.removeItem('lx_schema_version'); else localStorage.setItem('lx_schema_version', savedSchemaVersion);
-if (savedCurrentCalc === null) localStorage.removeItem('lx_current_calc'); else localStorage.setItem('lx_current_calc', savedCurrentCalc);
-if (savedCalcOrders === null) localStorage.removeItem('lx_calc_orders'); else localStorage.setItem('lx_calc_orders', savedCalcOrders);
-}
-})();
 
 const passCount = results.filter(r => r.pass).length;
 console.group(`%cLX self-test: ${passCount}/${results.length} passed`, `color:${passCount === results.length ? '#3ddc84' : '#ff5c5c'}; font-weight:bold;`);
