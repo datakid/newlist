@@ -4,7 +4,7 @@ const MAX_UNDO = 40;
 const HUES = 10;
 const KEYS = {
   ver: 'lx_schema_version', ws: 'lx_workspace', calc: 'lx_current_calc', orders: 'lx_calc_orders', cur: 'lx_current_order', draft: 'lx_draft_name',
-  engine: 'lx_engine', mode: 'lx_add_mode', qty: 'lx_default_qty', recent: 'lx_recent', rounding: 'lx_rounding', minOne: 'lx_min_one'
+  engine: 'lx_engine', mode: 'lx_add_mode', qty: 'lx_default_qty', recent: 'lx_recent', rounding: 'lx_rounding', minOne: 'lx_min_one', catalog: 'lx_catalog'
 };
 
 const Store = (() => {

@@ -35,11 +35,27 @@ v5 had "saved orders", with separate save, load and "unfinished" autosave steps.
 - Lines show the exact fraction next to the pack count (for example `≈ 3.4`), and **short** units in red when rounding down leaves you under the need.
 - An engine in `drugs.json` can set its own default, for example `"rounding": "ceil"`.
 
+### Catalog: built in, refreshable (Settings → Medicine catalog)
+- The medicine list is built into `js/data.js`, so `index.html` opens straight from disk (file://) with no server and no fetch.
+- `data/drugs.json` is still the **single source of truth**. After you edit it, go to **Settings → Refresh from drugs.json**:
+  - Over http it re-reads `data/drugs.json`. When opened from disk, or if that read fails, it opens a file picker so you can choose `drugs.json`.
+  - The file is checked first. An invalid file is rejected and the current list stays in use.
+  - The loaded list is saved (`localStorage.lx_catalog`) and used on every later start.
+  - A toast reports what changed: new items, price changes, removed items.
+  - Your calculations are kept, and their prices update to the new list.
+- **Use built-in list** clears the saved list and goes back to `js/data.js`.
+- To update the built-in list permanently, paste the contents of drugs.json into `js/data.js` after `window.LX_DATA = `.
+
+### UI polish
+- Calculation tabs: the number badge now sits beside the name and total, and all text stays inside the tab. This fixes a class clash (`.empty`) that stacked the tab contents vertically.
+- Evenly spaced rail with a divider before the + and board buttons. The tray header, footer, action buttons and grand-total row have more room.
+
 ## Architecture
 ```
 index.html          markup + inline SVG icon sprite
 css/app.css         design tokens, 10-hue calc palette, dark/light, responsive + print
 data/drugs.json     single source of truth (items, sources, tiers, engines, aliases, examples)
+js/data.js          built-in copy of drugs.json (window.LX_DATA) so file:// works
 js/theme-boot.js    sets the theme before first paint
 js/engine.js        pure logic: parser (#n targeting), ROUND_MODES + packInfo, catalog, ranking, facets, cost
 js/store.js         workspace of calculations, rounding prefs, transfer/merge/reorder, undo, persistence, migration
@@ -51,6 +67,7 @@ js/selftest.js      131 tests; open index.html?selftest=1 and read the console
 
 ## Data model
 - Workspace (`localStorage.lx_workspace`): `{ v: 4, active, seq, calcs: [{ id, name, hue, created, updated, items: [[itemId, { req, packs, supplyPrice, manual, item }]] }] }`
+- Refreshed catalog: `lx_catalog` (`{ from, at, data }`), used before the built-in list
 - Preferences: `lx_rounding` (`{ engineId: 'round'|'ceil'|'floor' }`), `lx_min_one`, `lx_add_mode`, `lx_default_qty`, `lx_engine`, `lx_theme_mode`, `lx_recent`.
 - **Migration** from v5 / v4.5 runs automatically on first load:
   - each saved order becomes a calculation;

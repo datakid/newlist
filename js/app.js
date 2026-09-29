@@ -518,7 +518,7 @@ const patchLine = (id, skipField) => {
 const tabHTML = (c, i) => {
   const on = c.id === Store.state.active;
   const n = c.lines.size;
-  return `<button class="tab ${hueCls(c)}${on ? ' on' : ''}${n ? '' : ' empty'}" id="tab-${esc(c.id)}" role="tab" aria-selected="${on}" data-action="switch-calc" data-cid="${esc(c.id)}" data-drop-cid="${esc(c.id)}" data-drag="calc" draggable="${coarse() ? 'false' : 'true'}" title="${esc(c.name)} · ${plural(n, 'item')} · ${money(Store.totalP(c.lines))} EGP${i < 9 ? ` · Alt ${i + 1}` : ''}"><span class="num">${i + 1}</span><span class="tab-text"><span class="tab-name">${esc(c.name)}</span><span class="tab-meta">${n ? `${money(Store.totalP(c.lines))}` : 'empty'}</span></span></button>`;
+  return `<button class="tab ${hueCls(c)}${on ? ' on' : ''}${n ? '' : ' is-empty'}" id="tab-${esc(c.id)}" role="tab" aria-selected="${on}" data-action="switch-calc" data-cid="${esc(c.id)}" data-drop-cid="${esc(c.id)}" data-drag="calc" draggable="${coarse() ? 'false' : 'true'}" title="${esc(c.name)} · ${plural(n, 'item')} · ${money(Store.totalP(c.lines))} EGP${i < 9 ? ` · Alt ${i + 1}` : ''}"><span class="num">${i + 1}</span><span class="tab-text"><span class="tab-name">${esc(c.name)}</span><span class="tab-meta">${n ? `${money(Store.totalP(c.lines))}` : 'empty'}</span></span></button>`;
 };
 
 const renderRail = () => {
@@ -549,7 +549,7 @@ const renderTotals = () => {
   els.trayBarTotal.textContent = `${tot} EGP`;
   const others = st.calcs.filter(x => x.id !== st.active);
   els.trayBarCalcs.innerHTML = multi() ? `<span class="num on">${calcPos(c)}</span>` + (others.length ? `<span class="num more">+${others.length}</span>` : '') : '';
-  els.trayBar.classList.toggle('empty', !n && !multi());
+  els.trayBar.classList.toggle('is-empty', !n && !multi());
   const g = Store.grandTotalP();
   els.grand.hidden = !multi();
   els.grand.innerHTML = `${icon('board', 'sm')}<span class="grow">All ${st.calcs.length} calculations</span><b>${money(g)} <small>EGP</small></b>${icon('chev-right', 'sm')}`;
@@ -784,6 +784,95 @@ const closeBoard = () => {
   return true;
 };
 
+const Catalog = (() => {
+  const valid = (d) => {
+    if (!d || typeof d !== 'object' || !Array.isArray(d.items) || !d.items.length || !d.engines || typeof d.engines !== 'object') return false;
+    const defEngine = (d.defaults && d.defaults.engine) || 'pack';
+    const okItems = d.items.every(i => i && typeof i.name === 'string' && typeof i.unit === 'string' && isFinite(Number(i.price)) && d.engines[i.engine || defEngine]);
+    if (!okItems) return false;
+    try { buildCatalog({ sources: {}, tiers: {}, ...d }); return true; } catch (e) { return false; }
+  };
+  const readStored = () => {
+    try { const raw = localStorage.getItem(KEYS.catalog); if (!raw) return null; const w = JSON.parse(raw); return w && valid(w.data) ? w.data : null; } catch (e) { return null; }
+  };
+  const storedMeta = () => {
+    try { const w = JSON.parse(localStorage.getItem(KEYS.catalog)); return { from: w.from || 'drugs.json', at: w.at || 0 }; } catch (e) { return { from: 'drugs.json', at: 0 }; }
+  };
+  const save = (data, from) => { try { localStorage.setItem(KEYS.catalog, JSON.stringify({ from, at: Date.now(), data })); return true; } catch (e) { return false; } };
+  const drop = () => { try { localStorage.removeItem(KEYS.catalog); } catch (e) {} };
+  const diff = (oldDb, newDb) => {
+    const o = new Map(oldDb.map(i => [i.id, i]));
+    const n = new Map(newDb.map(i => [i.id, i]));
+    let added = 0, removed = 0, priced = 0;
+    n.forEach((i, id) => { const p = o.get(id); if (!p) added++; else if (p.pP !== i.pP) priced++; });
+    o.forEach((_, id) => { if (!n.has(id)) removed++; });
+    return { added, removed, priced };
+  };
+  return { valid, readStored, storedMeta, save, drop, diff };
+})();
+
+const applyCatalog = (data, origin) => {
+  const norm = { sources: {}, tiers: {}, aliases: {}, examples: [], ...data };
+  const newDb = buildCatalog(norm);
+  const change = Catalog.diff(App.db, newDb);
+  Store.persistNow();
+  App.data = norm;
+  App.db = newDb;
+  App.dataOrigin = origin;
+  rowCache.clear();
+  els.res.innerHTML = '';
+  Store.init(App.db);
+  Store.undoStack = [];
+  renderTray();
+  search();
+  if (settingsOpen()) renderSettings();
+  return change;
+};
+
+const catalogReport = (c, label) => {
+  const bits = [];
+  if (c.added) bits.push(`${c.added} new`);
+  if (c.priced) bits.push(`${c.priced} price${c.priced === 1 ? '' : 's'} changed`);
+  if (c.removed) bits.push(`${c.removed} removed`);
+  Toast.show(`${label} · ${App.db.length} medicines${bits.length ? ' · ' + bits.join(', ') : ' · no changes'}`, 'ok', 'reset');
+};
+
+const loadCatalogData = (data, from) => {
+  if (!Catalog.valid(data)) { Toast.show('That file is not a valid drugs.json', 'warn'); return false; }
+  const saved = Catalog.save(data, from);
+  const c = applyCatalog(data, saved ? Catalog.storedMeta() : { from, at: Date.now() });
+  catalogReport(c, 'Catalog refreshed');
+  return true;
+};
+
+const refreshCatalog = async () => {
+  if (location.protocol === 'file:') { $('catalogUpload').click(); return; }
+  const btn = $('settingsSheet') && $('settingsSheet').querySelector('[data-action="refresh-catalog"]');
+  if (btn) btn.disabled = true;
+  try {
+    const res = await fetch(`data/drugs.json?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    loadCatalogData(await res.json(), 'data/drugs.json');
+  } catch (e) {
+    Toast.show('Could not read data/drugs.json here — pick the file instead', 'warn');
+    $('catalogUpload').click();
+  } finally { if (btn && document.contains(btn)) btn.disabled = false; }
+};
+
+const useBuiltInCatalog = () => {
+  if (!window.LX_DATA) return;
+  Catalog.drop();
+  const c = applyCatalog(window.LX_DATA, { from: 'built-in' });
+  catalogReport(c, 'Using built-in catalog');
+};
+
+const catalogStatus = () => {
+  const o = App.dataOrigin || { from: 'built-in' };
+  if (o.from === 'built-in') return `Built-in list · v${esc(App.data.version || '')} · ${App.db.length} medicines`;
+  const when = o.at ? new Date(o.at).toLocaleString() : '';
+  return `Loaded from ${esc(o.from)}${when ? ` · ${esc(when)}` : ''} · v${esc(App.data.version || '')} · ${App.db.length} medicines`;
+};
+
 const settingsOpen = () => $('settingsModal').classList.contains('open');
 const engineExample = (engineId) => {
   const items = App.db.filter(i => i.engineId === engineId && i.bQty > 1);
@@ -825,6 +914,9 @@ ${rows}
 <section class="set-sec"><div class="sheet-sec-label">Appearance &amp; lookups</div>
 <div class="set-line"><span>Theme</span><div class="seg" role="radiogroup">${['system', 'light', 'dark'].map(m => segBtn(theme === m, 'set-theme', `data-value="${m}"`, `${icon(THEME[m].icon)}<span>${THEME[m].label}</span>`, `th:${m}`)).join('')}</div></div>
 <div class="set-line"><span>Web search</span><div class="seg wrap" role="radiogroup">${Object.entries(WEB_ENGINES).map(([k, w]) => segBtn(p.web === k, 'set-web-pref', `data-id="${k}"`, `<span>${esc(w.label.replace(' Search', ''))}</span>`, `web:${k}`)).join('')}</div></div></section>
+<section class="set-sec"><div class="sheet-sec-label">Medicine catalog</div><p class="set-help">The app ships with a built-in copy of <b>data/drugs.json</b>, so it opens straight from the file. After you edit drugs.json, press Refresh to load it. Your calculations are kept, and prices update to match.</p>
+<div class="set-status">${icon('info', 'sm')}<span>${catalogStatus()}</span></div>
+<div class="links"><button class="link-btn" data-action="refresh-catalog">${icon('reset')}Refresh from drugs.json</button>${App.dataOrigin && App.dataOrigin.from !== 'built-in' ? `<button class="link-btn" data-action="use-builtin-catalog">${icon('undo')}Use built-in list</button>` : ''}</div></section>
 <section class="set-sec"><div class="sheet-sec-label">Your data</div><div class="links">
 <button class="link-btn" data-action="download-all-json">${icon('download')}Back up all calculations</button>
 <button class="link-btn" data-action="open-file-upload">${icon('upload')}Import a file</button></div></section>`;
@@ -989,6 +1081,8 @@ const ACTIONS = {
   'open-board': (t) => openBoard(t && t.dataset.filter),
   'close-board': closeBoard,
   'open-settings': openSettings,
+  'refresh-catalog': refreshCatalog,
+  'use-builtin-catalog': useBuiltInCatalog,
   'set-rounding': (t) => setRounding(t.dataset.engine, t.dataset.mode),
   'toggle-min-one': () => { const n = Store.setMinOne(!Store.state.prefs.minOne); Toast.show(`${Store.state.prefs.minOne ? 'At least 1 pack' : 'Zero packs allowed'}${n ? ` · ${plural(n, 'line')} updated` : ''}`, 'ok', 'calc'); },
   'reset-rounding': () => { let n = 0; Object.keys(App.data.engines).forEach(k => { n += Store.setRounding(k, DEFAULT_ROUND); }); Toast.show(`Rounding reset to nearest${n ? ` · ${plural(n, 'line')} updated` : ''}`, 'ok', 'reset'); },
@@ -1155,6 +1249,18 @@ const bind = () => {
     e.target.value = '';
   });
 
+  $('catalogUpload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const rd = new FileReader();
+    rd.onload = (ev) => {
+      try { loadCatalogData(JSON.parse(ev.target.result), file.name); }
+      catch (err) { Toast.show('That file is not valid JSON', 'warn'); }
+    };
+    rd.readAsText(file);
+    e.target.value = '';
+  });
+
   els.res.addEventListener('scroll', () => Popover.close(), { passive: true });
   els.lines.addEventListener('scroll', () => Popover.close(), { passive: true });
   els.boardCols.addEventListener('scroll', () => Popover.close(), { passive: true, capture: true });
@@ -1253,7 +1359,7 @@ const reveal = () => {
 const bootError = (err) => {
   document.documentElement.classList.remove('booting');
   const p = $('lxPreloader'); if (p) p.remove();
-  $('resultsList').innerHTML = `<div class="empty"><span class="empty-art">${icon('warning')}</span><h3>Catalog failed to load</h3><p>data/drugs.json could not be read (${esc(err && err.message ? err.message : 'unknown error')}). Serve the folder over http and reload.</p></div>`;
+  $('resultsList').innerHTML = `<div class="empty"><span class="empty-art">${icon('warning')}</span><h3>Catalog failed to load</h3><p>The medicine list could not be read (${esc(err && err.message ? err.message : 'unknown error')}). Make sure js/data.js sits next to index.html and reload.</p></div>`;
 };
 
 const boot = async () => {
@@ -1267,11 +1373,11 @@ const boot = async () => {
   });
   $('cmdkHint').textContent = `${isMac ? '⌘' : 'Ctrl '}K`;
   applyTheme();
-  try {
-    const res = await fetch('data/drugs.json', { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    App.data = await res.json();
-  } catch (err) { bootError(err); return; }
+  const stored = Catalog.readStored();
+  const initial = stored || window.LX_DATA;
+  if (!initial || !Catalog.valid(initial)) { bootError(new Error('built-in catalog missing')); return; }
+  App.data = initial;
+  App.dataOrigin = stored ? Catalog.storedMeta() : { from: 'built-in' };
   App.db = buildCatalog(App.data);
   const boot = Store.init(App.db);
   bind();
@@ -1302,4 +1408,5 @@ const boot = async () => {
   });
 })();
 
-boot();
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+else setTimeout(boot, 0);
