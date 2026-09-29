@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script src="js/theme-boot.js"></script>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<title>LX Search 5</title>
+<link rel="icon" type="image/jpeg" href="images/lx-icon.jpg">
+<title>LX Search 5.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -65,6 +65,16 @@
 <symbol id="i-enter" viewBox="0 0 24 24"><path d="M19.5 5v6.5a3 3 0 0 1-3 3H5M9 10.5l-4 4 4 4"/></symbol>
 <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></symbol>
 <symbol id="i-tray" viewBox="0 0 24 24"><path d="M4 13.5l2.2-7.1A2 2 0 0 1 8.1 5h7.8a2 2 0 0 1 1.9 1.4l2.2 7.1V17a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17zM4 13.5h4.5l1 2h5l1-2H20"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5l1.6 2.1 2.6-.6.6 2.6 2.1 1.6-1.2 2.3 1.2 2.3-2.1 1.6-.6 2.6-2.6-.6L12 20.5l-1.6-2.1-2.6.6-.6-2.6-2.1-1.6L6.3 12 5.1 9.7l2.1-1.6.6-2.6 2.6.6z"/></symbol>
+<symbol id="i-board" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="5" height="15" rx="1.8"/><rect x="9.5" y="4.5" width="5" height="10" rx="1.8"/><rect x="15.5" y="4.5" width="5" height="12.5" rx="1.8"/></symbol>
+<symbol id="i-move" viewBox="0 0 24 24"><path d="M4.5 8.5h13M14 5l3.5 3.5L14 12M19.5 15.5h-13M10 12l-3.5 3.5L10 19"/></symbol>
+<symbol id="i-merge" viewBox="0 0 24 24"><path d="M6 4.5v4a5 5 0 0 0 5 5h1a5 5 0 0 1 5 5v1M18 4.5v4a5 5 0 0 1-3 4.6M14.5 16.5L17 19.5l2.5-3"/></symbol>
+<symbol id="i-more" viewBox="0 0 24 24"><path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3"/></symbol>
+<symbol id="i-chev-left" viewBox="0 0 24 24"><path d="M14 6.5L8.5 12l5.5 5.5"/></symbol>
+<symbol id="i-drag" viewBox="0 0 24 24"><path d="M9 6.5h.01M15 6.5h.01M9 12h.01M15 12h.01M9 17.5h.01M15 17.5h.01" stroke-width="2.6"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 4c-2.6 3.6-6 6-6 10a6 6 0 0 0 12 0c0-4-3.4-6.4-6-10z"/></symbol>
+<symbol id="i-reset" viewBox="0 0 24 24"><path d="M5 12a7 7 0 1 0 2.1-5M5 4.5V9h4.5"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></symbol>
 <symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 3.2c-2.3 3.2-6.8 5.2-6.8 9.8a6.8 6.8 0 0 0 13.6 0c0-4.6-4.5-6.6-6.8-9.8z" fill="url(#lxGrad)" stroke="none"/><path d="M9.3 13.6a2.8 2.8 0 0 0 2.7 2.6" stroke="rgba(10,20,40,.55)"/></symbol>
 </svg>
 
@@ -77,7 +87,7 @@
 <header class="topbar" id="topbar">
 <a class="brand" href="./" aria-label="LX Search home">
 <svg class="brand-mark"><use href="#i-logo"/></svg>
-<span class="brand-text">LX Search<span class="brand-ver">5</span></span>
+<span class="brand-text">LX Search<span class="brand-ver">5.5</span></span>
 </a>
 <nav class="dock" aria-label="App controls">
 <button class="dock-btn palette-trigger" data-action="open-cmdk" title="Command palette" aria-label="Open command palette">
@@ -85,7 +95,9 @@
 </button>
 <span class="dock-sep"></span>
 <button class="dock-btn" id="themeBtn" data-action="cycle-theme" aria-label="Toggle theme"><svg class="ic"><use id="themeIconUse" href="#i-auto"/></svg></button>
-<button class="dock-btn" data-action="open-file-upload" title="Import order (.json)" aria-label="Import order"><svg class="ic"><use href="#i-upload"/></svg></button>
+<button class="dock-btn" data-action="open-board" title="All calculations (Alt B)" aria-label="Open all calculations"><svg class="ic"><use href="#i-board"/></svg><span class="dock-count" id="dockCalcCount">1</span></button>
+<button class="dock-btn" data-action="open-file-upload" title="Import calculations (.json)" aria-label="Import calculations"><svg class="ic"><use href="#i-upload"/></svg></button>
+<button class="dock-btn" data-action="open-settings" title="Settings" aria-label="Settings"><svg class="ic"><use href="#i-gear"/></svg></button>
 <div class="menu-anchor">
 <button class="dock-btn" id="engineBtn" data-action="toggle-engine-menu" title="Web search engine" aria-label="Web search engine" aria-haspopup="true" aria-expanded="false"><svg class="ic"><use href="#i-globe"/></svg></button>
 <div class="menu" id="engineMenu" role="menu"></div>
@@ -100,6 +112,7 @@
 <div class="omnibar" id="omnibar">
 <svg class="ic omni-lead" id="omniLead"><use href="#i-search"/></svg>
 <input type="text" id="omniInput" class="omni-input" placeholder="Search medicines or type concor 5 x30" autocomplete="off" spellcheck="false" enterkeyhint="go" aria-label="Search medicines" role="combobox" aria-expanded="true" aria-haspopup="listbox" aria-autocomplete="list" aria-controls="resultsList">
+<button class="omni-target" id="omniTarget" data-action="target-menu" aria-haspopup="true" aria-expanded="false" title="Items are added to this calculation. Type #2 to pick another."></button>
 <label class="omni-price" id="omniPriceWrap" hidden><span>@</span><input type="number" inputmode="decimal" id="omniPriceInput" placeholder="Supply price" aria-label="Supply price" min="0"></label>
 <button class="omni-btn" id="omniClear" data-action="clear-input" aria-label="Clear search" hidden><svg class="ic"><use href="#i-x"/></svg></button>
 </div>
@@ -122,25 +135,34 @@
 <aside class="tray" id="tray" aria-label="Calculation tray">
 <div class="tray-card">
 <header class="tray-head">
+<button class="calc-dot" id="calcDot" data-action="color-menu" aria-haspopup="true" aria-expanded="false" aria-label="Calculation color"></button>
 <div class="tray-title-wrap">
-<input class="tray-title" id="trayTitle" value="Current calculation" maxlength="60" aria-label="Order name" spellcheck="false">
-<span class="status" id="trayStatus">Unsaved</span>
+<input class="tray-title" id="trayTitle" value="Calc 1" maxlength="60" aria-label="Calculation name" spellcheck="false">
+<span class="status" id="trayStatus">1 / 1</span>
 </div>
+<button class="icon-btn" id="calcMenuBtn" data-action="calc-menu" aria-haspopup="true" aria-expanded="false" aria-label="Calculation actions"><svg class="ic"><use href="#i-more"/></svg></button>
 <button class="icon-btn tray-close" data-action="close-tray" aria-label="Close tray"><svg class="ic"><use href="#i-chev-down"/></svg></button>
 </header>
-<div class="orders" id="ordersBar" aria-label="Saved orders"></div>
+<nav class="rail" id="calcRail" aria-label="Calculations">
+<div class="rail-track" id="railTrack" role="tablist" aria-label="Switch calculation"></div>
+<div class="rail-end">
+<button class="rail-btn" data-action="new-calc" title="New calculation (Alt N)" aria-label="New calculation"><svg class="ic"><use href="#i-plus"/></svg></button>
+<button class="rail-btn" data-action="open-board" title="See all calculations side by side (Alt B)" aria-label="Open all calculations"><svg class="ic"><use href="#i-board"/></svg></button>
+</div>
+</nav>
 <div class="tray-lines" id="trayLines"></div>
 <footer class="tray-foot" id="trayFoot">
 <div class="total-row">
 <div><div class="total-label">Total</div><div class="total-sub" id="traySub">0 items</div></div>
 <div class="total-val" id="trayTotal">0.00 <small>EGP</small></div>
 </div>
+<button class="grand-row" id="grandRow" data-action="open-board" hidden></button>
 <div class="tray-actions">
 <button class="pill-btn ghost" data-action="clear-tray" title="Clear"><svg class="ic"><use href="#i-trash"/></svg><span>Clear</span></button>
 <button class="pill-btn ghost" data-action="copy-tray" title="Copy summary"><svg class="ic"><use href="#i-copy"/></svg><span>Copy</span></button>
 <button class="pill-btn ghost" data-action="download-json" title="Download .json"><svg class="ic"><use href="#i-download"/></svg><span>JSON</span></button>
 <button class="pill-btn ghost" data-action="download-csv" title="Download .csv"><svg class="ic"><use href="#i-table"/></svg><span>CSV</span></button>
-<button class="pill-btn primary" id="saveOrderBtn" data-action="save-order"><svg class="ic"><use href="#i-save"/></svg><span>Save order</span></button>
+<button class="pill-btn primary" id="newCalcBtn" data-action="new-calc"><svg class="ic"><use href="#i-plus"/></svg><span>New calculation</span><kbd class="btn-kbd">Alt N</kbd></button>
 </div>
 </footer>
 </div>
@@ -149,7 +171,8 @@
 
 <button class="tray-bar" id="trayBar" data-action="open-tray" aria-label="Open calculation tray">
 <span class="tray-bar-icon"><svg class="ic"><use href="#i-calc"/></svg><span class="count" id="trayBarCount">0</span></span>
-<span class="tray-bar-text"><span class="tray-bar-label">Calculation</span><span class="tray-bar-total" id="trayBarTotal">0.00 EGP</span></span>
+<span class="tray-bar-text"><span class="tray-bar-label" id="trayBarLabel">Calc 1</span><span class="tray-bar-total" id="trayBarTotal">0.00 EGP</span></span>
+<span class="tray-bar-calcs" id="trayBarCalcs"></span>
 <svg class="ic"><use href="#i-chev-right"/></svg>
 </button>
 
@@ -159,11 +182,33 @@
 <div class="sheet" id="detailSheet" role="dialog" aria-modal="true" aria-labelledby="detailTitle" tabindex="-1"></div>
 </div>
 
+<div class="modal" id="settingsModal" aria-hidden="true">
+<div class="sheet settings-sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" tabindex="-1"></div>
+</div>
+
+<div class="board" id="board" aria-hidden="true">
+<section class="board-panel" id="boardPanel" role="dialog" aria-modal="true" aria-labelledby="boardTitle" tabindex="-1">
+<header class="board-head">
+<div class="board-title-wrap"><h2 class="board-title" id="boardTitle">All calculations</h2><span class="board-sub" id="boardSub"></span></div>
+<label class="board-search"><svg class="ic"><use href="#i-search"/></svg><input type="text" id="boardFilter" placeholder="Find a calculation or medicine" autocomplete="off" spellcheck="false" aria-label="Filter calculations"></label>
+<div class="board-actions">
+<button class="pill-btn ghost" data-action="copy-all" title="Copy every calculation"><svg class="ic"><use href="#i-copy"/></svg><span>Copy all</span></button>
+<button class="pill-btn ghost" data-action="download-all-json" title="Download every calculation as JSON"><svg class="ic"><use href="#i-download"/></svg><span>JSON</span></button>
+<button class="pill-btn ghost" data-action="download-all-csv" title="Download every calculation as CSV"><svg class="ic"><use href="#i-table"/></svg><span>CSV</span></button>
+<button class="pill-btn primary-sm" data-action="new-calc-board"><svg class="ic"><use href="#i-plus"/></svg><span>New</span></button>
+<button class="icon-btn" data-action="close-board" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+</div>
+</header>
+<div class="board-hint" id="boardHint"></div>
+<div class="board-cols" id="boardCols"></div>
+</section>
+</div>
+
 <div class="cmdk" id="cmdk" aria-hidden="true">
 <div class="cmdk-panel" id="cmdkPanel" role="dialog" aria-modal="true" aria-label="Command palette">
 <div class="cmdk-input-row">
 <svg class="ic"><use href="#i-bolt"/></svg>
-<input type="text" id="cmdkInput" class="cmdk-input" placeholder="Medicines, commands, orders… try concor 5 x30" autocomplete="off" spellcheck="false" aria-label="Search medicines or run a command">
+<input type="text" id="cmdkInput" class="cmdk-input" placeholder="Medicines, commands, calculations… try concor 5 x30 #2" autocomplete="off" spellcheck="false" aria-label="Search medicines or run a command">
 <kbd>Esc</kbd>
 </div>
 <div class="cmdk-body">

@@ -1,56 +1,72 @@
-# LX Search 5
+# LX Search 5.5
 
-A fast medicine search and a calculator that supports several pricing models, combined into one app. You search on the left and build the order on the right (on phones the order opens as a bottom sheet). Every search result can be added to the calculation directly.
+A fast medicine search combined with a calculator that supports several pricing models. You search on the left and build calculations on the right (on phones the calculation opens as a bottom sheet). Version 5.5 changes how you handle **many calculations at once**, and adds **rounding rules** you can set yourself.
+
+## What's new in 5.5
+
+### Multiple calculations
+v5 had "saved orders", with separate save, load and "unfinished" autosave steps. v5.5 drops that model. Every calculation is now a live workspace that saves itself automatically. There is no Save button and nothing to lose.
+
+- **Calculation rail**: a row of numbered, color-coded tabs under the tray header. Click a tab to switch. Double-click a tab to rename it. When there are more than 3 calculations, the inactive tabs shrink to just their number badge, so 9 or more still fit. The **+** button adds a calculation and the board button opens the overview.
+- **Target chip in the search bar**: shows the calculation that new items will go into (number, color and name). Click it to pick another. Typing `#2` anywhere in a command (for example `concor 5 x30 #2`) sends that item to calc 2 **without switching** away from the one you're on. The chip changes live to show the override, and an unknown `#9` is flagged before you commit.
+- **Which calc holds an item**: each search result shows a badge for the current calc (for example `2 · 1 pack`) plus small colored number badges for every *other* calc that contains it. Click a badge to jump to that calc. With 5 or more, the extra calcs collapse into a `+n` badge that opens the overview filtered to that medicine.
+- **All calculations board** (`Alt B`): every calculation side by side as columns, with totals and a grand total.
+  - Drag a medicine to another column to move it. Hold `Alt`, `Ctrl` or `⌘` while dropping to copy it instead.
+  - Drag a column header to change the order.
+  - Rename a calculation inline.
+  - Use the `⋯` menu on a column to duplicate it, merge it into another, export it, clear it or delete it.
+  - Filter to "which calcs contain Toujeo?".
+  - Copy all, or export all as JSON or CSV.
+  - On touch devices, tap a medicine to move or copy it (no dragging needed).
+- **Moving a line from the tray**: the move icon on each line opens *Move to…* (or copy with the side icon), including *New calculation*. You can also drag a line's icon onto a tab in the rail. When the same medicine already exists in the target, the two are combined.
+- **Calculation menu** (`⋯` in the tray header): rename, pick a color (10 hues), duplicate, merge into another calc, copy, JSON, CSV, clear, delete. Every destructive action has an Undo toast.
+- **Grand total row** in the tray footer whenever there is more than one calc.
+- **Detail sheet**: target pills let you add straight into any calc.
+- **Command palette**: lists your calculations, and for a medicine it offers "Add to 3 · Ward 3" for the other calcs.
+- **Keyboard**: `Alt 1–9` switch calc · `Alt [` / `Alt ]` previous / next · `Alt N` new · `Alt B` board.
+- Limit: 30 calculations (was 10 orders).
+
+### Rounding rules (Settings → Rounding rules)
+- Set for each calculation type (Pack price, Insulin, Supply share): **Nearest** (the default), **Up**, or **Down**.
+  - Example: 1020 IU with 300 IU pens = 3.4 pens → Nearest gives 3, Up gives 4, Down gives 3.
+- Each rule shows live example chips calculated from real catalog pack sizes.
+- **Never less than 1 pack** (on by default): a need above 0 never rounds to 0 packs.
+- Changing a rule updates every calculation right away. Lines where you typed the pack count by hand keep it. These lines are marked **AUTO**; click that to go back to automatic.
+- Lines show the exact fraction next to the pack count (for example `≈ 3.4`), and **short** units in red when rounding down leaves you under the need.
+- An engine in `drugs.json` can set its own default, for example `"rounding": "ceil"`.
 
 ## Architecture
-
 ```
-index.html          markup + inline SVG icon sprite (no icon font)
-css/app.css         design tokens, dark/light themes, responsive + print
-data/drugs.json     THE single source of truth (items, sources, tiers, engines, aliases, examples)
+index.html          markup + inline SVG icon sprite
+css/app.css         design tokens, 10-hue calc palette, dark/light, responsive + print
+data/drugs.json     single source of truth (items, sources, tiers, engines, aliases, examples)
 js/theme-boot.js    sets the theme before first paint
-js/engine.js        pure logic: command parser, catalog builder, ranking, facets, cost models
-js/store.js         state: lines, orders, prefs, recent, snapshot-based undo, persistence, migration
-js/ui.js            helpers: SVG icons, toasts, clipboard, focus trap, popover, web links
-js/palette.js       ⌘K command palette (medicines + commands + saved orders)
-js/app.js           rendering (finder, tray, detail sheet), events, keyboard, boot
-js/selftest.js      77 tests; run by opening index.html?selftest=1
+js/engine.js        pure logic: parser (#n targeting), ROUND_MODES + packInfo, catalog, ranking, facets, cost
+js/store.js         workspace of calculations, rounding prefs, transfer/merge/reorder, undo, persistence, migration
+js/ui.js            helpers: icons, toasts (undo variants), clipboard, focus trap, popover (swap)
+js/palette.js       ⌘K palette (medicines, commands, calculations)
+js/app.js           rendering (finder, tray + rail, board, settings, detail), events, drag & drop, keyboard, boot
+js/selftest.js      131 tests; open index.html?selftest=1 and read the console
 ```
 
-### Data model (`data/drugs.json`)
-- `items[]`: `name`, `unit`, `price`, and optionally `source`, `tier`, `engine`, `packUnits`. Fields you leave out fall back to `defaults`.
-- `engines`: the calculation models.
-  - `pack`: fixed price per pack. Quantities round up to whole packs.
-  - `insulin`: dosed in IU, with 300 IU per pen by default (Toujeo overrides this to 450 via `packUnits`).
-  - `supply`: the cost is `ratio` × the supply price you enter.
-- `sources`, `tiers`: labels in English and Arabic.
-- `aliases`: maps generic names to brands (for example bisoprolol → concor).
-- `examples`: the command pills shown on the start screen.
-
-To add a medicine or a new calculation model, you only edit this file.
-
-## Features
-- **Search**: results are ranked by exact name, first-word prefix, word prefix, generic alias, substring, and then typo tolerance. It also matches Arabic tier text, English tier labels, Arabic-Indic digits, and slashes typed with or without spaces. When nothing matches, it shows a "Did you mean" suggestion.
-- **Facets**: a type bar with live counts, plus Unit, Source and Tier menus (also with counts) and sorting by relevance, name, or price in either direction.
-- **Command grammar**: `concor 5 x30`, `x2p` (packs), `x900u` (base units), `@450` (supply price). The line under the search bar shows the resulting packs, spare units and cost before you commit.
-- **Keyboard**: `/` focuses search, ↑↓ PgUp/PgDn Home/End move through results, Tab completes a name, Enter adds, Shift+Enter adds and keeps the query so you can repeat it, Ctrl/⌘+Enter adds and opens the tray, Esc steps back, Ctrl/⌘ Z undoes, Ctrl/⌘ S saves, Ctrl/⌘ K opens the palette.
-- **Row quick-add**: a quantity pill on each row (plus a supply-price field for supply items), with web-search, copy and details buttons.
-- **Detail sheet**: price per pack and per unit, an add form with a unit/pack toggle and live preview, and lookup links.
-- **Tray**: steppers for units needed, packs and supply price; spare or short units; cost per line; the total; an editable order name.
-- **Orders**: up to 10 saved orders. You can save, update, load, rename, duplicate and delete them. Unsaved work is kept automatically when you switch orders.
-- **Undo**: snapshot-based, 25 steps, covering adds, edits, removals, clearing and order changes. Destructive actions show an undo toast that lasts 30 seconds.
-- **Export and import**: copy a text summary, download JSON or CSV (with a total row), and import JSON files, including v4.5 files.
-- **Other**: system, light and dark themes; print styles; changes sync across browser tabs; the parent iframe bridge from v4.5 (`lx:ready`, `lx:title`, `lx:theme`) still works.
-
-## Storage
-Everything is saved in the browser's `localStorage`, under the same keys as v4.5 (`lx_current_calc`, `lx_calc_orders`, `lx_engine`, `lx_add_mode`, `lx_default_qty`, `lx_theme_mode`) plus the new `lx_recent`, `lx_draft_name` and `lx_current_order`. The schema version is now 3. Item IDs are generated the same way as in v4.5, so existing saved data and files load as before. Entries that can't be matched are dropped.
+## Data model
+- Workspace (`localStorage.lx_workspace`): `{ v: 4, active, seq, calcs: [{ id, name, hue, created, updated, items: [[itemId, { req, packs, supplyPrice, manual, item }]] }] }`
+- Preferences: `lx_rounding` (`{ engineId: 'round'|'ceil'|'floor' }`), `lx_min_one`, `lx_add_mode`, `lx_default_qty`, `lx_engine`, `lx_theme_mode`, `lx_recent`.
+- **Migration** from v5 / v4.5 runs automatically on first load:
+  - each saved order becomes a calculation;
+  - the order that was active keeps your latest edits;
+  - unsaved work becomes its own calculation;
+  - pack counts that matched the old always-round-up result become automatic;
+  - pack counts you had edited by hand stay manual.
+- **Import**: accepts v4.5 and v5 single-order files, and v5.5 multi-calculation files (`{ calcs: [...] }`).
+- **Export**: one calc, or all calcs, as JSON or CSV. The CSV has a Rounding column and subtotals.
 
 ## Entry points
 - `index.html`: the app
-- `index.html?selftest=1`: runs the test suite and prints results to the console
+- `index.html?selftest=1`: runs the test suite
 
 ## Not yet done / next steps
-- The catalog has to be served over http, because `fetch` of `data/drugs.json` doesn't work from `file://`.
+- Drag and drop on touch devices (tap menus are used instead for now)
 - Offline support with a service worker
-- A `favicon.ico` file (it is referenced but missing, as it was in v4.5)
-- Optional: a price-history field in the JSON, and printing a single order
+- Per-medicine rounding overrides (the model is per engine today)
+- Printing several calculations at once from the board

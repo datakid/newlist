@@ -4,6 +4,7 @@ const icon = (name, cls = '') => `<svg class="ic${cls ? ' ' + cls : ''}" aria-hi
 const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
 const isMac = /Mac|iPhone|iPod|iPad/.test(navigator.platform || navigator.userAgent || '');
 const MOD = isMac ? '⌘' : 'Ctrl';
+const QUICK_SIZES = [1, 10, 20, 30, 50, 100];
 
 const WEB_ENGINES = {
   brave: { label: 'Brave Search', icon: 'compass', web: q => `https://search.brave.com/search?q=${q}`, img: q => `https://search.brave.com/images?q=${q}` },
@@ -56,15 +57,15 @@ const Toast = (() => {
     setTimeout(() => dismiss(t), 2800);
     return t;
   };
-  const undo = (msg) => {
+  const undo = (msg, ic = 'trash', kind = 'del', ms = 30000) => {
     const h = host();
     h.querySelectorAll('.toast.has-undo').forEach(x => x.remove());
     trim();
     const t = document.createElement('div');
-    t.className = 'toast del has-undo';
-    t.innerHTML = `${icon('trash')}<span class="msg">${esc(msg)}</span><button class="undo" data-action="undo">${icon('undo', 'sm')}UNDO</button><span class="bar" style="animation-duration:30s"></span>`;
+    t.className = `toast ${kind} has-undo`;
+    t.innerHTML = `${icon(ic)}<span class="msg">${esc(msg)}</span><button class="undo" data-action="undo">${icon('undo', 'sm')}UNDO</button><span class="bar" style="animation-duration:${ms}ms"></span>`;
     h.appendChild(t);
-    setTimeout(() => dismiss(t), 30000);
+    setTimeout(() => dismiss(t), ms);
     return t;
   };
   const clearUndo = () => host().querySelectorAll('.toast.has-undo').forEach(dismiss);
@@ -141,5 +142,16 @@ const Popover = (() => {
     if (p._anchor) p._anchor.setAttribute('aria-expanded', 'false');
     owner = null;
   };
-  return { open, close, get owner() { return owner; } };
+  const swap = (key, html) => {
+    const p = el();
+    if (!owner || !p._anchor || !p._anchor.isConnected) { close(); return false; }
+    p.innerHTML = html;
+    owner = key;
+    const r = p._anchor.getBoundingClientRect();
+    const h = p.offsetHeight;
+    const below = r.bottom + 6;
+    p.style.top = `${below + h > window.innerHeight - 8 ? Math.max(8, r.top - h - 6) : below}px`;
+    return true;
+  };
+  return { open, close, swap, get owner() { return owner; } };
 })();

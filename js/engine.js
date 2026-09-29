@@ -5,18 +5,37 @@ const normalizeText = (s) => normalizeDigits(s).toLowerCase().replace(/\s*\/\s*/
 const toPiastres = (v) => Math.round((Number(v) || 0) * 100);
 const money = (p) => (p / 100).toFixed(2);
 const fmtNum = (n) => Number.isInteger(n) ? n : +Number(n).toFixed(2);
-const packInfo = (req, bQty) => {
+const ROUND_MODES = {
+  round: { label: 'Nearest', verb: 'Round to nearest', glyph: '≈', fn: Math.round },
+  ceil: { label: 'Up', verb: 'Always round up', glyph: '↑', fn: Math.ceil },
+  floor: { label: 'Down', verb: 'Always round down', glyph: '↓', fn: Math.floor }
+};
+const DEFAULT_ROUND = 'round';
+const roundPacks = (ratio, mode) => {
+  const snapped = Math.abs(ratio - Math.round(ratio)) < 1e-9 ? Math.round(ratio) : ratio;
+  return (ROUND_MODES[mode] || ROUND_MODES[DEFAULT_ROUND]).fn(snapped);
+};
+const packInfo = (req, bQty, mode = DEFAULT_ROUND, minOne = false) => {
   const q = bQty || 1;
-  const packs = Math.ceil((req || 0) / q);
-  return { packs, spare: Math.max(0, packs * q - (req || 0)) };
+  const r = Math.max(0, req || 0);
+  let packs = roundPacks(r / q, mode);
+  if (minOne && r > 0 && packs < 1) packs = 1;
+  const cover = packs * q;
+  return { packs, spare: Math.max(0, +(cover - r).toFixed(4)), short: Math.max(0, +(r - cover).toFixed(4)), exact: +(r / q).toFixed(4) };
 };
 
 const QTY_RE = /(?<=[\s\d])[x*×]\s*(\d+(?:[.,]\d+)?)\s*([up])?\s*$/i;
 const PRICE_RE = /\s*@\s*(\d+(?:[.,]\d+)?)\s*/i;
+const CALC_RE = /(?:^|\s)#\s*(\d{1,2})(?=\s|$)/;
 
 const parseCommand = (raw) => {
   let s = normalizeDigits(raw);
-  const intent = { query: '', qty: null, unit: null, price: null, qtyInvalid: false };
+  const intent = { query: '', qty: null, unit: null, price: null, qtyInvalid: false, calc: null };
+  const cm = s.match(CALC_RE);
+  if (cm) {
+    intent.calc = parseInt(cm[1], 10);
+    s = s.slice(0, cm.index) + ' ' + s.slice(cm.index + cm[0].length);
+  }
   const pm = s.match(PRICE_RE);
   if (pm) {
     intent.price = parseFloat(pm[1].replace(',', '.'));
@@ -97,7 +116,7 @@ const buildCatalog = (data) => {
       id: makeStableId(legacyName, raw.unit, src.ar || src.label),
       n: raw.name, t: tier ? tier.ar : '', tLabel: tier ? tier.label : '', tierId: raw.tier || '',
       u: raw.unit, p: raw.price, pP: toPiastres(raw.price),
-      sourceId, s: src.label, engineId, engineLabel: eng.label, model: eng.model, ratio: eng.ratio || 1,
+      sourceId, s: src.label, engineId, engineLabel: eng.label, model: eng.model, ratio: eng.ratio || 1, rounding: ROUND_MODES[eng.rounding] ? eng.rounding : DEFAULT_ROUND,
       isDynamic: eng.model === 'share', bQty, bType, kind: kindFor(raw.unit), generics, nameN, words,
       hay: normalizeText([raw.name, tier ? `${tier.ar} ${tier.label}` : '', raw.unit, src.label, src.ar, eng.label, ...generics].join(' '))
     };

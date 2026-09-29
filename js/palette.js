@@ -6,7 +6,7 @@ const Palette = (() => {
   let lastQuery = '';
   let lastFocus = null;
   const E = {};
-  const SIZES = [1, 10, 20, 30, 50, 100];
+  const SIZES = QUICK_SIZES;
 
   const isOpen = () => E.root && E.root.classList.contains('open');
   const themeMode = () => document.documentElement.getAttribute('data-theme-mode') || 'system';
@@ -15,12 +15,14 @@ const Palette = (() => {
 
   const commands = () => [
     { icon: 'tray', title: 'Open calculation', sub: `${Store.state.lines.size} items`, keys: 'tray calculator cart', actions: [{ icon: 'tray', label: 'Open calculation', shortcut: 'Enter', run: run(() => { if (narrow()) openTray(); else { const f = document.querySelector('.line-in'); if (f) f.focus(); } }) }] },
-    { icon: 'save', title: Store.state.current >= 0 ? 'Update order' : 'Save order', sub: `${MOD} S`, keys: 'save order bookmark', actions: [{ icon: 'save', label: 'Save', shortcut: 'Enter', run: run(saveOrder) }] },
-    { icon: 'plus', title: 'New order', sub: 'Start fresh', keys: 'new order blank', actions: [{ icon: 'plus', label: 'New order', shortcut: 'Enter', run: run(newOrder) }] },
-    { icon: 'copy', title: 'Copy summary', sub: 'Clipboard', keys: 'export copy text share', actions: [{ icon: 'copy', label: 'Copy summary', shortcut: 'Enter', run: run(exportText) }] },
-    { icon: 'download', title: 'Download', sub: 'JSON · CSV', keys: 'download export json csv file', actions: [{ icon: 'download', label: 'Download JSON', shortcut: 'Enter', run: run(downloadJSON) }, { icon: 'table', label: 'Download CSV', run: run(downloadCSV) }] },
-    { icon: 'upload', title: 'Import order file', sub: '.json', keys: 'import upload open file', actions: [{ icon: 'upload', label: 'Choose file…', shortcut: 'Enter', run: run(() => $('fileUpload').click()) }] },
-    { icon: 'trash', title: 'Clear calculation', sub: 'Undo available', keys: 'clear empty reset delete', actions: [{ icon: 'trash', label: 'Clear calculation', shortcut: 'Enter', run: run(clearTray) }] },
+    { icon: 'plus', title: 'New calculation', sub: 'Alt N', keys: 'new calc calculation order blank add patient', actions: [{ icon: 'plus', label: 'New calculation', shortcut: 'Enter', run: run(() => newCalc()) }] },
+    { icon: 'board', title: 'All calculations', sub: 'Alt B', keys: 'board overview all calculations orders compare side', actions: [{ icon: 'board', label: 'Open side by side', shortcut: 'Enter', run: run(() => openBoard()) }] },
+    { icon: 'gear', title: 'Settings & rounding', sub: 'Nearest · up · down', keys: 'settings preferences rounding round ceil floor up down nearest', actions: [{ icon: 'gear', label: 'Open settings', shortcut: 'Enter', run: run(openSettings) }] },
+    { icon: 'copy', title: 'Copy summary', sub: Store.title(), keys: 'export copy text share', actions: [{ icon: 'copy', label: `Copy ${Store.title()}`, shortcut: 'Enter', run: run(() => exportText()) }, { icon: 'board', label: 'Copy all calculations', run: run(copyAll) }] },
+    { icon: 'download', title: 'Download', sub: 'JSON · CSV', keys: 'download export json csv file backup', actions: [{ icon: 'download', label: 'This calculation · JSON', shortcut: 'Enter', run: run(() => downloadJSON()) }, { icon: 'table', label: 'This calculation · CSV', run: run(() => downloadCSV()) }, { icon: 'download', label: 'All calculations · JSON', run: run(downloadAllJSON) }, { icon: 'table', label: 'All calculations · CSV', run: run(downloadAllCSV) }] },
+    { icon: 'upload', title: 'Import file', sub: '.json', keys: 'import upload open file', actions: [{ icon: 'upload', label: 'Choose file…', shortcut: 'Enter', run: run(() => $('fileUpload').click()) }] },
+    { icon: 'trash', title: 'Clear calculation', sub: 'Undo available', keys: 'clear empty reset delete', actions: [{ icon: 'trash', label: `Clear ${Store.title()}`, shortcut: 'Enter', run: run(clearTray) }] },
+    ...Object.entries(App.data.engines).filter(([k]) => App.db.some(i => i.engineId === k && i.bQty > 1)).map(([k, e]) => { const cur = Store.state.prefs.rounding[k] || DEFAULT_ROUND; return { icon: 'calc', title: `Rounding · ${e.label}`, sub: ROUND_MODES[cur].label, keys: `rounding round ceil floor up down nearest ${e.label}`, actions: Object.entries(ROUND_MODES).map(([m, r]) => ({ icon: 'calc', label: r.verb, active: cur === m, run: keep(() => setRounding(k, m)) })) }; }),
     { icon: 'undo', title: 'Undo', sub: `${MOD} Z`, keys: 'undo revert back', actions: [{ icon: 'undo', label: 'Undo last change', shortcut: 'Enter', run: run(doUndo) }] },
     { icon: 'calc', title: 'Filter by calculation type', sub: App.view.facets.type === 'all' ? 'All' : App.data.engines[App.view.facets.type].label, keys: 'type engine insulin supply pack filter', actions: [{ icon: 'grid', label: 'All types', active: App.view.facets.type === 'all', run: run(() => setFacet('type', 'all')) }, ...Object.entries(App.data.engines).map(([k, e]) => ({ icon: ENGINE_ICON[k] || 'box', label: e.label, active: App.view.facets.type === k, run: run(() => { App.view.facets.type = k; search(); }) }))] },
     { icon: 'sliders', title: 'Reset filters & sort', sub: '', keys: 'reset clear filters sort', actions: [{ icon: 'x', label: 'Reset', shortcut: 'Enter', run: run(clearFacets) }] },
@@ -30,17 +32,19 @@ const Palette = (() => {
     { icon: THEME[themeMode()].icon, title: 'Theme', sub: THEME[themeMode()].label, keys: 'theme dark light system appearance', actions: ['system', 'light', 'dark'].map(m => ({ icon: THEME[m].icon, label: THEME[m].label, active: themeMode() === m, run: keep(() => setTheme(m)) })) }
   ];
 
-  const orderActions = (idx) => [
-    { icon: 'bookmark', label: 'Load order', shortcut: 'Enter', run: run(() => { if (loadOrder(idx)) openTray(); }) },
-    { icon: 'edit', label: 'Rename', run: keep(() => { const n = $('paneOrderName'); if (n && Store.renameOrder(idx, n.value)) Toast.show('Order renamed', 'ok', 'edit'); }) },
-    { icon: 'copy', label: 'Duplicate', run: keep(() => { const r = Store.duplicateOrder(idx); Toast.show(r.ok ? 'Order duplicated' : `Maximum ${MAX_ORDERS} saved orders`, r.ok ? 'ok' : 'warn', 'copy'); }) },
-    { icon: 'trash', label: 'Delete order', run: run(() => deleteOrder(idx)) }
+  const calcActions = (cid) => [
+    { icon: 'target', label: 'Switch to it', shortcut: 'Enter', run: run(() => { switchCalc(cid, { silent: true }); openTray(); }) },
+    { icon: 'edit', label: 'Rename', run: keep(() => { const n = $('paneOrderName'); if (n && Store.renameCalc(cid, n.value)) Toast.show('Renamed', 'ok', 'edit'); }) },
+    { icon: 'copy', label: 'Duplicate', run: keep(() => duplicateCalc(cid)) },
+    { icon: 'copy', label: 'Copy summary', run: run(() => exportText(cid)) },
+    { icon: 'trash', label: 'Delete calculation', run: run(() => deleteCalc(cid)) }
   ];
 
   const medActions = (item, intent) => {
     const acts = [
-      { icon: 'plus', label: 'Add to calculation', shortcut: 'Enter', run: () => paneAdd(item, false) },
-      { icon: 'tray', label: 'Add & open tray', shortcut: `${MOD}⏎`, run: () => paneAdd(item, true) },
+      { icon: 'plus', label: `Add to ${(intentCalc(intent) || Store.activeCalc()).name}`, shortcut: 'Enter', run: () => paneAdd(item, false, intent) },
+      { icon: 'tray', label: 'Add & open tray', shortcut: `${MOD}⏎`, run: () => paneAdd(item, true, intent) },
+      ...(multi() ? Store.state.calcs.filter(c => c.id !== (intentCalc(intent) || Store.activeCalc()).id).slice(0, 8).map(c => ({ icon: 'target', label: `Add to ${calcPos(c)} · ${c.name}`, run: () => paneAdd(item, false, intent, c.id) })) : []),
       { icon: 'info', label: 'Details', run: run(() => openDetails(item.id)) },
       { icon: 'copy', label: 'Copy info', run: () => copyItem(item.id) },
       ...webLinks(item).map(l => ({ icon: l.icon, label: `Search ${l.label}`, run: () => { window.open(l.href, '_blank', 'noopener'); } }))
@@ -54,7 +58,7 @@ const Palette = (() => {
     const list = [];
     if (qn) searchCatalog(App.db, intent.query).slice(0, 8).forEach(item => list.push({ type: 'med', item, intent, icon: KIND_ICON[item.kind] || 'box', title: item.n, sub: priceLabel(item), actions: medActions(item, intent) }));
     commands().filter(c => !qn || `${c.title} ${c.keys}`.toLowerCase().includes(qn)).forEach(c => list.push({ type: 'cmd', ...c }));
-    Store.state.orders.forEach((o, idx) => { if (!qn || o.name.toLowerCase().includes(qn)) list.push({ type: 'order', idx, icon: 'bookmark', title: o.name, sub: `${money(Store.totalP(o.lines))} EGP`, actions: orderActions(idx) }); });
+    Store.state.calcs.forEach((c, idx) => { if (!qn || normalizeText(c.name).includes(qn) || String(idx + 1) === qn) list.push({ type: 'order', cid: c.id, hue: c.hue, pos: idx + 1, icon: 'calc', title: c.name, sub: `${money(Store.totalP(c.lines))} EGP`, actions: calcActions(c.id) }); });
     return list;
   };
 
@@ -80,12 +84,12 @@ const Palette = (() => {
       E.pane.innerHTML = '<div class="cmdk-empty" style="margin:auto">Nothing selected</div>';
       return;
     }
-    const labels = { med: 'Medicines', cmd: 'Commands', order: 'Saved orders' };
+    const labels = { med: 'Medicines', cmd: 'Commands', order: 'Calculations' };
     const seen = {};
     let html = '';
     items.forEach((it, i) => {
       if (!seen[it.type]) { html += `<div class="cmdk-group">${labels[it.type]}</div>`; seen[it.type] = 1; }
-      html += `<div class="cmdk-item${i === active ? ' on' : ''}" role="option" aria-selected="${i === active}" data-pidx="${i}">${icon(it.icon)}<span class="cmdk-title" dir="auto">${it.type === 'med' ? highlight(it.title, queryTokens(it.intent.query)) : esc(it.title)}</span><span class="cmdk-sub">${esc(it.sub || '')}</span>${it.actions.length > 1 ? icon('chev-right', 'sm') : ''}</div>`;
+      html += `<div class="cmdk-item${i === active ? ' on' : ''}" role="option" aria-selected="${i === active}" data-pidx="${i}">${it.type === 'order' ? `<span class="num hue-${it.hue}">${it.pos}</span>` : icon(it.icon)}<span class="cmdk-title" dir="auto">${it.type === 'med' ? highlight(it.title, queryTokens(it.intent.query)) : esc(it.title)}</span><span class="cmdk-sub">${esc(it.sub || '')}</span>${it.actions.length > 1 ? icon('chev-right', 'sm') : ''}</div>`;
     });
     E.list.innerHTML = html;
     const on = E.list.querySelector('.cmdk-item.on');
@@ -102,16 +106,18 @@ const Palette = (() => {
     if (!(q > 0)) { out.textContent = 'Enter a quantity'; return; }
     if (item.isDynamic && isNaN(sp)) { out.textContent = 'Enter the supply price'; return; }
     const req = addMode() === 'pack' ? q * item.bQty : q;
-    const { packs, spare } = packInfo(req, item.bQty);
-    out.innerHTML = `<b>${fmtNum(req)} ${esc(item.bType)} → ${plural(packs, 'pack')} · ${money(costOf(item, packs, sp))} EGP</b>${spare > 0 ? ` · ${fmtNum(spare)} spare` : ''}`;
+    const { packs, spare, short } = Store.packsFor(item, req);
+    out.innerHTML = `<b>${fmtNum(req)} ${esc(item.bType)} → ${esc(packWord(item, packs))} · ${money(costOf(item, packs, sp))} EGP</b>${spare > 0 ? ` · ${fmtNum(spare)} spare` : short > 0 ? ` · ${fmtNum(short)} short` : ''}`;
   };
 
-  const paneAdd = (item, openAfter) => {
+  const paneAdd = (item, openAfter, intent, forced) => {
     const qEl = $('paneQty'), sEl = $('paneSp');
     const q = qEl && qEl.value.trim() !== '' ? parseFloat(qEl.value) : quickQty();
     const req = addMode() === 'pack' ? q * item.bQty : q;
     const sp = item.isDynamic ? (sEl && sEl.value.trim() !== '' ? parseFloat(sEl.value) : NaN) : 0;
-    const r = Store.add(item.id, req, sp, true);
+    const dest = forced || (intent && intent.calc != null ? (Store.byPosition(intent.calc) || {}).id : undefined);
+    if (intent && intent.calc != null && !dest) { Toast.show(`There is no calculation #${intent.calc}`, 'warn'); return; }
+    const r = Store.add(item.id, req, sp, true, dest);
     if (!r.ok) {
       if (r.reason === 'needs-price') { paneFocused = true; paint(); const s = $('paneSp'); if (s) s.focus(); }
       failFeedback(r);
@@ -129,13 +135,14 @@ const Palette = (() => {
     let fields = '';
     let head = `<div class="pane-head"><span class="row-icon"${it.type === 'med' ? ` data-engine="${esc(it.item.engineId)}"` : ''}>${icon(it.icon)}</span><div style="min-width:0"><div class="pane-title" dir="auto">${esc(it.title)}</div><div class="pane-sub">${esc(it.sub || '')}</div></div></div>`;
     if (it.type === 'order') {
-      const o = Store.state.orders[it.idx];
-      fields = `<div class="pane-field"><label for="paneOrderName">Order name</label><input type="text" id="paneOrderName" class="pane-input pnav" data-nav="${nav++}" value="${esc(o ? o.name : '')}" maxlength="60"></div>`;
+      const o = Store.calc(it.cid);
+      head = `<div class="pane-head"><span class="row-icon calc-ic hue-${it.hue}"><span class="num">${it.pos}</span></span><div style="min-width:0"><div class="pane-title" dir="auto">${esc(it.title)}</div><div class="pane-sub">${o ? `${plural(o.lines.size, 'item')} · ${money(Store.totalP(o.lines))} EGP${o.id === Store.state.active ? ' · current' : ''}` : ''}</div></div></div>`;
+      fields = `<div class="pane-field"><label for="paneOrderName">Name</label><input type="text" id="paneOrderName" class="pane-input pnav" data-nav="${nav++}" value="${esc(o ? o.name : '')}" maxlength="60"></div>`;
     }
     if (it.type === 'med') {
       const item = it.item;
-      const l = Store.state.lines.get(item.id);
-      head = `<div class="pane-head">${itemIcon(item)}<div style="min-width:0"><div class="pane-title" dir="auto">${esc(item.n)} ${tierTag(item)}</div><div class="pane-sub">${esc(item.u)} · ${esc(item.s)} · ${esc(priceLabel(item))}${l ? ` · <span style="color:var(--success)">in tray (${plural(l.packs, 'pack')})</span>` : ''}</div></div></div>`;
+      const mem = Store.membership(item.id);
+      head = `<div class="pane-head">${itemIcon(item)}<div style="min-width:0"><div class="pane-title" dir="auto">${esc(item.n)} ${tierTag(item)}</div><div class="pane-sub">${esc(item.u)} · ${esc(item.s)} · ${esc(priceLabel(item))}</div>${mem.length ? `<div class="pane-mem">${mem.map(x => `<span class="tag ok">${multi() ? `<span class="num hue-${x.calc.hue}">${x.pos}</span>` : ''}${esc(packWord(item, x.line.packs))}</span>`).join('')}</div>` : ''}</div></div>`;
       const q = it.intent.qty != null ? it.intent.qty : '';
       const p = it.intent.price != null ? it.intent.price : '';
       fields = `${item.isDynamic ? `<div class="pane-field"><label for="paneSp" style="color:var(--accent)">Supply price</label><input type="number" inputmode="decimal" id="paneSp" class="pane-input pnav" data-nav="${nav++}" value="${esc(String(p))}" placeholder="0" min="0" style="color:var(--accent)"></div>` : ''}
